@@ -388,6 +388,37 @@
                   </ul>
                 </div>
               </div>
+              <div class="border-t pt-4 mt-4">
+                <h4 class="font-medium text-primary mb-2">Risk Management Features</h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <h5 class="text-sm font-medium mb-1">Break-Even Protection</h5>
+                    <ul class="list-none space-y-1 text-sm">
+                      <li>
+                        <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                        Move to break-even after {{ config.break_even_pips|default(0) }} pips profit
+                      </li>
+                      <li>
+                        <i class="fas fa-shield-alt text-blue-500 mr-2"></i>
+                        Buffer of {{ config.break_even_buffer_pips|default(0) }} pips above entry
+                      </li>
+                    </ul>
+                  </div>
+                  <div>
+                    <h5 class="text-sm font-medium mb-1">Partial Close</h5>
+                    <ul class="list-none space-y-1 text-sm">
+                      <li>
+                        <i class="fas {% if config.partial_close_enabled %}fa-check-circle text-green-500{% else %}fa-times-circle text-gray-400{% endif %} mr-2"></i>
+                        Partial close {{ config.partial_close_pct|default(0) }}% of position
+                      </li>
+                      <li>
+                        <i class="fas fa-chart-line text-purple-500 mr-2"></i>
+                        Triggered at {{ config.partial_close_pips|default(0) }} pips profit
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
           
@@ -598,6 +629,68 @@
                     />
                   </div>
                   {% endfor %}
+                  <div class="col-span-2 mt-2 border-t pt-4">
+                    <h3 class="text-lg font-medium text-gray-800 mb-2">Risk Management Settings</h3>
+                  </div>
+                  
+                  <!-- Break-Even Settings -->
+                  <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                      Break Even Pips:
+                    </label>
+                    <input 
+                      name="break_even_pips" 
+                      value="{{ config.break_even_pips|default(0) }}" 
+                      class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none transition"
+                    />
+                  </div>
+                  
+                  <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                      Break Even Buffer Pips:
+                    </label>
+                    <input 
+                      name="break_even_buffer_pips" 
+                      value="{{ config.break_even_buffer_pips|default(0) }}" 
+                      class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none transition"
+                    />
+                  </div>
+                  
+                  <!-- Partial Close Settings -->
+                  <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                      Partial Close Enabled:
+                    </label>
+                    <select
+                      name="partial_close_enabled"
+                      class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none transition"
+                    >
+                      <option value="true" {% if config.partial_close_enabled %}selected{% endif %}>Enabled</option>
+                      <option value="false" {% if not config.partial_close_enabled %}selected{% endif %}>Disabled</option>
+                    </select>
+                  </div>
+                  
+                  <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                      Partial Close Percentage:
+                    </label>
+                    <input 
+                      name="partial_close_pct" 
+                      value="{{ config.partial_close_pct|default(50) }}" 
+                      class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none transition"
+                    />
+                  </div>
+                  
+                  <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                      Partial Close Pips:
+                    </label>
+                    <input 
+                      name="partial_close_pips" 
+                      value="{{ config.partial_close_pips|default(0) }}" 
+                      class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none transition"
+                    />
+                  </div>
                 </div>
                 <button type="submit" class="w-full md:w-auto mt-6 px-6 py-2 bg-primary text-white rounded-md shadow-sm hover:bg-primary/90 transition flex items-center justify-center">
                   <i class="fas fa-save mr-2"></i>

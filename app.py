@@ -192,14 +192,29 @@ def stop():
 def update_config():
     new_conf = {}
     for key, val in request.form.items():
+        # Handle boolean values from form
+        if val.lower() == 'true':
+            new_conf[key] = True
+        elif val.lower() == 'false':
+            new_conf[key] = False
         # try to cast to int or float
-        if val.isdigit():
+        elif val.isdigit():
             new_conf[key] = int(val)
         else:
             try:
                 new_conf[key] = float(val)
             except:
                 new_conf[key] = val
+                
+    # Load current config to preserve array values that might not be in form
+    with open('config.json', 'r') as f:
+        current_config = json.load(f)
+        
+    # Merge configs (this keeps arrays like timeframes)
+    for key, val in current_config.items():
+        if key not in new_conf:
+            new_conf[key] = val
+            
     with open('config.json', 'w') as f:
         json.dump(new_conf, f, indent=4)
     return redirect(url_for('index'))

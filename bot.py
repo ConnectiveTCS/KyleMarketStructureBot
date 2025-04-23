@@ -37,6 +37,13 @@ ATR_PERIOD = int(config.get('atr_period', 14))
 ATR_MULT_SL = float(config.get('atr_multiplier_sl', 1.5))
 ATR_MULT_TP = float(config.get('atr_multiplier_tp', 3.0))
 
+# New configuration parameters for break-even and partial close
+BREAK_EVEN_PIPS = float(config.get('break_even_pips', 0))
+BREAK_EVEN_BUFFER = float(config.get('break_even_buffer_pips', 1))
+PARTIAL_CLOSE_ENABLED = bool(config.get('partial_close_enabled', False))
+PARTIAL_CLOSE_PCT = float(config.get('partial_close_pct', 50))
+PARTIAL_CLOSE_PIPS = float(config.get('partial_close_pips', 0))
+
 # Convert pips to price units
 def pips_to_points(pips, symbol_info):
     digits = symbol_info.digits
@@ -91,6 +98,127 @@ def check_break(bars, highs, lows, symbol_info):
             return 'bear'
     return None
 
+# Check if position should be moved to break-even
+def check_break_even(position, symbol_info):
+    if BREAK_EVEN_PIPS <= 0:
+        return False
+    
+    # Calculate pip value for this symbol
+    pip_value = pips_to_points(1.0, symbol_info)
+    
+    # Calculate break-even threshold
+    break_even_threshold = BREAK_EVEN_PIPS * pip_value
+    buffer = BREAK_EVEN_BUFFER * pip_value
+    
+    # Get current price
+    tick = mt5.symbol_info_tick(position.symbol)
+    current_bid, current_ask = tick.bid, tick.ask
+    
+    # Check if already at break-even (stop loss at or better than entry)
+    if position.type == mt5.POSITION_TYPE_BUY and position.sl >= position.price_open:
+        return False
+    if position.type == mt5.POSITION_TYPE_SELL and position.sl <= position.price_open:
+        return False
+    
+    # Check if position is in enough profit to move to break-even
+    if position.type == mt5.POSITION_TYPE_BUY:
+        profit_pips = current_bid - position.price_open
+        if profit_pips >= break_even_threshold:
+            new_sl = position.price_open + buffer
+            return new_sl
+    else:  # SELL position
+        profit_pips = position.price_open - current_ask
+        if profit_pips >= break_even_threshold:
+            new_sl = position.price_open - buffer
+            return new_sl
+    
+    return False
+
+# Check if position should be partially closed
+def check_partial_close(position, symbol_info):
+    if not PARTIAL_CLOSE_ENABLED or PARTIAL_CLOSE_PIPS <= 0 or PARTIAL_CLOSE_PCT <= 0:
+        return False
+    
+    # If position has already been partially closed (check volume)
+    original_volume = LOT_SIZE  # Assuming all positions start with the same lot size
+    if position.volume < original_volume * 0.99:  # Allow for small rounding differences
+        return False
+    
+    # Calculate pip value for this symbol
+    pip_value = pips_to_points(1.0, symbol_info)
+    
+    # Calculate partial close threshold
+    partial_close_threshold = PARTIAL_CLOSE_PIPS * pip_value
+    
+    # Get current price
+    tick = mt5.symbol_info_tick(position.symbol)
+    current_bid, current_ask = tick.bid, tick.ask
+    
+    # Check if position is in enough profit for partial close
+    if position.type == mt5.POSITION_TYPE_BUY:
+        profit_pips = current_bid - position.price_open
+        if profit_pips >= partial_close_threshold:
+            return True
+    else:  # SELL position
+        profit_pips = position.price_open - current_ask
+        if profit_pips >= partial_close_threshold:
+            return True
+    
+    return False
+
+# Move position to break-even
+def move_to_break_even(position, new_sl):
+    request = {
+        "action": mt5.TRADE_ACTION_SLTP,
+        "symbol": position.symbol,
+        "position": position.ticket,
+        "sl": new_sl,
+        "tp": position.tp,
+        "magic": MAGIC
+    }
+    result = mt5.order_send(request)
+    if result.retcode != mt5.TRADE_RETCODE_DONE:
+        print(f"Error moving position {position.ticket} to break-even: {result.retcode}")
+    else:
+        print(f"Position {position.ticket} moved to break-even: SL={new_sl}")
+    return result
+
+# Partially close a position
+def partial_close(position):
+    # Calculate volume to close
+    close_volume = position.volume * (PARTIAL_CLOSE_PCT / 100.0)
+    
+    # Ensure we don't close more than the position size
+    close_volume = min(close_volume, position.volume)
+    
+    # MetaTrader minimum volume is usually 0.01
+    if close_volume < 0.01:
+        close_volume = 0.01
+    
+    # Round to 2 decimal places
+    close_volume = round(close_volume, 2)
+    
+    # Create close request
+    request = {
+        "action": mt5.TRADE_ACTION_DEAL,
+        "symbol": position.symbol,
+        "volume": close_volume,
+        "type": mt5.ORDER_TYPE_SELL if position.type == mt5.POSITION_TYPE_BUY else mt5.ORDER_TYPE_BUY,
+        "position": position.ticket,
+        "price": mt5.symbol_info_tick(position.symbol).bid if position.type == mt5.POSITION_TYPE_BUY else mt5.symbol_info_tick(position.symbol).ask,
+        "deviation": 20,
+        "magic": MAGIC,
+        "comment": "partial close",
+        "type_filling": mt5.ORDER_FILLING_FOK,
+    }
+    
+    result = mt5.order_send(request)
+    if result.retcode != mt5.TRADE_RETCODE_DONE:
+        print(f"Error partially closing position {position.ticket}: {result.retcode}")
+    else:
+        print(f"Position {position.ticket} partially closed: {close_volume} lots")
+    return result
+
 # Entry logic with ATR-based SL/TP
 def enter_trade(direction, symbol_info, last_high, last_low):
     rates = mt5.copy_rates_from_pos(SYMBOL, TIMEFRAME, 0, LOOKBACK)
@@ -134,6 +262,19 @@ def run(stop_event):
 
     symbol_info = mt5.symbol_info(SYMBOL)
     while not stop_event.is_set():
+        # Check existing positions for break-even and partial close
+        positions = mt5.positions_get(symbol=SYMBOL, magic=MAGIC) or []
+        
+        for position in positions:
+            # Check for break-even opportunity
+            new_sl = check_break_even(position, symbol_info)
+            if new_sl:
+                move_to_break_even(position, new_sl)
+            
+            # Check for partial close opportunity
+            if check_partial_close(position, symbol_info):
+                partial_close(position)
+        
         # multi‐TF structure checks
         dir_map = {}
         pivot_map = {}
