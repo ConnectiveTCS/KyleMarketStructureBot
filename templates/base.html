@@ -3,6 +3,15 @@
   <head>
     {% include 'partials/head.html' %}
     <title>{% block title %}Market Structure Bot{% endblock %}</title>
+    <!-- Make sure dashboard CSS is loaded -->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/dashboard.css') }}"
+    />
+    <!-- Add debug script -->
+    <script>
+      console.log("DEBUG: Base template loaded");
+    </script>
   </head>
   <body class="bg-gray-100 text-gray-800">
     {% include 'partials/header.html' %}
@@ -11,12 +20,53 @@
       {% include 'partials/sidebar.html' %}
 
       <main class="flex-1 overflow-y-auto p-4 md:p-6">
+        <div
+          id="debug-info"
+          style="
+            background-color: rgb(14, 0, 50);
+            padding: 10px;
+            margin-bottom: 10px;
+            display: block;
+            color: white;
+          "
+        >
+          Debug: Click
+          <a
+            href="#"
+            onclick="showSection('logging'); return false;"
+            style="color: rgb(255, 242, 1); text-decoration: underline"
+            >here</a
+          >
+          to show logging section
+        </div>
         {% block content %}{% endblock %}
       </main>
     </div>
 
     {% block scripts %}
     <script>
+      console.log("DEBUG: Base scripts loaded");
+
+      // Debug function to check section visibility
+      function checkSections() {
+        const sections = [
+          "market",
+          "positions",
+          "history",
+          "logging",
+          "account",
+          "config",
+        ];
+        sections.forEach((section) => {
+          const element = document.getElementById(section);
+          console.log(
+            `Section ${section} exists: ${!!element}, visible: ${
+              element && !element.classList.contains("hidden")
+            }`
+          );
+        });
+      }
+
       let botRunning = true;
       let updateInterval;
 
@@ -52,11 +102,27 @@
       }
 
       document.addEventListener("DOMContentLoaded", function () {
-        // Initialize dashboard as default section
-        showSection("dashboard");
+        console.log("DOM fully loaded");
 
-        // Start the bot automatically
-        startBot();
+        // Run section check
+        setTimeout(checkSections, 1000);
+
+        // Ensure the logging section is visible
+        setTimeout(function () {
+          const loggingSection = document.getElementById("logging");
+          if (loggingSection) {
+            console.log("Making logging section visible");
+            sections.forEach((section) => {
+              const element = document.getElementById(section);
+              if (element) {
+                element.classList.add("hidden");
+              }
+            });
+            loggingSection.classList.remove("hidden");
+          } else {
+            console.error("Logging section not found in DOM");
+          }
+        }, 2000);
       });
     </script>
     {% endblock %}

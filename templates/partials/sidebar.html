@@ -1,96 +1,105 @@
 <aside
-  class="sidebar inset-y-0 left-0 z-20 w-64 transform -translate-x-full md:translate-x-0 transition-transform duration-200 ease-in-out bg-white shadow-md pt-16 hidden md:block"
+  class="sidebar left-0 top-16 bottom-0 w-16 md:w-64 bg-white shadow-md z-10 transition-all duration-300 ease-in-out overflow-y-auto"
 >
-  <div class="p-4">
-    <div class="mb-8">
-      <p
-        class="text-xs uppercase font-semibold text-gray-500 mb-4 tracking-wider"
-      >
-        Bot Controls
-      </p>
-      <div class="space-y-2">
+  <nav class="py-4">
+    <ul class="px-2">
+      <li class="nav-item my-2">
         <a
           href="/start"
-          class="flex items-center p-2 rounded hover:bg-gray-100 text-success"
+          class="nav-link flex items-center p-2 rounded hover:bg-gray-100 text-success"
         >
-          <i class="fas fa-play mr-3 w-5 text-center"></i>
-          <span>Start Bot</span>
+          <i class="fas fa-play nav-icon mr-3 w-5 text-center"></i>
+          <span class="nav-text">Start Bot</span>
         </a>
+      </li>
+      <li class="nav-item my-2">
         <a
           href="/stop"
-          class="flex items-center p-2 rounded hover:bg-gray-100 text-danger"
+          class="nav-link flex items-center p-2 rounded hover:bg-gray-100 text-danger"
         >
-          <i class="fas fa-stop mr-3 w-5 text-center"></i>
-          <span>Stop Bot</span>
+          <i class="fas fa-stop nav-icon mr-3 w-5 text-center"></i>
+          <span class="nav-text">Stop Bot</span>
         </a>
+      </li>
+      <li class="nav-item my-2">
         <a
           href="/"
-          class="flex items-center p-2 rounded hover:bg-gray-100 text-info"
+          class="nav-link flex items-center p-2 rounded hover:bg-gray-100 text-info"
         >
-          <i class="fas fa-sync-alt mr-3 w-5 text-center"></i>
-          <span>Refresh Data</span>
+          <i class="fas fa-sync-alt nav-icon mr-3 w-5 text-center"></i>
+          <span class="nav-text">Refresh Data</span>
         </a>
-      </div>
-    </div>
-
-    <div class="mb-8">
-      <p
-        class="text-xs uppercase font-semibold text-gray-500 mb-4 tracking-wider"
-      >
-        Monitoring
-      </p>
-      <div class="space-y-2">
+      </li>
+      <li class="nav-item my-2">
         <button
           onclick="showSection('market_structure')"
-          class="nav-btn flex items-center p-2 rounded hover:bg-gray-100 w-full text-left"
+          class="nav-link flex items-center p-2 rounded hover:bg-gray-100 w-full text-left"
         >
-          <i class="fas fa-chart-bar mr-3 w-5 text-center"></i>
-          <span>Market Structure</span>
+          <i class="fas fa-chart-bar nav-icon mr-3 w-5 text-center"></i>
+          <span class="nav-text">Market Structure</span>
         </button>
+      </li>
+      <li class="nav-item my-2">
         <button
           onclick="showSection('positions')"
-          class="nav-btn flex items-center p-2 rounded hover:bg-gray-100 w-full text-left"
+          class="nav-link flex items-center p-2 rounded hover:bg-gray-100 w-full text-left"
         >
-          <i class="fas fa-list-ul mr-3 w-5 text-center"></i>
-          <span>Open Positions</span>
+          <i class="fas fa-list-ul nav-icon mr-3 w-5 text-center"></i>
+          <span class="nav-text">Open Positions</span>
         </button>
+      </li>
+      <li class="nav-item my-2">
         <button
           onclick="showSection('history')"
-          class="nav-btn flex items-center p-2 rounded hover:bg-gray-100 w-full text-left"
+          class="nav-link flex items-center p-2 rounded hover:bg-gray-100 w-full text-left"
         >
-          <i class="fas fa-history mr-3 w-5 text-center"></i>
-          <span>Trading History</span>
+          <i class="fas fa-history nav-icon mr-3 w-5 text-center"></i>
+          <span class="nav-text">Trading History</span>
         </button>
+      </li>
+      <li class="nav-item my-2">
         <button
           onclick="showSection('account')"
-          class="nav-btn flex items-center p-2 rounded hover:bg-gray-100 w-full text-left"
+          class="nav-link flex items-center p-2 rounded hover:bg-gray-100 w-full text-left"
         >
-          <i class="fas fa-wallet mr-3 w-5 text-center"></i>
-          <span>Account Info</span>
+          <i class="fas fa-wallet nav-icon mr-3 w-5 text-center"></i>
+          <span class="nav-text">Account Info</span>
         </button>
+      </li>
+      <li class="nav-item my-2">
         <button
           onclick="showSection('config')"
-          class="nav-btn flex items-center p-2 rounded hover:bg-gray-100 w-full text-left"
+          class="nav-link flex items-center p-2 rounded hover:bg-gray-100 w-full text-left"
         >
-          <i class="fas fa-cog mr-3 w-5 text-center"></i>
-          <span>Configuration</span>
+          <i class="fas fa-cog nav-icon mr-3 w-5 text-center"></i>
+          <span class="nav-text">Configuration</span>
         </button>
+      </li>
+      <li class="nav-item my-2">
+        <a
+          href="#"
+          data-section="logging"
+          class="nav-link bg-blue-100 hover:bg-blue-200 flex items-center p-2 rounded"
+        >
+          <i
+            class="fas fa-clipboard-list nav-icon text-blue-600 mr-3 w-5 text-center"
+          ></i>
+          <span class="nav-text font-semibold">Logs</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+  <div class="pt-4 mt-auto border-t">
+    <div class="flex items-center bg-gray-50 p-3 rounded-lg">
+      <div class="mr-3 bg-primary-700 text-white p-2 rounded-full">
+        <i class="fas fa-robot"></i>
       </div>
-    </div>
-
-    <!-- Bot Status Indicator -->
-    <div class="pt-4 mt-auto border-t">
-      <div class="flex items-center bg-gray-50 p-3 rounded-lg">
-        <div class="mr-3 bg-primary-700 text-white p-2 rounded-full">
-          <i class="fas fa-robot"></i>
-        </div>
-        <div>
-          <p class="text-sm font-medium">Bot Status</p>
-          <div
-            class="status-badge {{ 'status-running' if status == 'running' else 'status-stopped' }}"
-          >
-            {{ status.upper() }}
-          </div>
+      <div>
+        <p class="text-sm font-medium">Bot Status</p>
+        <div
+          class="status-badge {{ 'status-running' if status == 'running' else 'status-stopped' }}"
+        >
+          {{ status.upper() }}
         </div>
       </div>
     </div>
