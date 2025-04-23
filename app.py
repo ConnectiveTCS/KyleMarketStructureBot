@@ -1,7 +1,9 @@
 import threading
 import json
-import datetime  # Import the standard datetime module
-from flask import Flask, render_template, request, redirect, url_for
+import datetime
+import csv
+import os
+from flask import Flask, render_template, request, redirect, url_for, jsonify
 import bot as trading_bot
 import MetaTrader5 as mt5
 
@@ -89,6 +91,60 @@ def format_position(position):
         'profit': position.profit
     }
 
+# Get trade journal data
+def get_trade_journal(limit=20):
+    journal_data = []
+    try:
+        if os.path.exists('trade_journal.csv'):
+            with open('trade_journal.csv', 'r') as f:
+                reader = csv.DictReader(f)
+                journal_data = list(reader)[-limit:]  # Get last 'limit' entries
+    except Exception as e:
+        print(f"Error reading trade journal: {e}")
+    return journal_data
+
+# Calculate performance metrics
+def get_performance_metrics():
+    metrics = {
+        'win_rate': 0,
+        'avg_win': 0,
+        'avg_loss': 0,
+        'profit_factor': 0,
+        'total_trades': 0,
+        'winning_trades': 0,
+        'losing_trades': 0
+    }
+    
+    # Get closed trades from history
+    history = get_history(100)  # Last 100 trades
+    if not history:
+        return metrics
+    
+    # Calculate metrics
+    metrics['total_trades'] = len(history)
+    winning_trades = [t for t in history if t['profit'] > 0]
+    losing_trades = [t for t in history if t['profit'] < 0]
+    
+    metrics['winning_trades'] = len(winning_trades)
+    metrics['losing_trades'] = len(losing_trades)
+    
+    if metrics['total_trades'] > 0:
+        metrics['win_rate'] = (metrics['winning_trades'] / metrics['total_trades']) * 100
+    
+    if metrics['winning_trades'] > 0:
+        metrics['avg_win'] = sum(t['profit'] for t in winning_trades) / metrics['winning_trades']
+    
+    if metrics['losing_trades'] > 0:
+        metrics['avg_loss'] = abs(sum(t['profit'] for t in losing_trades) / metrics['losing_trades'])
+    
+    total_profit = sum(t['profit'] for t in winning_trades)
+    total_loss = abs(sum(t['profit'] for t in losing_trades))
+    
+    if total_loss > 0:
+        metrics['profit_factor'] = total_profit / total_loss
+    
+    return metrics
+
 # Get market structures data
 def get_market_structures():
     if not mt5.initialize():
@@ -127,6 +183,36 @@ def get_market_structures():
             'pivot_low_time': plt,
             'current_price': current_price
         })
+        
+        # Add trend analysis with safe access to market_structures
+        trend_type = 'neutral'
+        market_structure = None
+        
+        # Check if market_structures exists in the module and if this timeframe has data
+        if hasattr(trading_bot, 'market_structures') and name in trading_bot.market_structures:
+            market_structure = trading_bot.market_structures[name]
+            trend_type = market_structure.last_trend if market_structure and market_structure.last_trend else 'neutral'
+        
+        # Add structure information (safely)
+        structures[-1]['trend_type'] = trend_type
+        
+        # Add additional fields only if we have market structure data
+        if market_structure:
+            structures[-1]['higher_high'] = market_structure.last_hh
+            structures[-1]['higher_low'] = market_structure.last_hl
+            structures[-1]['lower_high'] = market_structure.last_lh
+            structures[-1]['lower_low'] = market_structure.last_ll
+            structures[-1]['waiting_for_retest'] = market_structure.waiting_for_retest
+            structures[-1]['retest_level'] = market_structure.retest_level
+        else:
+            # Add default values when no market structure data is available
+            structures[-1]['higher_high'] = None
+            structures[-1]['higher_low'] = None
+            structures[-1]['lower_high'] = None
+            structures[-1]['lower_low'] = None
+            structures[-1]['waiting_for_retest'] = False
+            structures[-1]['retest_level'] = None
+    
     overall = next((s['market_direction'] for s in structures if s['market_direction']), None)
     return overall, structures
 
@@ -156,6 +242,10 @@ def index():
     last_pivot_low = primary_structure.get('last_pivot_low')
     pivot_low_time = primary_structure.get('pivot_low_time')
     
+    # Get enhanced data for dashboard
+    performance = get_performance_metrics()
+    journal = get_trade_journal(10)
+    
     return render_template('dashboard.html', 
                           config=config, 
                           status=status,
@@ -164,6 +254,8 @@ def index():
                           account=account,
                           overall_direction=overall,
                           market_structures=market_structures,
+                          performance=performance,
+                          journal=journal,
                           # Add individual structure details for backward compatibility
                           symbol=symbol,
                           timeframe=timeframe,
@@ -218,6 +310,20 @@ def update_config():
     with open('config.json', 'w') as f:
         json.dump(new_conf, f, indent=4)
     return redirect(url_for('index'))
+
+# New API endpoint for AJAX updates
+@app.route('/api/data')
+def api_data():
+    overall, market_structures = get_market_structures()
+    positions = get_positions()
+    account = get_account_info()
+    
+    return jsonify({
+        'overall_direction': overall,
+        'market_structures': market_structures,
+        'positions': positions,
+        'account': account
+    })
 
 if __name__ == '__main__':
     app.run(debug=True)

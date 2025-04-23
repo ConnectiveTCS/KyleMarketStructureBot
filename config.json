@@ -19,11 +19,16 @@
     "stop_loss_pips": 10,
     "take_profit_pips": 20,
     "magic": 123456,
-    "max_positions": 10,
+    "max_positions": 3,
     "update_interval": 60,
     "break_even_pips": 5,
     "break_even_buffer_pips": 1,
     "partial_close_enabled": true,
     "partial_close_pct": 50,
-    "partial_close_pips": 10
+    "partial_close_pips": 10,
+    "retest_enabled": true,
+    "risk_per_trade": 1.0,
+    "drawdown_limit_daily": 5.0,
+    "scale_out_enabled": true,
+    "scale_out_target": 1.0
 }

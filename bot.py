@@ -2,6 +2,8 @@ import time
 import json
 import threading
 import MetaTrader5 as mt5
+import numpy as np
+from datetime import datetime
 
 # Load configuration
 with open('config.json', 'r') as f:
@@ -44,6 +46,13 @@ PARTIAL_CLOSE_ENABLED = bool(config.get('partial_close_enabled', False))
 PARTIAL_CLOSE_PCT = float(config.get('partial_close_pct', 50))
 PARTIAL_CLOSE_PIPS = float(config.get('partial_close_pips', 0))
 
+# New configuration parameters for enhanced strategy
+RETEST_ENABLED = bool(config.get('retest_enabled', True))  # Enable retest entry method
+DRAWDOWN_LIMIT_DAILY = float(config.get('drawdown_limit_daily', 5.0))  # Daily drawdown limit percentage
+RISK_PER_TRADE = float(config.get('risk_per_trade', 1.0))  # Risk percentage per trade
+SCALE_OUT_ENABLED = bool(config.get('scale_out_enabled', False))  # Enable scaling out
+SCALE_OUT_TARGET = float(config.get('scale_out_target', 1.0))  # First target for scaling out (R:R ratio)
+
 # Convert pips to price units
 def pips_to_points(pips, symbol_info):
     digits = symbol_info.digits
@@ -83,6 +92,104 @@ def find_pivots(bars):
         if bars[i]['low'] == min(lows_w):
             lows.append((i, bars[i]['low']))
     return highs, lows
+
+# Structure for tracking identified market structures
+class MarketStructure:
+    def __init__(self):
+        self.last_trend = None  # 'uptrend' or 'downtrend'
+        self.last_hh = None     # Last higher high price
+        self.last_hl = None     # Last higher low price
+        self.last_lh = None     # Last lower high price
+        self.last_ll = None     # Last lower low price
+        self.break_detected = False   # Structure break detected
+        self.retest_level = None      # Price level for retest entry
+        self.retest_direction = None  # Direction after break ('bull' or 'bear')
+        self.waiting_for_retest = False  # Waiting for retest entry
+
+# Dictionary to store market structure data for each timeframe
+market_structures = {}
+
+# Identify trend structure (higher highs/lows or lower highs/lows)
+def identify_trend_structure(bars, timeframe):
+    # Get or create market structure tracker for this timeframe
+    if timeframe not in market_structures:
+        market_structures[timeframe] = MarketStructure()
+    
+    ms = market_structures[timeframe]
+    
+    # We need at least 4 pivot points to identify a trend structure
+    highs, lows = find_pivots(bars)
+    
+    if len(highs) < 2 or len(lows) < 2:
+        return ms
+    
+    # Get the last two pivot highs and lows
+    last_two_highs = sorted(highs[-2:])
+    last_two_lows = sorted(lows[-2:])
+    
+    # Check for uptrend (higher highs and higher lows)
+    if highs[-1][1] > highs[-2][1] and lows[-1][1] > lows[-2][1]:
+        ms.last_trend = 'uptrend'
+        ms.last_hh = highs[-1][1]
+        ms.last_hl = lows[-1][1]
+    
+    # Check for downtrend (lower highs and lower lows)
+    elif highs[-1][1] < highs[-2][1] and lows[-1][1] < lows[-2][1]:
+        ms.last_trend = 'downtrend'
+        ms.last_lh = highs[-1][1]
+        ms.last_ll = lows[-1][1]
+        
+    return ms
+
+# Enhanced check for market structure breaks with retest logic
+def check_structure_break(bars, symbol_info, timeframe):
+    ms = identify_trend_structure(bars, timeframe)
+    
+    if len(bars) == 0:
+        return None
+    
+    last_close = bars[-1]['close']
+    buffer = pips_to_points(BREAK_BUFFER_PIPS, symbol_info)
+    
+    # If we're waiting for a retest, check if it happened
+    if ms.waiting_for_retest and ms.retest_level:
+        if ms.retest_direction == 'bull':
+            # For long entries, check if price came back near the retest level (former resistance now support)
+            if abs(last_close - ms.retest_level) < buffer:
+                # Check for bullish price action (close > open)
+                if bars[-1]['close'] > bars[-1]['open']:
+                    ms.waiting_for_retest = False
+                    return 'bull_retest'
+        elif ms.retest_direction == 'bear':
+            # For short entries, check if price came back near the retest level (former support now resistance)
+            if abs(last_close - ms.retest_level) < buffer:
+                # Check for bearish price action (close < open)
+                if bars[-1]['close'] < bars[-1]['open']:
+                    ms.waiting_for_retest = False
+                    return 'bear_retest'
+    
+    # Check for structure breaks
+    if ms.last_trend == 'downtrend' and ms.last_lh and last_close > ms.last_lh + buffer:
+        # Bullish break of structure (price broke above the last lower high)
+        if RETEST_ENABLED:
+            ms.retest_level = ms.last_lh
+            ms.retest_direction = 'bull'
+            ms.waiting_for_retest = True
+            return 'bull_break'
+        else:
+            return 'bull'
+            
+    elif ms.last_trend == 'uptrend' and ms.last_hl and last_close < ms.last_hl - buffer:
+        # Bearish break of structure (price broke below the last higher low)
+        if RETEST_ENABLED:
+            ms.retest_level = ms.last_hl
+            ms.retest_direction = 'bear'
+            ms.waiting_for_retest = True
+            return 'bear_break'
+        else:
+            return 'bear'
+    
+    return None
 
 # Check for break of market structure with buffer
 def check_break(bars, highs, lows, symbol_info):
@@ -219,36 +326,111 @@ def partial_close(position):
         print(f"Position {position.ticket} partially closed: {close_volume} lots")
     return result
 
-# Entry logic with ATR-based SL/TP
-def enter_trade(direction, symbol_info, last_high, last_low):
-    rates = mt5.copy_rates_from_pos(SYMBOL, TIMEFRAME, 0, LOOKBACK)
-    atr = calculate_atr(rates, ATR_PERIOD)
+# Enhanced entry logic with proper stop-loss based on structure
+def enter_trade(direction, symbol_info, bars, highs, lows):
+    # Check for drawdown limit before entering trade
+    if check_drawdown_limit():
+        print(f"Daily drawdown limit of {DRAWDOWN_LIMIT_DAILY}% reached. No new trades.")
+        return
+    
+    # Get current tick
     tick = mt5.symbol_info_tick(SYMBOL)
-    if direction == 'bull':
-        price = tick.ask
-        sl = price - atr * ATR_MULT_SL
-        tp = price + atr * ATR_MULT_TP
+    if not tick:
+        print("Failed to get current price tick")
+        return
+    
+    # Determine price, SL, and TP
+    atr = calculate_atr(bars, ATR_PERIOD)
+    
+    if 'bull' in direction:
+        # For long entries
+        entry_price = tick.ask
+        
+        # Set stop loss below the recent HL (higher low) or last pivot low
+        if lows and len(lows) > 0:
+            stop_loss = lows[-1][1] - pips_to_points(BREAK_BUFFER_PIPS, symbol_info)
+        else:
+            stop_loss = entry_price - atr * ATR_MULT_SL
+            
+        # Set take profit target based on risk-reward ratio
+        sl_distance = entry_price - stop_loss
+        take_profit = entry_price + (sl_distance * ATR_MULT_TP)
+        
         order_type = mt5.ORDER_TYPE_BUY
+        
     else:
-        price = tick.bid
-        sl = price + atr * ATR_MULT_SL
-        tp = price - atr * ATR_MULT_TP
+        # For short entries
+        entry_price = tick.bid
+        
+        # Set stop loss above the recent LH (lower high) or last pivot high
+        if highs and len(highs) > 0:
+            stop_loss = highs[-1][1] + pips_to_points(BREAK_BUFFER_PIPS, symbol_info)
+        else:
+            stop_loss = entry_price + atr * ATR_MULT_SL
+            
+        # Set take profit target based on risk-reward ratio
+        sl_distance = stop_loss - entry_price
+        take_profit = entry_price - (sl_distance * ATR_MULT_TP)
+        
         order_type = mt5.ORDER_TYPE_SELL
-
+    
+    # Calculate position size based on risk percentage
+    volume = calculate_position_size(direction, entry_price, stop_loss, symbol_info)
+    
+    # Place the trade
     request = {
         'action': mt5.TRADE_ACTION_DEAL,
         'symbol': SYMBOL,
-        'volume': LOT_SIZE,
+        'volume': volume,
         'type': order_type,
-        'price': price,
-        'sl': sl,
-        'tp': tp,
+        'price': entry_price,
+        'sl': stop_loss,
+        'tp': take_profit,
         'magic': MAGIC,
-        'comment': 'market structure bot',
+        'comment': f'market structure {direction}',
         'type_filling': mt5.ORDER_FILLING_FOK,
     }
+    
     result = mt5.order_send(request)
-    print(f"OrderSend result: {result}")
+    if result.retcode != mt5.TRADE_RETCODE_DONE:
+        print(f"Order send failed: {result.retcode}, {result.comment}")
+    else:
+        print(f"Order placed successfully: {direction} {volume} lots at {entry_price}, SL: {stop_loss}, TP: {take_profit}")
+        
+        # If scaling out is enabled, set up second position with different TP
+        if SCALE_OUT_ENABLED and volume >= 0.02:
+            # Calculate position size for the scale-out
+            scale_volume = round(volume * 0.5, 2)  # 50% of original position
+            if scale_volume >= 0.01:  # Minimum 0.01 lot
+                # Calculate first target using scale out setting
+                sl_distance = abs(entry_price - stop_loss)
+                scale_tp = entry_price + (sl_distance * SCALE_OUT_TARGET) if 'bull' in direction else entry_price - (sl_distance * SCALE_OUT_TARGET)
+                
+                # Place the scaled position
+                scale_request = request.copy()
+                scale_request['volume'] = scale_volume
+                scale_request['tp'] = scale_tp
+                scale_request['comment'] = f'market structure {direction} scale-out'
+                
+                scale_result = mt5.order_send(scale_request)
+                if scale_result.retcode == mt5.TRADE_RETCODE_DONE:
+                    print(f"Scale-out position placed: {scale_volume} lots, TP: {scale_tp}")
+    
+    return result
+
+# Log trade to journal
+def log_trade(direction, entry_price, stop_loss, take_profit, volume, result):
+    try:
+        with open('trade_journal.csv', 'a') as f:
+            # Write header if file is empty
+            if f.tell() == 0:
+                f.write("timestamp,symbol,direction,entry,stop_loss,take_profit,volume,ticket\n")
+            
+            timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            ticket = result.order if hasattr(result, 'order') else 0
+            f.write(f"{timestamp},{SYMBOL},{direction},{entry_price},{stop_loss},{take_profit},{volume},{ticket}\n")
+    except Exception as e:
+        print(f"Error logging trade: {e}")
 
 # Main bot loop
 def run(stop_event):
@@ -261,46 +443,82 @@ def run(stop_event):
         return
 
     symbol_info = mt5.symbol_info(SYMBOL)
+    triggered_timeframes = {}
+    last_day = datetime.now().day
+
     while not stop_event.is_set():
-        # Check existing positions for break-even and partial close
+        current_day = datetime.now().day
+        if current_day != last_day:
+            triggered_timeframes = {}
+            last_day = current_day
+
+        if check_drawdown_limit():
+            print(f"Daily drawdown limit reached. Waiting for next day.")
+            time.sleep(UPDATE_INTERVAL)
+            continue
+
         positions = mt5.positions_get(symbol=SYMBOL, magic=MAGIC) or []
         
         for position in positions:
-            # Check for break-even opportunity
             new_sl = check_break_even(position, symbol_info)
             if new_sl:
                 move_to_break_even(position, new_sl)
             
-            # Check for partial close opportunity
             if check_partial_close(position, symbol_info):
                 partial_close(position)
         
-        # multi‐TF structure checks
         dir_map = {}
         pivot_map = {}
         for name, tf in zip(TIMEFRAME_NAMES, TIMEFRAMES):
             bars = mt5.copy_rates_from_pos(SYMBOL, tf, 0, LOOKBACK)
             if bars is None:
                 bars = []
+                
+            if len(bars) < LOOKBACK:
+                continue
+                
             highs, lows = find_pivots(bars)
-            dir_map[name] = check_break(bars, highs, lows, symbol_info)
-            pivot_map[name] = (highs, lows)
-        # pick first TF with a break
-        trigger = next((n for n in TIMEFRAME_NAMES if dir_map.get(n)), None)
-        direction = dir_map.get(trigger)
-
-        positions = mt5.positions_get(symbol=SYMBOL, magic=MAGIC) or []
-        if trigger and direction and len(positions) < MAX_POS:
-            highs, lows = pivot_map[trigger]
-            last_high = highs[-1][1] if highs else None
-            last_low  = lows[-1][1]  if lows  else None
-            enter_trade(direction, symbol_info, last_high, last_low)
-
+            # Update to pass the timeframe name for market structure tracking
+            direction = check_structure_break(bars, symbol_info, name)
+            
+            dir_map[name] = direction
+            pivot_map[name] = (highs, lows, bars)
+            
+            if name in triggered_timeframes:
+                continue
+                
+        current_positions = len(positions)
+        if current_positions < MAX_POS:
+            for name in TIMEFRAME_NAMES:
+                if name not in dir_map or not dir_map[name]:
+                    continue
+                    
+                if name in triggered_timeframes:
+                    continue
+                    
+                direction = dir_map[name]
+                
+                if direction in ['bull', 'bear', 'bull_retest', 'bear_retest']:
+                    highs, lows, bars = pivot_map[name]
+                    result = enter_trade(direction, symbol_info, bars, highs, lows)
+                    
+                    if result and hasattr(result, 'order') and result.order > 0:
+                        triggered_timeframes[name] = True
+                        
+                        tick = mt5.symbol_info_tick(SYMBOL)
+                        entry_price = tick.ask if 'bull' in direction else tick.bid
+                        stop_loss = lows[-1][1] if 'bull' in direction else highs[-1][1]
+                        sl_distance = abs(entry_price - stop_loss)
+                        take_profit = entry_price + sl_distance * ATR_MULT_TP if 'bull' in direction else entry_price - sl_distance * ATR_MULT_TP
+                        volume = calculate_position_size(direction, entry_price, stop_loss, symbol_info)
+                        
+                        log_trade(direction, entry_price, stop_loss, take_profit, volume, result)
+                        break
+        
         time.sleep(UPDATE_INTERVAL)
 
     mt5.shutdown()
 
-# Allow running from script
 if __name__ == '__main__':
     stop_flag = threading.Event()
     try:
