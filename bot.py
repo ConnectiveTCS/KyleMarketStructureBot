@@ -2,6 +2,10 @@ import time
 import json
 import threading
 import MetaTrader5 as mt5
+from logs import get_logger
+
+# Create a logger for this module
+logger = get_logger('bot')
 
 # Load configuration
 with open('config.json', 'r') as f:
@@ -15,12 +19,17 @@ TF_CONST_MAP = {
     "TIMEFRAME_M1": mt5.TIMEFRAME_M1,
     "TIMEFRAME_M15": mt5.TIMEFRAME_M15,
     "TIMEFRAME_M30": mt5.TIMEFRAME_M30,
-    "TIMEFRAME_H1": mt5.TIMEFRAME_H1,
     "TIMEFRAME_H4": mt5.TIMEFRAME_H4,
-    "TIMEFRAME_D1": mt5.TIMEFRAME_D1,
-    "TIMEFRAME_MN": mt5.TIMEFRAME_MN1
 }
+
+logger.info(f"Configured timeframes: {TIMEFRAME_NAMES}")
 TIMEFRAMES = [TF_CONST_MAP[name] for name in TIMEFRAME_NAMES if name in TF_CONST_MAP]
+
+# Check if TIMEFRAMES is empty and handle the error
+if not TIMEFRAMES:
+    logger.warning(f"No valid timeframes found in configuration. Using TIMEFRAME_M15 as default.")
+    TIMEFRAMES = [mt5.TIMEFRAME_M15]  # Use M15 as default
+    
 # use lowest timeframe for order execution
 TIMEFRAME = TIMEFRAMES[-1]
 
@@ -178,9 +187,9 @@ def move_to_break_even(position, new_sl):
     }
     result = mt5.order_send(request)
     if result.retcode != mt5.TRADE_RETCODE_DONE:
-        print(f"Error moving position {position.ticket} to break-even: {result.retcode}")
+        logger.error(f"Error moving position {position.ticket} to break-even: {result.retcode}")
     else:
-        print(f"Position {position.ticket} moved to break-even: SL={new_sl}")
+        logger.info(f"Position {position.ticket} moved to break-even: SL={new_sl}")
     return result
 
 # Partially close a position
@@ -214,9 +223,9 @@ def partial_close(position):
     
     result = mt5.order_send(request)
     if result.retcode != mt5.TRADE_RETCODE_DONE:
-        print(f"Error partially closing position {position.ticket}: {result.retcode}")
+        logger.error(f"Error partially closing position {position.ticket}: {result.retcode}")
     else:
-        print(f"Position {position.ticket} partially closed: {close_volume} lots")
+        logger.info(f"Position {position.ticket} partially closed: {close_volume} lots")
     return result
 
 # Entry logic with ATR-based SL/TP
@@ -248,15 +257,16 @@ def enter_trade(direction, symbol_info, last_high, last_low):
         'type_filling': mt5.ORDER_FILLING_FOK,
     }
     result = mt5.order_send(request)
-    print(f"OrderSend result: {result}")
+    logger.info(f"OrderSend result: {result}")
 
 # Main bot loop
 def run(stop_event):
+    logger.info("Bot starting...")
     if not mt5.initialize():
-        print("MT5 initialization failed")
+        logger.error("MT5 initialization failed")
         return
     if not mt5.symbol_select(SYMBOL, True):
-        print(f"Failed to select symbol {SYMBOL}")
+        logger.error(f"Failed to select symbol {SYMBOL}")
         mt5.shutdown()
         return
 
@@ -299,6 +309,7 @@ def run(stop_event):
         time.sleep(UPDATE_INTERVAL)
 
     mt5.shutdown()
+    logger.info("Bot stopping...")
 
 # Allow running from script
 if __name__ == '__main__':

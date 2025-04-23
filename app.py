@@ -4,6 +4,8 @@ import datetime  # Import the standard datetime module
 from flask import Flask, render_template, request, redirect, url_for
 import bot as trading_bot
 import MetaTrader5 as mt5
+# Import the logs module
+from logs import get_logs, get_available_components
 
 app = Flask(__name__)
 bot_thread = None
@@ -131,7 +133,7 @@ def get_market_structures():
     return overall, structures
 
 @app.route('/')
-def index():
+def dashboard():
     with open('config.json', 'r') as f:
         config = json.load(f)
     status = 'running' if bot_thread and bot_thread.is_alive() else 'stopped'
@@ -156,6 +158,12 @@ def index():
     last_pivot_low = primary_structure.get('last_pivot_low')
     pivot_low_time = primary_structure.get('pivot_low_time')
     
+    # Get logs for the dashboard
+    log_level = request.args.get('level', None)
+    log_component = request.args.get('component', None)
+    logs = get_logs(n=100, level=log_level, component=log_component)
+    log_components = get_available_components()
+    
     return render_template('dashboard.html', 
                           config=config, 
                           status=status,
@@ -172,7 +180,28 @@ def index():
                           last_pivot_high=last_pivot_high,
                           pivot_high_time=pivot_high_time, 
                           last_pivot_low=last_pivot_low,
-                          pivot_low_time=pivot_low_time)
+                          pivot_low_time=pivot_low_time,
+                          logs=logs,
+                          log_level=log_level,
+                          log_component=log_component,
+                          log_components=log_components)
+
+@app.route('/logs')
+def view_logs():
+    log_level = request.args.get('level', None)
+    log_component = request.args.get('component', None)
+    logs = get_logs(n=100, level=log_level, component=log_component)
+    log_components = get_available_components()
+    
+    # If this is just a refresh request, redirect back to dashboard with params
+    if request.args.get('refresh'):
+        return redirect(url_for('dashboard', level=log_level, component=log_component, _anchor='logs'))
+    
+    return render_template('dashboard.html',
+                          logs=logs,
+                          log_level=log_level,
+                          log_component=log_component,
+                          log_components=log_components)
 
 @app.route('/start')
 def start():
@@ -181,12 +210,12 @@ def start():
         bot_thread = threading.Thread(target=start_bot)
         bot_thread.daemon = True
         bot_thread.start()
-    return redirect(url_for('index'))
+    return redirect(url_for('dashboard'))
 
 @app.route('/stop')
 def stop():
     stop_event.set()
-    return redirect(url_for('index'))
+    return redirect(url_for('dashboard'))
 
 @app.route('/update_config', methods=['POST'])
 def update_config():
@@ -217,7 +246,7 @@ def update_config():
             
     with open('config.json', 'w') as f:
         json.dump(new_conf, f, indent=4)
-    return redirect(url_for('index'))
+    return redirect(url_for('dashboard'))
 
 if __name__ == '__main__':
     app.run(debug=True)
