@@ -1,0 +1,156 @@
+<div id="market_structure" class="dashboard-section space-y-6">
+  <!-- Executive Dashboard Header -->
+  <div
+    class="bg-gradient-to-r from-primary-800 to-primary-700 text-white rounded-lg p-4 flex justify-between items-center"
+  >
+    <h2 class="text-xl font-bold">
+      <i class="fas fa-chart-bar mr-2"></i>Market Structure Dashboard
+    </h2>
+    <div class="flex items-center">
+      <span class="text-sm opacity-80 mr-2">{{ symbol }}</span>
+      <span class="bg-primary-500 text-xs font-bold px-2 py-1 rounded"
+        >LIVE</span
+      >
+    </div>
+  </div>
+
+  <!-- Key Metrics Bar -->
+  <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+    <div class="card p-4 text-center">
+      <p class="text-xs uppercase tracking-wider text-gray-500 mb-1">
+        Overall Direction
+      </p>
+      <div class="flex justify-center">
+        <div
+          class="w-3 h-3 rounded-full mt-1 mr-2 {% if overall_direction|default('')=='bull' %}bg-green-500{% elif overall_direction|default('')=='bear' %}bg-red-500{% else %}bg-gray-400{% endif %}"
+        ></div>
+        <p
+          class="text-lg font-bold {% if overall_direction|default('')=='bull' %}text-green-500{% elif overall_direction|default('')=='bear' %}text-red-500{% else %}text-gray-500{% endif %}"
+        >
+          {{ overall_direction|default('Neutral')|title }}
+        </p>
+      </div>
+    </div>
+
+    <div class="card p-4 text-center">
+      <p class="text-xs uppercase tracking-wider text-gray-500 mb-1">
+        Current Price
+      </p>
+      <p class="text-lg font-bold">{{ current_price|default('N/A') }}</p>
+    </div>
+
+    <div class="card p-4 text-center">
+      <p class="text-xs uppercase tracking-wider text-gray-500 mb-1">
+        Daily Change
+      </p>
+      <p
+        class="text-lg font-bold {% if current_price|default('') and last_pivot_high|default('') and current_price > last_pivot_high %}text-green-500{% elif current_price|default('') and last_pivot_low|default('') and current_price < last_pivot_low %}text-red-500{% else %}text-gray-500{% endif %}"
+      >
+        <i
+          class="fas {% if current_price|default('') and last_pivot_high|default('') and current_price > last_pivot_high %}fa-arrow-up{% elif current_price|default('') and last_pivot_low|default('') and current_price < last_pivot_low %}fa-arrow-down{% else %}fa-minus{% endif %} mr-1"
+        ></i>
+        {% if current_price|default('') and last_pivot_high|default('') and
+        current_price > last_pivot_high %}+{{ ((current_price - last_pivot_high)
+        / last_pivot_high * 100)|round(2) }}% {% elif current_price|default('')
+        and last_pivot_low|default('') and current_price < last_pivot_low %}-{{
+        ((last_pivot_low - current_price) / last_pivot_low * 100)|round(2) }}%
+        {% else %}0.00%{% endif %}
+      </p>
+    </div>
+
+    <div class="card p-4 text-center">
+      <p class="text-xs uppercase tracking-wider text-gray-500 mb-1">
+        Positions
+      </p>
+      <p class="text-lg font-bold">
+        {{ positions|length if positions else 0 }}
+      </p>
+    </div>
+  </div>
+
+  <!-- Dashboard Main Content -->
+  <div class="grid grid-cols-12 gap-6">
+    <!-- Multi-Timeframe Analysis Card -->
+    <div class="col-span-12 lg:col-span-8">
+      <div class="card">
+        <div class="card-header">
+          <h3 class="font-semibold">Multi-Timeframe Analysis</h3>
+        </div>
+        <div class="card-body">
+          <!-- Timeframe Signals Panel -->
+          <div class="flex flex-wrap justify-center">
+            {% for ms in market_structures %}
+            <div
+              class="w-1/3 md:w-1/4 lg:w-1/7 mb-5 flex flex-col items-center"
+            >
+              <div
+                class="w-16 h-16 rounded-full flex items-center justify-center mb-2 {% if ms.market_direction|default('')=='bull' %}bg-green-100 text-green-600 {% elif ms.market_direction|default('')=='bear' %}bg-red-100 text-red-600 {% else %}bg-gray-100 text-gray-600{% endif %}"
+              >
+                <i
+                  class="fas {% if ms.market_direction|default('')=='bull' %}fa-arrow-up {% elif ms.market_direction|default('')=='bear' %}fa-arrow-down {% else %}fa-minus{% endif %} text-2xl"
+                ></i>
+              </div>
+              <p class="font-bold text-xs text-center">
+                {{ ms.timeframe|default('N/A') }}
+              </p>
+              <p class="text-xs text-center text-gray-500">
+                {{ ms.market_direction|default('Neutral')|title }}
+              </p>
+            </div>
+            {% endfor %}
+          </div>
+
+          <!-- Market Strength Gauge -->
+          <div class="mt-6 border-t pt-6">
+            <h4 class="font-medium text-sm mb-3 text-gray-700">
+              Market Strength
+            </h4>
+            <div class="h-3 bg-gray-200 rounded-full overflow-hidden">
+              {% set bull_count =
+              market_structures|selectattr('market_direction', 'equalto',
+              'bull')|list|length %} {% set bear_count =
+              market_structures|selectattr('market_direction', 'equalto',
+              'bear')|list|length %} {% set neutral_count =
+              market_structures|length - bull_count - bear_count %} {% set
+              bull_percent = bull_count / market_structures|length * 100 if
+              market_structures else 0 %} {% set bear_percent = bear_count /
+              market_structures|length * 100 if market_structures else 0 %} {%
+              set neutral_percent = neutral_count / market_structures|length *
+              100 if market_structures else 0 %}
+
+              <div class="h-full flex">
+                <div
+                  class="bg-green-500 h-full"
+                  style="width: {{ bull_percent }}%"
+                ></div>
+                <div
+                  class="bg-gray-400 h-full"
+                  style="width: {{ neutral_percent }}%"
+                ></div>
+                <div
+                  class="bg-red-500 h-full"
+                  style="width: {{ bear_percent }}%"
+                ></div>
+              </div>
+            </div>
+            <div class="flex justify-between mt-1 text-xs text-gray-500">
+              <span>Bullish ({{ bull_count }})</span>
+              <span>Neutral ({{ neutral_count }})</span>
+              <span>Bearish ({{ bear_count }})</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Current Status Card and More Components -->
+    {% include 'partials/market_status.html' %}
+  </div>
+
+  <!-- Include other market structure components -->
+  {% include 'partials/strategy_section.html' %} {% include
+  'partials/entry_conditions.html' %} {% include
+  'partials/performance_metrics.html' %} {% include
+  'partials/trade_journal.html' %} {% include 'partials/money_management.html'
+  %}
+</div>

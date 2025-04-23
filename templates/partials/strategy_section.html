@@ -1,0 +1,122 @@
+<div class="grid grid-cols-12 gap-6 mt-6">
+  <!-- Market Structure Strategy Card -->
+  <div class="col-span-12 md:col-span-7">
+    <div class="card">
+      <div class="card-header">
+        <h3 class="font-semibold">Market Structure Strategy</h3>
+      </div>
+      <div class="card-body">
+        <div class="flex flex-col md:flex-row gap-6">
+          <div class="flex-1">
+            <h4 class="font-medium text-green-600 mb-2 flex items-center">
+              <i class="fas fa-arrow-up mr-2"></i>Bullish Structure
+            </h4>
+            <ul class="list-disc ml-5 space-y-1 text-sm">
+              <li>Price breaks above recent pivot high</li>
+              <li>Enter long after confirmation</li>
+              <li>Stop loss below recent swing low</li>
+              <li>
+                Break-even at {{ config.break_even_pips|default(0) }} pips
+              </li>
+              <li>
+                Partial close at {{ config.partial_close_pips|default(0) }} pips
+              </li>
+            </ul>
+          </div>
+          <div class="flex-1">
+            <h4 class="font-medium text-red-600 mb-2 flex items-center">
+              <i class="fas fa-arrow-down mr-2"></i>Bearish Structure
+            </h4>
+            <ul class="list-disc ml-5 space-y-1 text-sm">
+              <li>Price breaks below recent pivot low</li>
+              <li>Enter short after confirmation</li>
+              <li>Stop loss above recent swing high</li>
+              <li>
+                Break-even at {{ config.break_even_pips|default(0) }} pips
+              </li>
+              <li>
+                Partial close at {{ config.partial_close_pips|default(0) }} pips
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Strategy Condition Checks Card -->
+  <div class="col-span-12 md:col-span-5">
+    <div class="card h-full">
+      <div class="card-header">
+        <h3 class="font-semibold">Signal Status</h3>
+      </div>
+      <div class="card-body">
+        <div class="space-y-3">
+          <!-- Condition 1 -->
+          <div class="flex items-center">
+            <div
+              class="w-8 h-8 rounded-full flex items-center justify-center {% if last_pivot_high|default('') and last_pivot_low|default('') %}bg-green-100 text-green-600{% else %}bg-gray-100 text-gray-400{% endif %}"
+            >
+              <i
+                class="fas {% if last_pivot_high|default('') and last_pivot_low|default('') %}fa-check{% else %}fa-times{% endif %}"
+              ></i>
+            </div>
+            <div class="ml-3">
+              <p class="font-medium">Pivot Points Detected</p>
+              <p class="text-xs text-gray-500">
+                Both high and low pivots found
+              </p>
+            </div>
+          </div>
+
+          <!-- Condition 2 -->
+          <div class="flex items-center">
+            <div
+              class="w-8 h-8 rounded-full flex items-center justify-center {% if market_direction|default('') %}bg-green-100 text-green-600{% else %}bg-gray-100 text-gray-400{% endif %}"
+            >
+              <i
+                class="fas {% if market_direction|default('') %}fa-check{% else %}fa-times{% endif %}"
+              ></i>
+            </div>
+            <div class="ml-3">
+              <p class="font-medium">Structure Break Detected</p>
+              <p class="text-xs text-gray-500">
+                Price broke structure boundary
+              </p>
+            </div>
+          </div>
+
+          <!-- Condition 3 -->
+          <div class="flex items-center">
+            <div
+              class="w-8 h-8 rounded-full flex items-center justify-center {% if positions|length < config.max_positions|default(0) %}bg-green-100 text-green-600{% else %}bg-yellow-100 text-yellow-600{% endif %}"
+            >
+              <i
+                class="fas {% if positions|length < config.max_positions|default(0) %}fa-check{% else %}fa-exclamation{% endif %}"
+              ></i>
+            </div>
+            <div class="ml-3">
+              <p class="font-medium">Position Capacity</p>
+              <p class="text-xs text-gray-500">
+                {{ positions|length }}/{{ config.max_positions|default(0) }}
+                positions open
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Ready Status -->
+        <div
+          class="mt-5 p-3 text-center rounded {% if market_direction|default('') and positions|length < config.max_positions|default(0) %}bg-green-100 text-green-800 {% elif positions|length >= config.max_positions|default(0) %}bg-yellow-100 text-yellow-800 {% else %}bg-gray-100 text-gray-600{% endif %}"
+        >
+          <p class="font-semibold">
+            {% if market_direction|default('') and positions|length <
+            config.max_positions|default(0) %} Ready to Trade {% elif
+            positions|length >= config.max_positions|default(0) %} Maximum
+            Positions Reached {% else %} Waiting for Signal {% endif %}
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

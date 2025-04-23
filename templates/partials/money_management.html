@@ -1,0 +1,77 @@
+<div class="mt-6">
+  <div class="card">
+    <div class="card-header">
+      <h3 class="font-semibold">Money Management Rules</h3>
+    </div>
+    <div class="card-body">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <h4 class="font-medium mb-3">Risk Parameters</h4>
+          <ul class="space-y-2">
+            <li class="flex items-center">
+              <i class="fas fa-percentage text-blue-500 mr-2"></i>
+              <span
+                >Risk per trade:
+                <span class="font-medium"
+                  >{{ config.risk_per_trade|default(0) }}%</span
+                >
+                of equity</span
+              >
+            </li>
+            <li class="flex items-center">
+              <i class="fas fa-chart-line text-blue-500 mr-2"></i>
+              <span
+                >Max positions:
+                <span class="font-medium"
+                  >{{ config.max_positions|default(0) }}</span
+                ></span
+              >
+            </li>
+            <li class="flex items-center">
+              <i class="fas fa-exclamation-triangle text-blue-500 mr-2"></i>
+              <span
+                >Daily drawdown limit:
+                <span class="font-medium"
+                  >{{ config.drawdown_limit_daily|default(0) }}%</span
+                ></span
+              >
+            </li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="font-medium mb-3">Trade Management</h4>
+          <ul class="space-y-2">
+            <li class="flex items-center">
+              <i class="fas fa-shield-alt text-green-500 mr-2"></i>
+              <span
+                >Break-even at
+                <span class="font-medium"
+                  >{{ config.break_even_pips|default(0) }}</span
+                >
+                pips profit</span
+              >
+            </li>
+            <li class="flex items-center">
+              <i class="fas fa-balance-scale-right text-green-500 mr-2"></i>
+              <span>
+                {% if config.partial_close_enabled|default(false) %} Partial
+                close {{ config.partial_close_pct|default(0) }}% at {{
+                config.partial_close_pips|default(0) }} pips {% else %} Partial
+                close disabled {% endif %}
+              </span>
+            </li>
+            <li class="flex items-center">
+              <i class="fas fa-chart-pie text-green-500 mr-2"></i>
+              <span>
+                {% if config.scale_out_enabled|default(false) %} Scale out at {{
+                config.scale_out_target|default(0) }}:1 reward:risk {% else %}
+                Scale out disabled {% endif %}
+              </span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

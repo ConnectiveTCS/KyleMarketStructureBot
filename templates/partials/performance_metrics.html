@@ -1,0 +1,70 @@
+<div class="mt-6">
+  <div class="card">
+    <div class="card-header">
+      <h3 class="font-semibold">Performance Metrics</h3>
+    </div>
+    <div class="card-body">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <!-- Win Rate -->
+        <div class="text-center">
+          <div
+            class="text-3xl font-bold {% if performance.win_rate|default(0) > 50 %}text-green-600{% elif performance.win_rate|default(0) > 40 %}text-yellow-600{% else %}text-red-600{% endif %}"
+          >
+            {{ performance.win_rate|default(0)|round(1) }}%
+          </div>
+          <div class="text-sm text-gray-500">Win Rate</div>
+        </div>
+
+        <!-- Profit Factor -->
+        <div class="text-center">
+          <div
+            class="text-3xl font-bold {% if performance.profit_factor|default(0) > 1.5 %}text-green-600{% elif performance.profit_factor|default(0) > 1 %}text-yellow-600{% else %}text-red-600{% endif %}"
+          >
+            {{ performance.profit_factor|default(0)|round(2) }}
+          </div>
+          <div class="text-sm text-gray-500">Profit Factor</div>
+        </div>
+
+        <!-- Average Win -->
+        <div class="text-center">
+          <div class="text-3xl font-bold text-green-600">
+            {{ performance.avg_win|default(0)|round(2) }}
+          </div>
+          <div class="text-sm text-gray-500">Avg Win</div>
+        </div>
+
+        <!-- Average Loss -->
+        <div class="text-center">
+          <div class="text-3xl font-bold text-red-600">
+            {{ performance.avg_loss|default(0)|round(2) }}
+          </div>
+          <div class="text-sm text-gray-500">Avg Loss</div>
+        </div>
+      </div>
+
+      <!-- Trade Count Summary -->
+      <div class="mt-4 p-3 bg-gray-50 rounded-lg">
+        <div class="flex justify-between">
+          <div>
+            <span class="text-sm text-gray-500">Total Trades:</span>
+            <span class="font-medium"
+              >{{ performance.total_trades|default(0) }}</span
+            >
+          </div>
+          <div>
+            <span class="text-sm text-gray-500">Winning:</span>
+            <span class="font-medium text-green-600"
+              >{{ performance.winning_trades|default(0) }}</span
+            >
+          </div>
+          <div>
+            <span class="text-sm text-gray-500">Losing:</span>
+            <span class="font-medium text-red-600"
+              >{{ performance.losing_trades|default(0) }}</span
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

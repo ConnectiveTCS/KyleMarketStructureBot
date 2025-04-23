@@ -1,0 +1,98 @@
+<aside
+  class="sidebar inset-y-0 left-0 z-20 w-64 transform -translate-x-full md:translate-x-0 transition-transform duration-200 ease-in-out bg-white shadow-md pt-16 hidden md:block"
+>
+  <div class="p-4">
+    <div class="mb-8">
+      <p
+        class="text-xs uppercase font-semibold text-gray-500 mb-4 tracking-wider"
+      >
+        Bot Controls
+      </p>
+      <div class="space-y-2">
+        <a
+          href="/start"
+          class="flex items-center p-2 rounded hover:bg-gray-100 text-success"
+        >
+          <i class="fas fa-play mr-3 w-5 text-center"></i>
+          <span>Start Bot</span>
+        </a>
+        <a
+          href="/stop"
+          class="flex items-center p-2 rounded hover:bg-gray-100 text-danger"
+        >
+          <i class="fas fa-stop mr-3 w-5 text-center"></i>
+          <span>Stop Bot</span>
+        </a>
+        <a
+          href="/"
+          class="flex items-center p-2 rounded hover:bg-gray-100 text-info"
+        >
+          <i class="fas fa-sync-alt mr-3 w-5 text-center"></i>
+          <span>Refresh Data</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="mb-8">
+      <p
+        class="text-xs uppercase font-semibold text-gray-500 mb-4 tracking-wider"
+      >
+        Monitoring
+      </p>
+      <div class="space-y-2">
+        <button
+          onclick="showSection('market_structure')"
+          class="nav-btn flex items-center p-2 rounded hover:bg-gray-100 w-full text-left"
+        >
+          <i class="fas fa-chart-bar mr-3 w-5 text-center"></i>
+          <span>Market Structure</span>
+        </button>
+        <button
+          onclick="showSection('positions')"
+          class="nav-btn flex items-center p-2 rounded hover:bg-gray-100 w-full text-left"
+        >
+          <i class="fas fa-list-ul mr-3 w-5 text-center"></i>
+          <span>Open Positions</span>
+        </button>
+        <button
+          onclick="showSection('history')"
+          class="nav-btn flex items-center p-2 rounded hover:bg-gray-100 w-full text-left"
+        >
+          <i class="fas fa-history mr-3 w-5 text-center"></i>
+          <span>Trading History</span>
+        </button>
+        <button
+          onclick="showSection('account')"
+          class="nav-btn flex items-center p-2 rounded hover:bg-gray-100 w-full text-left"
+        >
+          <i class="fas fa-wallet mr-3 w-5 text-center"></i>
+          <span>Account Info</span>
+        </button>
+        <button
+          onclick="showSection('config')"
+          class="nav-btn flex items-center p-2 rounded hover:bg-gray-100 w-full text-left"
+        >
+          <i class="fas fa-cog mr-3 w-5 text-center"></i>
+          <span>Configuration</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Bot Status Indicator -->
+    <div class="pt-4 mt-auto border-t">
+      <div class="flex items-center bg-gray-50 p-3 rounded-lg">
+        <div class="mr-3 bg-primary-700 text-white p-2 rounded-full">
+          <i class="fas fa-robot"></i>
+        </div>
+        <div>
+          <p class="text-sm font-medium">Bot Status</p>
+          <div
+            class="status-badge {{ 'status-running' if status == 'running' else 'status-stopped' }}"
+          >
+            {{ status.upper() }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</aside>

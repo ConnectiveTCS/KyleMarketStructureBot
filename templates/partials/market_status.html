@@ -1,0 +1,93 @@
+<div class="col-span-12 lg:col-span-4">
+  <div class="card h-full">
+    <div class="card-header">
+      <h3 class="font-semibold">Market Status</h3>
+    </div>
+    <div class="card-body">
+      <div class="text-center">
+        <div
+          class="inline-block p-4 rounded-full mb-3 {% if market_direction|default('') == 'bull' %}bg-green-100 text-green-600 {% elif market_direction|default('') == 'bear' %}bg-red-100 text-red-600 {% else %}bg-gray-100 text-gray-600{% endif %}"
+        >
+          <i
+            class="fas {% if market_direction|default('') == 'bull' %}fa-arrow-up {% elif market_direction|default('') == 'bear' %}fa-arrow-down {% else %}fa-minus{% endif %} text-3xl"
+          ></i>
+        </div>
+        <div
+          class="text-xl font-bold mb-2 {% if market_direction|default('') == 'bull' %}text-green-600 {% elif market_direction|default('') == 'bear' %}text-red-600 {% else %}text-gray-600{% endif %}"
+        >
+          {{ market_direction|default('Neutral')|title }}
+        </div>
+        <p class="text-sm text-gray-500 mb-4">
+          {% if market_direction|default('') == 'bull' %} Bullish structure
+          confirmed on {{ timeframe|default('N/A') }} timeframe {% elif
+          market_direction|default('') == 'bear' %} Bearish structure confirmed
+          on {{ timeframe|default('N/A') }} timeframe {% else %} No clear market
+          structure detected {% endif %}
+        </p>
+      </div>
+
+      <div class="space-y-4 mt-5">
+        <div class="flex justify-between items-center">
+          <span class="text-sm">Pivot High:</span>
+          <span class="font-medium">{{ last_pivot_high|default('N/A') }}</span>
+        </div>
+        <div class="flex justify-between items-center">
+          <span class="text-sm">Pivot Low:</span>
+          <span class="font-medium">{{ last_pivot_low|default('N/A') }}</span>
+        </div>
+        <div class="flex justify-between items-center">
+          <span class="text-sm">Current Price:</span>
+          <span class="font-medium">{{ current_price|default('N/A') }}</span>
+        </div>
+      </div>
+
+      <!-- Price Position Indicator -->
+      <div class="mt-6 border-t pt-4">
+        <h4 class="text-sm font-medium mb-3 text-center">Price Position</h4>
+        <div class="w-full h-6 bg-gray-200 rounded-md relative">
+          {% if last_pivot_high|default('') and last_pivot_low|default('') and
+          current_price|default('') %} {% set range = last_pivot_high -
+          last_pivot_low %} {% set position = (current_price - last_pivot_low) /
+          range * 100 if range > 0 else 50 %}
+          <div
+            class="absolute h-full bg-blue-500 opacity-20 rounded-md position-indicator"
+            data-width="{{ position }}"
+          ></div>
+          <div
+            class="absolute top-0 h-full flex items-center position-marker"
+            data-left="{{ position }}"
+          >
+            <div
+              class="w-2 h-2 bg-blue-500 rounded-full transform -translate-x-1"
+            ></div>
+          </div>
+          <div class="absolute -bottom-6 left-0 text-xs">Low</div>
+          <div class="absolute -bottom-6 right-0 text-xs">High</div>
+
+          <!-- Replace style tag with script -->
+          <script>
+            document.addEventListener("DOMContentLoaded", function () {
+              var indicator = document.querySelector(".position-indicator");
+              var marker = document.querySelector(".position-marker");
+
+              if (indicator && indicator.dataset.width) {
+                indicator.style.width = indicator.dataset.width + "%";
+              }
+
+              if (marker && marker.dataset.left) {
+                marker.style.left = marker.dataset.left + "%";
+              }
+            });
+          </script>
+          {% else %}
+          <div
+            class="h-full flex items-center justify-center text-xs text-gray-500"
+          >
+            No pivot data available
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

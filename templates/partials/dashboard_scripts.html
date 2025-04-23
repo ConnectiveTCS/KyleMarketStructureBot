@@ -1,0 +1,73 @@
+<script>
+  // Mobile sidebar toggle
+  document.getElementById("nav-toggle").addEventListener("click", () => {
+    const sidebar = document.querySelector(".sidebar");
+    sidebar.classList.toggle("-translate-x-full");
+  });
+
+  // Navigation functionality
+  function showSection(sectionId) {
+    // Hide all sections
+    document.querySelectorAll(".dashboard-section").forEach((section) => {
+      section.classList.add("hidden");
+    });
+
+    // Show selected section
+    document.getElementById(sectionId).classList.remove("hidden");
+
+    // Highlight active nav button
+    document.querySelectorAll(".nav-btn").forEach((btn) => {
+      btn.classList.remove("bg-gray-100", "font-semibold");
+    });
+    event.currentTarget.classList.add("bg-gray-100", "font-semibold");
+  }
+
+  // API data update function
+  function updateDashboardData() {
+    fetch("/api/data")
+      .then((response) => response.json())
+      .then((data) => {
+        // Update indicators
+        if (data.overall_direction) {
+          document.querySelector("#direction-indicator").textContent =
+            data.overall_direction.charAt(0).toUpperCase() +
+            data.overall_direction.slice(1);
+        }
+
+        // Update market structures
+        if (data.market_structures) {
+          updateMarketStructures(data.market_structures);
+        }
+
+        // Update account info
+        if (data.account) {
+          updateAccountInfo(data.account);
+        }
+
+        // Update positions table
+        if (data.positions) {
+          updatePositionsTable(data.positions);
+        }
+
+        // Schedule next update
+        setTimeout(updateDashboardData, 30000);
+      })
+      .catch((error) => {
+        console.error("Error fetching dashboard data:", error);
+        setTimeout(updateDashboardData, 60000);
+      });
+  }
+
+  // Helper functions for updates
+  function updateMarketStructures(structures) {
+    // Implementation for updating timeframe indicators
+  }
+
+  function updateAccountInfo(account) {
+    // Implementation for updating account info cards
+  }
+
+  function updatePositionsTable(positions) {
+    // Implementation for updating positions table
+  }
+</script>

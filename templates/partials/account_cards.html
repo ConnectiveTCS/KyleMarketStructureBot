@@ -1,0 +1,68 @@
+<div class="card p-6">
+  <div class="flex items-center mb-4">
+    <div class="mr-4 p-3 bg-blue-100 text-blue-600 rounded-full">
+      <i class="fas fa-dollar-sign"></i>
+    </div>
+    <div>
+      <h3 class="text-sm font-semibold text-gray-500">Balance</h3>
+      <p class="text-2xl font-bold text-gray-800">
+        {{ account.balance|default('N/A') }}
+      </p>
+    </div>
+  </div>
+  <div class="text-sm text-gray-500">
+    <i class="fas fa-info-circle mr-1"></i>Total account balance without
+    unrealized P/L
+  </div>
+</div>
+
+<div class="card p-6">
+  <div class="flex items-center mb-4">
+    <div class="mr-4 p-3 bg-green-100 text-green-600 rounded-full">
+      <i class="fas fa-chart-line"></i>
+    </div>
+    <div>
+      <h3 class="text-sm font-semibold text-gray-500">Equity</h3>
+      <p class="text-2xl font-bold text-gray-800">
+        {{ account.equity|default('N/A') }}
+      </p>
+    </div>
+  </div>
+  <div class="text-sm text-gray-500">
+    <i class="fas fa-info-circle mr-1"></i>Balance + unrealized profit/loss
+  </div>
+</div>
+
+<div class="card p-6">
+  <div class="flex items-center mb-4">
+    <div class="mr-4 p-3 bg-yellow-100 text-yellow-600 rounded-full">
+      <i class="fas fa-lock"></i>
+    </div>
+    <div>
+      <h3 class="text-sm font-semibold text-gray-500">Margin</h3>
+      <p class="text-2xl font-bold text-gray-800">
+        {{ account.margin|default('N/A') }}
+      </p>
+    </div>
+  </div>
+  <div class="text-sm text-gray-500">
+    <i class="fas fa-info-circle mr-1"></i>Margin required for open positions
+  </div>
+</div>
+
+<div class="card p-6">
+  <div class="flex items-center mb-4">
+    <div class="mr-4 p-3 bg-purple-100 text-purple-600 rounded-full">
+      <i class="fas fa-hand-holding-usd"></i>
+    </div>
+    <div>
+      <h3 class="text-sm font-semibold text-gray-500">Free Margin</h3>
+      <p class="text-2xl font-bold text-gray-800">
+        {{ account.margin_free|default('N/A') }}
+      </p>
+    </div>
+  </div>
+  <div class="text-sm text-gray-500">
+    <i class="fas fa-info-circle mr-1"></i>Available margin for new positions
+  </div>
+</div>

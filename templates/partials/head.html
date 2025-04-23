@@ -1,0 +1,105 @@
+<meta charset="UTF-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com"></script>
+<!-- Font Awesome -->
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+/>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          primary: {
+            50: "#f0f6ff",
+            100: "#e0eefe",
+            200: "#baddff",
+            300: "#84c5ff",
+            400: "#42a2fc",
+            500: "#1e88e5",
+            600: "#1366d1",
+            700: "#1e40af",
+            800: "#173583",
+            900: "#183169",
+            950: "#101d40",
+          },
+          success: "#10b981",
+          danger: "#ef4444",
+          warning: "#f59e0b",
+          info: "#3b82f6",
+        },
+      },
+    },
+  };
+</script>
+<style>
+  /* Global Styles */
+  .sidebar {
+    min-height: calc(100vh - 4rem);
+  }
+  .status-badge {
+    padding: 2px 8px;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+  .status-running {
+    background-color: #dcfce7;
+    color: #15803d;
+  }
+  .status-stopped {
+    background-color: #fee2e2;
+    color: #b91c1c;
+  }
+  .card {
+    transition: all 0.2s ease-in-out;
+    background: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+  }
+  .card:hover {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+  }
+  .card-header {
+    padding: 1rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .card-body {
+    padding: 1.25rem;
+  }
+
+  /* Dashboard Indicators */
+  .market-indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 6px;
+  }
+  .indicator-bull {
+    background-color: #10b981;
+  }
+  .indicator-bear {
+    background-color: #ef4444;
+  }
+  .indicator-neutral {
+    background-color: #9ca3af;
+  }
+
+  /* Static Header */
+  .fixed-header {
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+    z-index: 30;
+  }
+</style>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    {% include 'partials/head.html' %}
+    <title>{% block title %}Market Structure Bot{% endblock %}</title>
+  </head>
+  <body class="bg-gray-100 text-gray-800">
+    {% include 'partials/header.html' %}
+
+    <div class="flex h-screen pt-16 overflow-hidden">
+      {% include 'partials/sidebar.html' %}
+
+      <main class="flex-1 overflow-y-auto p-4 md:p-6">
+        {% block content %}{% endblock %}
+      </main>
+    </div>
+
+    {% block scripts %}
+    <script>
+      let botRunning = true;
+      let updateInterval;
+
+      function stopBot() {
+        botRunning = false;
+        clearInterval(updateInterval);
+        console.log("Bot stopped by user");
+      }
+
+      function startBot() {
+        botRunning = true;
+        updateDashboardData();
+        console.log("Bot started");
+      }
+
+      function updateDashboardData() {
+        if (botRunning) {
+          // Your existing update code here
+          console.log("Updating dashboard data...");
+          
+          // Set up continuous updates
+          if (!updateInterval) {
+            updateInterval = setInterval(function() {
+              if (botRunning) {
+                // Your update logic here
+                console.log("Continuous update...");
+              } else {
+                clearInterval(updateInterval);
+              }
+            }, 10000);
+          }
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", function () {
+        // Initialize dashboard as default section
+        showSection("dashboard");
+        
+        // Start the bot automatically
+        startBot();
+      });
+    </script>
+    {% endblock %}
+  </body>
+</html>

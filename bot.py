@@ -432,6 +432,50 @@ def log_trade(direction, entry_price, stop_loss, take_profit, volume, result):
     except Exception as e:
         print(f"Error logging trade: {e}")
 
+# Check drawdown limit
+def check_drawdown_limit(account_balance, current_drawdown, max_drawdown_percent=5):
+    """
+    Check if a trade would exceed the maximum allowed drawdown limit.
+    
+    Args:
+        account_balance (float): Current account balance
+        current_drawdown (float): Current drawdown amount
+        max_drawdown_percent (float): Maximum allowed drawdown as percentage of account balance
+        
+    Returns:
+        bool: True if drawdown is within acceptable limits, False otherwise
+    """
+    max_allowed_drawdown = account_balance * (max_drawdown_percent / 100)
+    
+    # Return True if current drawdown is less than maximum allowed drawdown
+    return current_drawdown < max_allowed_drawdown
+
+# Calculate position size
+def calculate_position_size(account_balance, risk_per_trade, entry_price, stop_loss):
+    """
+    Calculate position size based on risk management parameters.
+    
+    Args:
+        account_balance (float): Current account balance
+        risk_per_trade (float): Percentage of account balance to risk per trade
+        entry_price (float): Planned entry price
+        stop_loss (float): Planned stop loss price
+        
+    Returns:
+        float: Position size in base currency
+    """
+    if entry_price == stop_loss:
+        return 0  # Avoid division by zero
+    
+    # Calculate risk amount in account currency
+    risk_amount = account_balance * (risk_per_trade / 100)
+    
+    # Calculate position size based on risk and stop distance
+    stop_distance = abs(entry_price - stop_loss)
+    position_size = risk_amount / stop_distance
+    
+    return position_size
+
 # Main bot loop
 def run(stop_event):
     if not mt5.initialize():

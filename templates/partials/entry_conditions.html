@@ -1,0 +1,126 @@
+<div class="mt-6">
+  <div class="card">
+    <div class="card-header">
+      <h3 class="font-semibold">Market Structure Entry Conditions</h3>
+    </div>
+    <div class="card-body">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Long Entry Conditions -->
+        <div class="bg-gray-50 p-4 rounded-lg">
+          <h4 class="font-medium text-green-600 mb-3">Long Entry Conditions</h4>
+
+          <div class="space-y-3">
+            <!-- Prior Downtrend -->
+            <div class="flex items-start">
+              <div
+                class="w-8 h-8 rounded-full flex items-center justify-center mt-1 {% if market_structures[0].trend_type|default('') == 'downtrend' %}bg-green-100 text-green-600{% else %}bg-gray-100 text-gray-400{% endif %}"
+              >
+                <i
+                  class="fas {% if market_structures[0].trend_type|default('') == 'downtrend' %}fa-check{% else %}fa-times{% endif %}"
+                ></i>
+              </div>
+              <div class="ml-3">
+                <p class="font-medium">Prior Downtrend</p>
+                <p class="text-xs text-gray-500">
+                  Series of lower highs and lower lows
+                </p>
+              </div>
+            </div>
+
+            <!-- Structure Break -->
+            <div class="flex items-start">
+              <div
+                class="w-8 h-8 rounded-full flex items-center justify-center mt-1 {% if market_structures[0].market_direction|default('') == 'bull' or market_structures[0].market_direction|default('') == 'bull_break' %}bg-green-100 text-green-600{% else %}bg-gray-100 text-gray-400{% endif %}"
+              >
+                <i
+                  class="fas {% if market_structures[0].market_direction|default('') == 'bull' or market_structures[0].market_direction|default('') == 'bull_break' %}fa-check{% else %}fa-times{% endif %}"
+                ></i>
+              </div>
+              <div class="ml-3">
+                <p class="font-medium">Structure Break</p>
+                <p class="text-xs text-gray-500">
+                  Price closes above recent lower high
+                </p>
+              </div>
+            </div>
+
+            <!-- Retest Entry -->
+            <div class="flex items-start">
+              <div
+                class="w-8 h-8 rounded-full flex items-center justify-center mt-1 {% if market_structures[0].market_direction|default('') == 'bull_retest' %}bg-green-100 text-green-600{% else %}bg-gray-100 text-gray-400{% endif %}"
+              >
+                <i
+                  class="fas {% if market_structures[0].market_direction|default('') == 'bull_retest' %}fa-check{% else %}fa-times{% endif %}"
+                ></i>
+              </div>
+              <div class="ml-3">
+                <p class="font-medium">Retest Entry</p>
+                <p class="text-xs text-gray-500">
+                  Price retests the breakout level
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Short Entry Conditions -->
+        <div class="bg-gray-50 p-4 rounded-lg">
+          <h4 class="font-medium text-red-600 mb-3">Short Entry Conditions</h4>
+
+          <div class="space-y-3">
+            <!-- Prior Uptrend -->
+            <div class="flex items-start">
+              <div
+                class="w-8 h-8 rounded-full flex items-center justify-center mt-1 {% if market_structures[0].trend_type|default('') == 'uptrend' %}bg-green-100 text-green-600{% else %}bg-gray-100 text-gray-400{% endif %}"
+              >
+                <i
+                  class="fas {% if market_structures[0].trend_type|default('') == 'uptrend' %}fa-check{% else %}fa-times{% endif %}"
+                ></i>
+              </div>
+              <div class="ml-3">
+                <p class="font-medium">Prior Uptrend</p>
+                <p class="text-xs text-gray-500">
+                  Series of higher highs and higher lows
+                </p>
+              </div>
+            </div>
+
+            <!-- Structure Break -->
+            <div class="flex items-start">
+              <div
+                class="w-8 h-8 rounded-full flex items-center justify-center mt-1 {% if market_structures[0].market_direction|default('') == 'bear' or market_structures[0].market_direction|default('') == 'bear_break' %}bg-green-100 text-green-600{% else %}bg-gray-100 text-gray-400{% endif %}"
+              >
+                <i
+                  class="fas {% if market_structures[0].market_direction|default('') == 'bear' or market_structures[0].market_direction|default('') == 'bear_break' %}fa-check{% else %}fa-times{% endif %}"
+                ></i>
+              </div>
+              <div class="ml-3">
+                <p class="font-medium">Structure Break</p>
+                <p class="text-xs text-gray-500">
+                  Price closes below recent higher low
+                </p>
+              </div>
+            </div>
+
+            <!-- Retest Entry -->
+            <div class="flex items-start">
+              <div
+                class="w-8 h-8 rounded-full flex items-center justify-center mt-1 {% if market_structures[0].market_direction|default('') == 'bear_retest' %}bg-green-100 text-green-600{% else %}bg-gray-100 text-gray-400{% endif %}"
+              >
+                <i
+                  class="fas {% if market_structures[0].market_direction|default('') == 'bear_retest' %}fa-check{% else %}fa-times{% endif %}"
+                ></i>
+              </div>
+              <div class="ml-3">
+                <p class="font-medium">Retest Entry</p>
+                <p class="text-xs text-gray-500">
+                  Price retests the breakout level
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -230,8 +230,7 @@ def index():
     # Get market structures data
     overall, market_structures = get_market_structures()
     
-    # Get individual structure details for the original template variables
-    # Use the first timeframe structure or set defaults
+    # Get individual structure details for the template
     primary_structure = market_structures[0] if market_structures else {}
     symbol = config['symbol']
     timeframe = primary_structure.get('timeframe', 'N/A')
@@ -246,6 +245,7 @@ def index():
     performance = get_performance_metrics()
     journal = get_trade_journal(10)
     
+    # Use the new modular template structure
     return render_template('dashboard.html', 
                           config=config, 
                           status=status,
@@ -256,7 +256,6 @@ def index():
                           market_structures=market_structures,
                           performance=performance,
                           journal=journal,
-                          # Add individual structure details for backward compatibility
                           symbol=symbol,
                           timeframe=timeframe,
                           market_direction=market_direction,
