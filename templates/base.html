@@ -36,10 +36,10 @@
         if (botRunning) {
           // Your existing update code here
           console.log("Updating dashboard data...");
-          
+
           // Set up continuous updates
           if (!updateInterval) {
-            updateInterval = setInterval(function() {
+            updateInterval = setInterval(function () {
               if (botRunning) {
                 // Your update logic here
                 console.log("Continuous update...");
@@ -54,7 +54,7 @@
       document.addEventListener("DOMContentLoaded", function () {
         // Initialize dashboard as default section
         showSection("dashboard");
-        
+
         // Start the bot automatically
         startBot();
       });
