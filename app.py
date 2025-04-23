@@ -3,6 +3,7 @@ import json
 import datetime
 import csv
 import os
+import ast
 from flask import Flask, render_template, request, redirect, url_for, jsonify
 import bot as trading_bot
 import MetaTrader5 as mt5
@@ -11,8 +12,33 @@ app = Flask(__name__)
 bot_thread = None
 stop_event = threading.Event()
 
+# Check and fix timeframes format in config
+def check_and_fix_config():
+    try:
+        with open('config.json', 'r') as f:
+            config = json.load(f)
+        
+        # Check if timeframes is a string instead of a list
+        if isinstance(config.get('timeframes'), str):
+            try:
+                # Try to evaluate it as a Python literal
+                timeframes_list = ast.literal_eval(config['timeframes'])
+                if isinstance(timeframes_list, list):
+                    config['timeframes'] = timeframes_list
+                    with open('config.json', 'w') as f:
+                        json.dump(config, f, indent=4)
+                    print("Fixed timeframes format in config file")
+            except (SyntaxError, ValueError) as e:
+                print(f"Error fixing timeframes format: {e}")
+    except Exception as e:
+        print(f"Error checking config: {e}")
+
 # Start trading bot in background thread
 def start_bot():
+    # Check and fix config first
+    check_and_fix_config()
+    
+    # Start the bot
     stop_event.clear()
     trading_bot.run(stop_event)
 
@@ -295,7 +321,15 @@ def update_config():
             try:
                 new_conf[key] = float(val)
             except:
-                new_conf[key] = val
+                # Handle timeframes specially if it's an array in string form
+                if key == 'timeframes' and val.startswith('[') and val.endswith(']'):
+                    try:
+                        timeframes_list = ast.literal_eval(val)
+                        new_conf[key] = timeframes_list
+                    except:
+                        new_conf[key] = val
+                else:
+                    new_conf[key] = val
                 
     # Load current config to preserve array values that might not be in form
     with open('config.json', 'r') as f:
@@ -325,4 +359,6 @@ def api_data():
     })
 
 if __name__ == '__main__':
+    # Check and fix config on startup
+    check_and_fix_config()
     app.run(debug=True)

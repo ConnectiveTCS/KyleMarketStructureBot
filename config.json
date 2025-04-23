@@ -1,6 +1,13 @@
 {
     "symbol": "Step Index",
-    "timeframes": "['TIMEFRAME_MN', 'TIMEFRAME_D1', 'TIMEFRAME_H4', 'TIMEFRAME_H1', 'TIMEFRAME_M30', 'TIMEFRAME_M15', 'TIMEFRAME_M1']",
+    "timeframes": [
+        "TIMEFRAME_D1",
+        "TIMEFRAME_H4",
+        "TIMEFRAME_H1",
+        "TIMEFRAME_M30",
+        "TIMEFRAME_M15",
+        "TIMEFRAME_M1"
+    ],
     "lookback": 100,
     "pivot_depth": 3,
     "break_buffer_pips": 1,
