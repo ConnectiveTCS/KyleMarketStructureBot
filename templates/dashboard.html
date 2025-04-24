@@ -642,58 +642,205 @@
           </div>
           
           <div id="positions" class="dashboard-section hidden">
-            <div class="mb-6 flex justify-between items-center">
-              <h2 class="text-xl font-bold text-slate-800">
-                <i class="fas fa-list-ul mr-2 text-blue-500"></i>Open Positions
+            <!-- Executive Dashboard Header -->
+            <div class="bg-gradient-to-r from-slate-800 to-slate-700 text-white rounded-t-lg p-5 flex justify-between items-center">
+              <h2 class="text-xl font-bold">
+                <i class="fas fa-list-ul mr-2"></i>Open Positions Dashboard
               </h2>
-              <p class="text-sm text-slate-500">{{ positions|length if positions else 0 }} positions</p>
+              <div class="flex items-center">
+                <span class="text-sm opacity-80 mr-3">{{ symbol }}</span>
+                <span class="bg-blue-500 text-xs font-bold px-2.5 py-1 rounded">LIVE</span>
+              </div>
             </div>
             
-            <div class="bg-white rounded-lg shadow-card overflow-hidden">
-              <div class="overflow-x-auto">
-                <table class="min-w-full">
-                  <thead>
-                    <tr class="bg-slate-50">
-                      <th class="py-3 px-4 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Ticket</th>
-                      <th class="py-3 px-4 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Symbol</th>
-                      <th class="py-3 px-4 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Type</th>
-                      <th class="py-3 px-4 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Volume</th>
-                      <th class="py-3 px-4 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Entry</th>
-                      <th class="py-3 px-4 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">SL/TP</th>
-                      <th class="py-3 px-4 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Profit</th>
-                    </tr>
-                  </thead>
-                  <tbody class="divide-y divide-slate-200">
-                    {% if positions %} 
-                      {% for pos in positions %}
-                      <tr class="hover:bg-slate-50">
-                        <td class="py-3 px-4 whitespace-nowrap">{{ pos.ticket }}</td>
-                        <td class="py-3 px-4 whitespace-nowrap">{{ pos.symbol }}</td>
-                        <td class="py-3 px-4 whitespace-nowrap">
-                          <span class="px-2 py-1 text-xs rounded-full {{ 'bg-emerald-100 text-emerald-800' if pos.type == 'BUY' else 'bg-red-100 text-red-800' }}">
-                            {{ pos.type }}
-                          </span>
-                        </td>
-                        <td class="py-3 px-4 whitespace-nowrap">{{ pos.volume }}</td>
-                        <td class="py-3 px-4 whitespace-nowrap">{{ pos.price_open }}</td>
-                        <td class="py-3 px-4 whitespace-nowrap text-xs">
-                          <div>SL: <span class="font-medium">{{ pos.sl }}</span></div>
-                          <div>TP: <span class="font-medium">{{ pos.tp }}</span></div>
-                        </td>
-                        <td class="py-3 px-4 whitespace-nowrap font-medium {{ 'text-emerald-600' if pos.profit >= 0 else 'text-red-600' }}"></td>
-                          {{ pos.profit }}
-                        </td>
-                      </tr>
-                      {% endfor %}
-                    {% else %}
+            <!-- Key Metrics Bar -->
+            <div class="bg-white grid grid-cols-4 divide-x divide-slate-200 shadow-md">
+              {% set total_positions = positions|length if positions else 0 %}
+              {% set total_volume = positions|sum(attribute='volume') if positions else 0 %}
+              {% set long_positions = positions|selectattr('type', 'equalto', 'BUY')|list|length if positions else 0 %}
+              {% set short_positions = positions|selectattr('type', 'equalto', 'SELL')|list|length if positions else 0 %}
+              {% set total_profit = positions|sum(attribute='profit') if positions else 0 %}
+              
+              <div class="p-5 text-center">
+                <p class="text-xs uppercase tracking-wider text-slate-500 mb-2 font-medium">Total Positions</p>
+                <p class="text-lg font-bold">{{ total_positions }}</p>
+              </div>
+              <div class="p-5 text-center">
+                <p class="text-xs uppercase tracking-wider text-slate-500 mb-2 font-medium">Total Volume</p>
+                <p class="text-lg font-bold">{{ total_volume|round(2) }}</p>
+              </div>
+              <div class="p-5 text-center">
+                <p class="text-xs uppercase tracking-wider text-slate-500 mb-2 font-medium">Market Exposure</p>
+                <div class="flex justify-center items-center">
+                  <span class="bg-emerald-100 text-emerald-800 text-xs font-medium px-2 py-1 rounded">LONG: {{ long_positions }}</span>
+                  <span class="mx-1">/</span>
+                  <span class="bg-red-100 text-red-800 text-xs font-medium px-2 py-1 rounded">SHORT: {{ short_positions }}</span>
+                </div>
+              </div>
+              <div class="p-5 text-center">
+                <p class="text-xs uppercase tracking-wider text-slate-500 mb-2 font-medium">Unrealized P/L</p>
+                <p class="text-lg font-bold {% if total_profit >= 0 %}text-emerald-600{% else %}text-red-600{% endif %}">
+                  {{ total_profit|round(2) }}
+                </p>
+              </div>
+            </div>
+            
+            <!-- Dashboard Main Content -->
+            <div class="p-6 bg-slate-50 mt-6">
+              <!-- Position Distribution Overview -->
+              {% if positions %}
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                <!-- Position Direction Chart -->
+                <div class="bg-white rounded-lg shadow-card p-5">
+                  <h3 class="font-medium text-slate-800 mb-4">Position Direction</h3>
+                  <div class="flex">
+                    <!-- Long Positions Bar -->
+                    <div class="flex-1">
+                      <div class="h-24 flex items-end justify-center">
+                        <div class="w-16 bg-emerald-500 rounded-t-md relative" 
+                             style="height: {{ (long_positions / total_positions * 100) if total_positions else 0 }}%">
+                          {% if long_positions > 0 %}
+                          <div class="absolute -top-6 w-full text-center text-sm font-bold text-slate-700">{{ long_positions }}</div>
+                          {% endif %}
+                        </div>
+                      </div>
+                      <div class="text-center mt-2 text-sm font-medium text-slate-600">Long</div>
+                    </div>
+                    
+                    <!-- Short Positions Bar -->
+                    <div class="flex-1">
+                      <div class="h-24 flex items-end justify-center">
+                        <div class="w-16 bg-red-500 rounded-t-md relative" 
+                             style="height: {{ (short_positions / total_positions * 100) if total_positions else 0 }}%">
+                          {% if short_positions > 0 %}
+                          <div class="absolute -top-6 w-full text-center text-sm font-bold text-slate-700">{{ short_positions }}</div>
+                          {% endif %}
+                        </div>
+                      </div>
+                      <div class="text-center mt-2 text-sm font-medium text-slate-600">Short</div>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Position Performance -->
+                <div class="bg-white rounded-lg shadow-card p-5">
+                  <h3 class="font-medium text-slate-800 mb-4">Position Performance</h3>
+                  {% set profitable_positions = positions|selectattr('profit', 'ge', 0)|list|length %}
+                  {% set unprofitable_positions = positions|selectattr('profit', 'lt', 0)|list|length %}
+                  
+                  <div class="flex items-center mb-3">
+                    <div class="w-full bg-slate-200 rounded-full h-2.5">
+                      {% if total_positions > 0 %}
+                      <div class="bg-emerald-500 h-2.5 rounded-full" style="width: {{ (profitable_positions / total_positions * 100)|round }}%"></div>
+                      {% endif %}
+                    </div>
+                  </div>
+                  
+                  <div class="flex justify-between text-sm">
+                    <div>
+                      <span class="font-medium text-emerald-600">{{ profitable_positions }}</span>
+                      <span class="text-slate-500"> profitable</span>
+                    </div>
+                    <div>
+                      <span class="font-medium text-red-600">{{ unprofitable_positions }}</span>
+                      <span class="text-slate-500"> unprofitable</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Risk Exposure -->
+                <div class="bg-white rounded-lg shadow-card p-5">
+                  <h3 class="font-medium text-slate-800 mb-4">Risk Exposure</h3>
+                  {% set max_risk = positions|sum(attribute='volume')|float * 100 if positions else 0 %}
+                  {% set current_risk = positions|selectattr('profit', 'lt', 0)|sum(attribute='profit')|abs|float if positions else 0 %}
+                  {% set risk_percent = (current_risk / max_risk * 100)|round if max_risk > 0 else 0 %}
+                  
+                  <div class="text-center mb-2">
+                    <div class="text-3xl font-bold {% if risk_percent < 25 %}text-emerald-600{% elif risk_percent < 50 %}text-amber-500{% else %}text-red-600{% endif %}">
+                      {{ risk_percent }}%
+                    </div>
+                    <div class="text-slate-500 text-sm">of max risk exposure</div>
+                  </div>
+                  
+                  <div class="flex items-center">
+                    <div class="w-full bg-slate-200 rounded-full h-2.5">
+                      <div class="h-2.5 rounded-full {% if risk_percent < 25 %}bg-emerald-500{% elif risk_percent < 50 %}bg-amber-500{% else %}bg-red-500{% endif %}" style="width: {{ risk_percent }}%"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {% endif %}
+              
+              <!-- Enhanced Positions Table -->
+              <div class="bg-white rounded-lg shadow-card overflow-hidden">
+                <div class="border-b p-4 bg-slate-50 flex justify-between items-center">
+                  <h3 class="font-semibold text-slate-800">Active Positions</h3>
+                  <span class="text-sm text-slate-500">{{ positions|length if positions else 0 }} positions</span>
+                </div>
+                
+                <div class="overflow-x-auto">
+                  <table class="min-w-full divide-y divide-slate-200">
+                    <thead class="bg-slate-50">
                       <tr>
-                        <td colspan="7" class="py-8 text-center text-slate-500">
-                          <i class="fas fa-info-circle mr-2"></i>No open positions
-                        </td>
+                        <th class="py-3 px-4 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Position</th>
+                        <th class="py-3 px-4 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Symbol</th>
+                        <th class="py-3 px-4 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Type</th>
+                        <th class="py-3 px-4 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Volume</th>
+                        <th class="py-3 px-4 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Entry</th>
+                        <th class="py-3 px-4 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">SL/TP</th>
+                        <th class="py-3 px-4 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">P/L</th>
+                        <th class="py-3 px-4 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Status</th>
                       </tr>
-                    {% endif %}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody class="divide-y divide-slate-200 bg-white">
+                      {% if positions %} 
+                        {% for pos in positions %}
+                        <tr class="hover:bg-slate-50">
+                          <td class="py-3 px-4 whitespace-nowrap font-medium text-slate-700">#{{ pos.ticket }}</td>
+                          <td class="py-3 px-4 whitespace-nowrap">{{ pos.symbol }}</td>
+                          <td class="py-3 px-4 whitespace-nowrap">
+                            <span class="px-2 py-1 text-xs rounded-full 
+                              {{ 'bg-emerald-100 text-emerald-800' if pos.type == 'BUY' else 'bg-red-100 text-red-800' }}">
+                              {{ pos.type }}
+                            </span>
+                          </td>
+                          <td class="py-3 px-4 whitespace-nowrap">{{ pos.volume }}</td>
+                          <td class="py-3 px-4 whitespace-nowrap">{{ pos.price_open }}</td>
+                          <td class="py-3 px-4 whitespace-nowrap text-xs">
+                            <div class="grid grid-cols-2 gap-1">
+                              <div class="rounded px-1.5 py-0.5 bg-red-50 text-red-700">SL: {{ pos.sl }}</div>
+                              <div class="rounded px-1.5 py-0.5 bg-emerald-50 text-emerald-700">TP: {{ pos.tp }}</div>
+                            </div>
+                          </td>
+                          <td class="py-3 px-4 whitespace-nowrap font-medium {{ 'text-emerald-600' if pos.profit >= 0 else 'text-red-600' }}">
+                            {{ pos.profit|round(2) }}
+                          </td>
+                          <td class="py-3 px-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                              <div class="w-2 h-8 rounded-l-full {{ 'bg-emerald-500' if pos.profit >= 0 else 'bg-red-500' }}"></div>
+                              <div class="w-16 h-8 rounded-r-full flex items-center justify-center {{ 'bg-emerald-100 text-emerald-800' if pos.profit >= 0 else 'bg-red-100 text-red-800' }}">
+                                {{ 'PROFIT' if pos.profit >= 0 else 'LOSS' }}
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                        {% endfor %}
+                      {% else %}
+                        <tr>
+                          <td colspan="8" class="py-8 text-center">
+                            <div class="flex flex-col items-center justify-center">
+                              <div class="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center mb-4">
+                                <i class="fas fa-inbox text-slate-400 text-2xl"></i>
+                              </div>
+                              <h3 class="text-lg font-medium text-slate-700 mb-1">No Open Positions</h3>
+                              <p class="text-sm text-slate-500">There are currently no active trading positions.</p>
+                            </div>
+                          </td>
+                        </tr>
+                      {% endif %}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           </div>

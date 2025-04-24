@@ -2,6 +2,7 @@ import threading
 import json
 import datetime  # Import the standard datetime module
 import os  # Add this import
+import sys  # Add this import for the system module
 from flask import Flask, render_template, request, redirect, url_for, jsonify  # Add jsonify
 import bot as trading_bot
 import MetaTrader5 as mt5
