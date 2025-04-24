@@ -3,6 +3,7 @@ import json
 import threading
 import MetaTrader5 as mt5
 from logs import get_logger
+import ast
 
 # Create a logger for this module
 logger = get_logger('bot')
@@ -13,8 +14,19 @@ with open('config.json', 'r') as f:
 
 SYMBOL = config['symbol']
 # Support multiple timeframes by precedence
-if 'timeframes' in config and isinstance(config['timeframes'], list):
-    TIMEFRAME_NAMES = config['timeframes']
+if 'timeframes' in config:
+    if isinstance(config['timeframes'], list):
+        TIMEFRAME_NAMES = config['timeframes']
+    elif isinstance(config['timeframes'], str):
+        # Try to parse string representation of list
+        try:
+            # Handle both formats: "['TIMEFRAME_H4', ...]" and '["TIMEFRAME_H4", ...]'
+            TIMEFRAME_NAMES = ast.literal_eval(config['timeframes'])
+        except (SyntaxError, ValueError):
+            logger.warning(f"Invalid timeframes format: {config['timeframes']}. Using default.")
+            TIMEFRAME_NAMES = ["TIMEFRAME_M15"]
+    else:
+        TIMEFRAME_NAMES = ["TIMEFRAME_M15"]  # Default timeframe
 elif 'timeframe' in config:
     TIMEFRAME_NAMES = [config['timeframe']]
 else:

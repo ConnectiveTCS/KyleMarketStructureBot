@@ -359,8 +359,24 @@ def stop():
 def update_config():
     new_conf = {}
     for key, val in request.form.items():
+        # Special handling for timeframes field
+        if key == 'timeframes':
+            try:
+                # If it contains square brackets, try to parse it as JSON
+                if '[' in val and ']' in val:
+                    # Clean up the input to ensure it's valid JSON
+                    # Remove single quotes, ensure double quotes for array items
+                    cleaned_val = val.replace("'", '"')
+                    new_conf[key] = json.loads(cleaned_val)
+                else:
+                    # If it's a single timeframe, make it a list
+                    new_conf[key] = [val]
+            except json.JSONDecodeError:
+                # If JSON parsing fails, keep as string but log warning
+                new_conf[key] = val
+                print(f"Warning: Could not parse timeframes value: {val}")
         # Handle boolean values from form
-        if val.lower() == 'true':
+        elif val.lower() == 'true':
             new_conf[key] = True
         elif val.lower() == 'false':
             new_conf[key] = False
