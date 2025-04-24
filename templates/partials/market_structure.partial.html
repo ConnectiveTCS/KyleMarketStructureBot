@@ -50,7 +50,9 @@
     >
       Current Price
     </p>
-    <p class="text-base sm:text-lg font-bold">{{ current_price }}</p>
+    <p class="text-base sm:text-lg font-bold">
+      {{ current_price if current_price != 'N/A' else '---' }}
+    </p>
   </div>
   <div class="p-3 sm:p-5 text-center">
     <p
@@ -58,17 +60,30 @@
     >
       Daily Change
     </p>
-    <p
-      class="text-base sm:text-lg font-bold {% if current_price and last_pivot_high and current_price > last_pivot_high %}text-emerald-600{% elif current_price and last_pivot_low and current_price < last_pivot_low %}text-red-600{% else %}text-slate-600{% endif %}"
-    >
-      <i
-        class="fas {% if current_price and last_pivot_high and current_price > last_pivot_high %}fa-arrow-up{% elif current_price and last_pivot_low and current_price < last_pivot_low %}fa-arrow-down{% else %}fa-minus{% endif %} mr-1"
-      ></i>
-      {% if current_price and last_pivot_high and current_price >
-      last_pivot_high %}+{{ ((current_price - last_pivot_high) / last_pivot_high
-      * 100)|round(2) }}% {% elif current_price and last_pivot_low and
-      current_price < last_pivot_low %}-{{ ((last_pivot_low - current_price) /
-      last_pivot_low * 100)|round(2) }}% {% else %}0.00%{% endif %}
+    {% set primary_tf_structure = market_structures[0] if market_structures else
+    None %} {% set daily_change_pct = 0.0 %} {% set daily_change_class =
+    'text-slate-600' %} {% set daily_change_icon = 'fa-minus' %} {% if
+    current_price and current_price != 'N/A' and primary_tf_structure %} {% set
+    ph = primary_tf_structure.last_pivot_high %} {% set pl =
+    primary_tf_structure.last_pivot_low %} {% if ph and pl and ph > pl %} {% set
+    pivot_mid = (ph + pl) / 2 %} {% if current_price > pivot_mid %} {% set
+    daily_change_pct = ((current_price - pivot_mid) / pivot_mid * 100)|round(2)
+    %} {% set daily_change_class = 'text-emerald-600' %} {% set
+    daily_change_icon = 'fa-arrow-up' %} {% elif current_price < pivot_mid %} {%
+    set daily_change_pct = ((pivot_mid - current_price) / pivot_mid *
+    100)|round(2) %} {% set daily_change_class = 'text-red-600' %} {% set
+    daily_change_icon = 'fa-arrow-down' %} {% endif %} {% elif ph and
+    current_price > ph %} {% set daily_change_pct = ((current_price - ph) / ph *
+    100)|round(2) %} {% set daily_change_class = 'text-emerald-600' %} {% set
+    daily_change_icon = 'fa-arrow-up' %} {% elif pl and current_price < pl %} {%
+    set daily_change_pct = ((pl - current_price) / pl * 100)|round(2) %} {% set
+    daily_change_class = 'text-red-600' %} {% set daily_change_icon =
+    'fa-arrow-down' %} {% endif %} {% endif %}
+
+    <p class="text-base sm:text-lg font-bold {{ daily_change_class }}">
+      <i class="fas {{ daily_change_icon }} mr-1"></i>
+      {{ '+%.2f'|format(daily_change_pct) if daily_change_pct > 0 else
+      '%.2f'|format(daily_change_pct) }}%
     </p>
   </div>
   <div class="p-3 sm:p-5 text-center">

@@ -257,14 +257,212 @@ def get_latest_github_release():
     except Exception:
         return None
 
+@app.route('/api/status', methods=['GET'])
+def api_status():
+    """API: Get bot status"""
+    global bot_thread
+    status = 'running' if bot_thread and bot_thread.is_alive() else 'stopped'
+    return jsonify({'status': status})
+
+@app.route('/api/start', methods=['POST'])
+def api_start():
+    """API: Start the bot"""
+    global bot_thread
+    if not bot_thread or not bot_thread.is_alive():
+        bot_thread = threading.Thread(target=start_bot)
+        bot_thread.daemon = True
+        bot_thread.start()
+        return jsonify({'success': True, 'message': 'Bot started'})
+    return jsonify({'success': False, 'message': 'Bot already running'})
+
+@app.route('/api/stop', methods=['POST'])
+def api_stop():
+    """API: Stop the bot"""
+    global bot_thread
+    if bot_thread and bot_thread.is_alive():
+        stop_event.set()
+        bot_thread = None
+        return jsonify({'success': True, 'message': 'Bot stopping'})
+    return jsonify({'success': False, 'message': 'Bot not running'})
+
+@app.route('/api/config', methods=['GET', 'POST'])
+def api_config():
+    """API: Get or Update configuration"""
+    if request.method == 'GET':
+        try:
+            config = load_config()
+            return jsonify({'success': True, 'config': config})
+        except Exception as e:
+            return jsonify({'success': False, 'message': f"Error loading config: {str(e)}"}), 500
+            
+    elif request.method == 'POST':
+        try:
+            new_config_data = request.json
+            if not isinstance(new_config_data, dict):
+                 return jsonify({'success': False, 'message': 'Invalid JSON data format'}), 400
+            
+            if save_config(new_config_data):
+                 return jsonify({'success': True, 'message': 'Configuration updated successfully'})
+            else:
+                 return jsonify({'success': False, 'message': 'Failed to save configuration'}), 500
+        except Exception as e:
+            return jsonify({'success': False, 'message': f"Error updating config: {str(e)}"}), 500
+
+@app.route('/api/profiles', methods=['GET'])
+def api_get_profiles():
+    """API: Get list of available profiles"""
+    profiles = get_available_profiles()
+    return jsonify({'success': True, 'profiles': profiles})
+
+@app.route('/api/profiles/<name>', methods=['POST', 'PUT', 'DELETE'])
+def api_manage_profile(name):
+    """API: Manage a specific profile (Save, Load, Delete)"""
+    name = name.strip()
+    if not name:
+        return jsonify({'success': False, 'message': 'Profile name is required'}), 400
+
+    if request.method == 'POST':
+        success, message = save_profile(name)
+        status_code = 200 if success else 500
+        return jsonify({'success': success, 'message': message}), status_code
+
+    elif request.method == 'PUT':
+        success, message = load_profile(name)
+        if success:
+            api_stop()
+            return jsonify({'success': True, 'message': message})
+        else:
+            status_code = 404 if "not found" in message else 500
+            return jsonify({'success': False, 'message': message}), status_code
+
+    elif request.method == 'DELETE':
+        success, message = delete_profile(name)
+        status_code = 200 if success else (404 if "not found" in message else 500)
+        return jsonify({'success': success, 'message': message}), status_code
+
+@app.route('/api/positions', methods=['GET'])
+def api_get_positions():
+    """API: Get open positions"""
+    try:
+        positions = get_positions()
+        return jsonify({'success': True, 'positions': positions})
+    except Exception as e:
+        return jsonify({'success': False, 'message': f"Error getting positions: {str(e)}"}), 500
+
+@app.route('/api/history', methods=['GET'])
+def api_get_history():
+    """API: Get trade history with optional date filtering"""
+    try:
+        from_date_str = request.args.get('from_date')
+        to_date_str = request.args.get('to_date')
+        limit_str = request.args.get('limit')
+        
+        from_date = None
+        to_date = None
+        limit = None
+
+        if from_date_str:
+            try:
+                from_date = datetime.datetime.strptime(from_date_str, '%Y-%m-%d')
+            except ValueError:
+                return jsonify({'success': False, 'message': 'Invalid from_date format. Use YYYY-MM-DD.'}), 400
+        
+        if to_date_str:
+            try:
+                to_date = datetime.datetime.strptime(to_date_str, '%Y-%m-%d')
+                to_date = to_date.replace(hour=23, minute=59, second=59)
+            except ValueError:
+                return jsonify({'success': False, 'message': 'Invalid to_date format. Use YYYY-MM-DD.'}), 400
+        
+        if limit_str:
+             try:
+                 limit = int(limit_str)
+                 if limit <= 0:
+                     limit = None
+             except ValueError:
+                 return jsonify({'success': False, 'message': 'Invalid limit format. Use a positive integer.'}), 400
+
+        history = get_history(from_date=from_date, to_date=to_date, limit=limit)
+        return jsonify({'success': True, 'history': history})
+    except Exception as e:
+        return jsonify({'success': False, 'message': f"Error getting history: {str(e)}"}), 500
+
+@app.route('/api/account', methods=['GET'])
+def api_get_account_info():
+    """API: Get account information"""
+    try:
+        account_info = get_account_info()
+        if account_info:
+            return jsonify({'success': True, 'account': account_info})
+        else:
+            return jsonify({'success': False, 'message': 'Could not retrieve account info'}), 500
+    except Exception as e:
+        return jsonify({'success': False, 'message': f"Error getting account info: {str(e)}"}), 500
+
+@app.route('/api/market_structures', methods=['GET'])
+def api_get_market_structures():
+    """API: Get market structure data"""
+    try:
+        overall, structures = get_market_structures()
+        return jsonify({'success': True, 'overall_direction': overall, 'structures': structures})
+    except Exception as e:
+        return jsonify({'success': False, 'message': f"Error getting market structures: {str(e)}"}), 500
+
+@app.route('/api/logs', methods=['GET'])
+def api_get_logs():
+    """API: Get logs with optional filtering"""
+    try:
+        level = request.args.get('level')
+        component = request.args.get('component')
+        n_str = request.args.get('n', '100')
+        
+        try:
+            n = int(n_str)
+        except ValueError:
+             return jsonify({'success': False, 'message': 'Invalid number (n) format. Use an integer.'}), 400
+
+        logs = get_logs(n=n, level=level, component=component)
+        return jsonify({'success': True, 'logs': logs})
+    except Exception as e:
+        return jsonify({'success': False, 'message': f"Error getting logs: {str(e)}"}), 500
+
+@app.route('/api/strategies', methods=['GET'])
+def api_get_strategies():
+    """API: Get available strategies"""
+    try:
+        strategies = get_available_strategies()
+        return jsonify({'success': True, 'strategies': strategies})
+    except Exception as e:
+        return jsonify({'success': False, 'message': f"Error getting strategies: {str(e)}"}), 500
+
+@app.route('/api/update/check', methods=['GET'])
+def api_check_update():
+    """API: Check for latest GitHub release version"""
+    latest_version = get_latest_github_release()
+    if latest_version:
+        return jsonify({'success': True, 'latest_version': latest_version})
+    else:
+        return jsonify({'success': False, 'message': 'Could not check for updates'}), 503
+
+@app.route('/api/update/trigger', methods=['POST'])
+def api_trigger_update():
+    """API: Trigger git pull and restart"""
+    try:
+        root = os.path.dirname(os.path.abspath(__file__))
+        result = subprocess.run(['git', 'pull'], cwd=root, capture_output=True, text=True, check=True)
+        api_stop()
+        return jsonify({'success': True, 'message': 'Update pulled. Restart required.', 'details': result.stdout})
+    except subprocess.CalledProcessError as e:
+         return jsonify({'success': False, 'message': 'Git pull failed.', 'details': e.stderr}), 500
+    except Exception as e:
+        return jsonify({'success': False, 'message': f"Error triggering update: {str(e)}"}), 500
+
 @app.route('/update_version')
 def update_version():
     """Pull latest code from Git and restart (manual restart may still be needed)."""
     try:
-        # Perform git pull in project root
         root = os.path.dirname(os.path.abspath(__file__))
         result = subprocess.run(['git', 'pull'], cwd=root, capture_output=True, text=True)
-        # Optionally stop and restart bot
         stop_event.set()
         return redirect(url_for('dashboard'))
     except Exception:
@@ -283,16 +481,13 @@ def filter_history():
             
         if to_date_str:
             to_date = datetime.datetime.strptime(to_date_str, '%Y-%m-%d')
-            # Set to end of day
             to_date = to_date.replace(hour=23, minute=59, second=59)
         else:
             to_date = datetime.datetime.now()
     except ValueError:
-        # Handle invalid date format
         from_date = datetime.datetime.now() - datetime.timedelta(days=30)
         to_date = datetime.datetime.now()
     
-    # For form submissions, redirect back to dashboard with query params and ensure the anchor is included
     return redirect(url_for('dashboard', 
                           from_date=from_date.strftime('%Y-%m-%d'),
                           to_date=to_date.strftime('%Y-%m-%d')) + '#history')
@@ -302,28 +497,55 @@ def dashboard():
     config = load_config()
     available_strategies = get_available_strategies()
     
-    # Mock data for example purposes
+    # --- Fetch real-time data for initial render ---
+    current_price_real = None
+    account_info_real = None
+    positions_real = []
+    history_real = []
+    overall_direction_real, market_structures_real = None, []
+    
+    if mt5.initialize():
+        symbol = config.get("symbol", "Step Index")
+        tick = mt5.symbol_info_tick(symbol)
+        if tick:
+            current_price_real = round((tick.bid + tick.ask) / 2, symbol_info.digits if (symbol_info := mt5.symbol_info(symbol)) else 5) # Use midpoint and round
+
+        account_info_real = get_account_info() # Use existing function
+        positions_real = get_positions() # Use existing function
+        
+        # Get history for default range (e.g., last 7 days) for initial view
+        to_date_hist = datetime.datetime.now()
+        from_date_hist = to_date_hist - datetime.timedelta(days=7)
+        history_real = get_history(from_date=from_date_hist, to_date=to_date_hist, limit=50) # Limit initial history load
+        
+        overall_direction_real, market_structures_real = get_market_structures() # Use existing function
+        
+        # mt5.shutdown() # Consider if shutdown is needed here or managed elsewhere
+    else:
+        print("Failed to initialize MT5 for dashboard render")
+        # Use defaults or indicate error state
+        
+    # --- Use fetched data (or defaults) in mock_data ---
     mock_data = {
         "symbol": config.get("symbol", "Step Index"),
-        "timeframe": "H4",
-        "status": "running",
-        "current_price": 15750.25,
-        "market_direction": "bull",
-        "overall_direction": "bull",
-        "last_pivot_high": 15700.50,
-        "last_pivot_low": 15600.75,
-        "positions": get_positions(),
-        "history": get_history(),
-        "logs": get_logs(n=100),
-        "account": get_account_info(),
-        "market_structures": get_market_structures()[1],
+        "timeframe": "H4", # This might still be a placeholder depending on your logic
+        "status": 'running' if bot_thread and bot_thread.is_alive() else 'stopped', # Get real status
+        "current_price": current_price_real if current_price_real is not None else "N/A", # Use fetched price
+        "market_direction": overall_direction_real, # Use fetched overall direction
+        "overall_direction": overall_direction_real, # Use fetched overall direction
+        # Use the first structure's pivots as representative, or handle None
+        "last_pivot_high": market_structures_real[0]['last_pivot_high'] if market_structures_real else None,
+        "last_pivot_low": market_structures_real[0]['last_pivot_low'] if market_structures_real else None,
+        "positions": positions_real, # Use fetched positions
+        "history": history_real, # Use fetched history
+        "logs": get_logs(n=100), # Keep log fetching as is, or adjust
+        "account": account_info_real, # Use fetched account info
+        "market_structures": market_structures_real, # Use fetched structures
         "profiles": get_available_profiles(),
         "available_strategies": available_strategies,
         "config": config
     }
     
-    # Always include stochastic data in the template context
-    # with default/empty values when the strategy is not active
     mock_data["stochastic"] = {
         "k_value": None,
         "d_value": None,
@@ -331,14 +553,13 @@ def dashboard():
         "signal": None
     }
     
-    # Override with actual values if stochastic is the active strategy
     active_strategy = config.get("active_strategy", "market_structure")
     if active_strategy == "stochastic":
         mock_data["stochastic"] = {
             "k_value": 25.5,
             "d_value": 20.3,
             "trend": "uptrend",
-            "signal": "buy"  # Add a signal value
+            "signal": "buy"
         }
     
     return render_template('dashboard.html', **mock_data)
@@ -350,7 +571,6 @@ def view_logs():
     logs = get_logs(n=100, level=log_level, component=log_component)
     log_components = get_available_components()
     
-    # If this is just a refresh request, redirect back to dashboard with params
     if request.args.get('refresh'):
         return redirect(url_for('dashboard', level=log_level, component=log_component, _anchor='logs'))
     
@@ -378,18 +598,14 @@ def stop():
 def update_config():
     config = load_config()
     
-    # Update config with form data
     for key, value in request.form.items():
-        # Handle boolean values
         if value.lower() in ['true', 'false']:
             config[key] = value.lower() == 'true'
-        # Handle numeric values
         elif value.replace('.', '', 1).isdigit():
             if '.' in value:
                 config[key] = float(value)
             else:
                 config[key] = int(value)
-        # Handle everything else as strings
         else:
             config[key] = value
     
@@ -414,14 +630,11 @@ def load_profile_route():
     
     success, message = load_profile(name)
     if success:
-        # Optionally stop the bot so new config is used on next start
         global bot_thread
         stop_event.set()
-        # Wait for bot to stop
         if bot_thread and bot_thread.is_alive():
             bot_thread.join(timeout=2)
         bot_thread = None
-        # Return reload instruction to frontend
         return jsonify({'success': True, 'message': message, 'reload': True})
     else:
         return jsonify({'success': False, 'message': message})
@@ -444,27 +657,17 @@ def get_config():
     except Exception as e:
         return jsonify({'success': False, 'message': str(e)}), 500
 
-# Chart view route
 @app.route('/chart/<symbol>')
 def chart_view(symbol):
-    """Render the chart view for a specific symbol"""
     return render_template('chart_view.html', symbol=symbol)
 
-# API endpoint for candle data
 @app.route('/api/candles')
 def get_candles():
-    """API endpoint to get candlestick data for a specific symbol and timeframe"""
     symbol = request.args.get('symbol', '')
     timeframe = request.args.get('timeframe', '1h')
     
     try:
-        # In a real implementation, you would fetch data from your trading platform
-        # or market data provider here. This is just demo data.
-        
-        # For this example, I'll generate some random candle data
         candles = generate_demo_candles(timeframe)
-        
-        # Get pivot points if available
         pivots = get_pivot_points(symbol, timeframe)
         
         return jsonify({
@@ -481,20 +684,14 @@ def get_candles():
             'message': f"Error getting candle data: {str(e)}"
         })
 
-# API endpoint for indicators
 @app.route('/api/indicator')
 def get_indicator():
-    """API endpoint to get indicator data"""
     symbol = request.args.get('symbol', '')
     indicator_type = request.args.get('type', '')
     period = int(request.args.get('period', 14))
     timeframe = request.args.get('timeframe', '1h')
     
     try:
-        # In a real implementation, you would calculate indicators based on
-        # actual price data. This is just demo data.
-        
-        # For this example, I'll generate some random indicator values
         values = generate_demo_indicator(timeframe, indicator_type, period)
         
         return jsonify({
@@ -511,13 +708,10 @@ def get_indicator():
             'message': f"Error getting indicator data: {str(e)}"
         })
 
-# Helper function to generate demo candle data
 def generate_demo_candles(timeframe):
-    """Generate demo candle data for testing"""
     candles = []
     now = int(time.time())
     
-    # Determine candlestick interval based on timeframe
     if timeframe.endswith('h'):
         interval = 3600 * int(timeframe[:-1])
     elif timeframe.endswith('d'):
@@ -527,18 +721,14 @@ def generate_demo_candles(timeframe):
     elif timeframe.endswith('m'):
         interval = 2592000 * int(timeframe[:-1])
     else:
-        interval = 3600  # Default to 1 hour
+        interval = 3600
     
-    # Start price around 100
     base_price = 100
     price = base_price
     
-    # Generate 100 candles
     for i in range(100):
-        # Calculate timestamp for this candle
         timestamp = now - (99 - i) * interval
         
-        # Generate random price movements
         price_change = random.uniform(-2, 2)
         price += price_change
         
@@ -557,13 +747,10 @@ def generate_demo_candles(timeframe):
     
     return candles
 
-# Helper function to generate demo indicator values
 def generate_demo_indicator(timeframe, indicator_type, period):
-    """Generate demo indicator values for testing"""
     values = []
     now = int(time.time())
     
-    # Determine interval based on timeframe
     if timeframe.endswith('h'):
         interval = 3600 * int(timeframe[:-1])
     elif timeframe.endswith('d'):
@@ -573,18 +760,14 @@ def generate_demo_indicator(timeframe, indicator_type, period):
     elif timeframe.endswith('m'):
         interval = 2592000 * int(timeframe[:-1])
     else:
-        interval = 3600  # Default to 1 hour
+        interval = 3600
     
-    # Start value around 100
     base_value = 100
     value = base_value
     
-    # Generate 100 values
     for i in range(100):
-        # Calculate timestamp for this value
         timestamp = now - (99 - i) * interval
         
-        # Generate random value movements (smoother for indicators)
         if indicator_type == 'sma':
             value = base_value + random.uniform(-5, 5)
         elif indicator_type == 'ema':
@@ -599,16 +782,9 @@ def generate_demo_indicator(timeframe, indicator_type, period):
     
     return values
 
-# Helper function to get pivot points
 def get_pivot_points(symbol, timeframe):
-    """Get pivot points for a symbol and timeframe"""
-    # In a real implementation, you would fetch actual pivot points
-    # from your market structure analysis. This is just demo data.
-    
-    # Generate a few random pivot highs and lows
     now = int(time.time())
     
-    # Determine interval based on timeframe
     if timeframe.endswith('h'):
         interval = 3600 * int(timeframe[:-1])
     elif timeframe.endswith('d'):
@@ -618,25 +794,23 @@ def get_pivot_points(symbol, timeframe):
     elif timeframe.endswith('m'):
         interval = 2592000 * int(timeframe[:-1])
     else:
-        interval = 3600  # Default to 1 hour
+        interval = 3600
     
     base_price = 100
     
-    # Generate some pivot highs
     pivot_highs = []
-    for i in range(1, 6):  # 5 pivot highs
-        timestamp = now - (90 - i * 15) * interval  # Spread them out
-        value = base_price + random.uniform(5, 10)  # Higher than base price
+    for i in range(1, 6):
+        timestamp = now - (90 - i * 15) * interval
+        value = base_price + random.uniform(5, 10)
         pivot_highs.append({
             'time': timestamp,
             'value': round(value, 2)
         })
     
-    # Generate some pivot lows
     pivot_lows = []
-    for i in range(1, 6):  # 5 pivot lows
-        timestamp = now - (82 - i * 15) * interval  # Offset from highs
-        value = base_price - random.uniform(3, 8)  # Lower than base price
+    for i in range(1, 6):
+        timestamp = now - (82 - i * 15) * interval
+        value = base_price - random.uniform(3, 8)
         pivot_lows.append({
             'time': timestamp,
             'value': round(value, 2)
@@ -648,17 +822,8 @@ def get_pivot_points(symbol, timeframe):
     }
 
 if __name__ == '__main__':
-    # When running as a service, bind to all interfaces (0.0.0.0)
-    # and don't use debug mode
     is_service = not hasattr(sys, 'getwindowsversion')
-    
-    # Get the port from an environment variable if specified, otherwise use 5000
     port = int(os.environ.get('FLASK_RUN_PORT', 5000))
-    
-    # Get the host from an environment variable if specified, otherwise bind to all interfaces
     host = os.environ.get('FLASK_RUN_HOST', '0.0.0.0')
-    
-    # Don't use debug mode when running as a service
     debug_mode = False if is_service else True
-    
     app.run(host=host, port=port, debug=debug_mode)

@@ -237,3 +237,15 @@
 2025-04-24 11:17:42,875 - market_structure.bot - INFO - OrderSend result: OrderSendResult(retcode=10009, deal=4204341631, order=4208386443, volume=0.2, price=8467.8, bid=8467.8, ask=8468.0, comment='Request executed', request_id=1551984257, retcode_external=0, request=TradeRequest(action=1, magic=123456, order=0, symbol='Step Index', volume=0.2, price=8467.7, stoplimit=0.0, sl=8469.542857142858, tp=8464.014285714286, deviation=0, type=1, type_filling=0, type_time=0, expiration=0, comment='market structure bot', position=0, position_by=0))
 2025-04-24 11:18:33,046 - market_structure.bot - INFO - Configured timeframes: ['TIMEFRAME_H4', 'TIMEFRAME_M30', 'TIMEFRAME_M15', 'TIMEFRAME_M1']
 2025-04-24 11:21:09,773 - market_structure.bot - INFO - Configured timeframes: ['TIMEFRAME_H4', 'TIMEFRAME_M30', 'TIMEFRAME_M15', 'TIMEFRAME_M1']
+2025-04-24 11:25:23,159 - market_structure.bot - WARNING - Invalid timeframes format: [. Using default.
+2025-04-24 11:25:23,159 - market_structure.bot - INFO - Configured timeframes: ['TIMEFRAME_M15']
+2025-04-24 11:27:28,868 - market_structure.bot - WARNING - Invalid timeframes format: [. Using default.
+2025-04-24 11:27:28,869 - market_structure.bot - INFO - Configured timeframes: ['TIMEFRAME_M15']
+2025-04-24 11:29:27,536 - market_structure.bot - INFO - Configured timeframes: ['TIMEFRAME_H4', 'TIMEFRAME_M30', 'TIMEFRAME_M15', 'TIMEFRAME_M1']
+2025-04-24 11:32:49,674 - market_structure.bot - INFO - Configured timeframes: ['TIMEFRAME_H4', 'TIMEFRAME_M30', 'TIMEFRAME_M15', 'TIMEFRAME_M1']
+2025-04-24 11:32:58,671 - market_structure.bot - INFO - Configured timeframes: ['TIMEFRAME_H4', 'TIMEFRAME_M30', 'TIMEFRAME_M15', 'TIMEFRAME_M1']
+2025-04-24 11:33:11,907 - market_structure.bot - INFO - Bot starting...
+2025-04-24 11:33:11,937 - market_structure.bot - INFO - Using ATR-based SL for SELL
+2025-04-24 11:33:12,878 - market_structure.bot - INFO - OrderSend result: OrderSendResult(retcode=10009, deal=4204359158, order=4208404442, volume=0.2, price=8472.0, bid=8472.0, ask=8472.2, comment='Request executed', request_id=1551984258, retcode_external=0, request=TradeRequest(action=1, magic=123456, order=0, symbol='Step Index', volume=0.2, price=8472.1, stoplimit=0.0, sl=8473.69642857143, tp=8468.907142857142, deviation=0, type=1, type_filling=0, type_time=0, expiration=0, comment='market structure bot', position=0, position_by=0))
+2025-04-24 11:34:12,946 - market_structure.bot - INFO - Using ATR-based SL for SELL
+2025-04-24 11:34:13,887 - market_structure.bot - INFO - OrderSend result: OrderSendResult(retcode=10009, deal=4204360071, order=4208405397, volume=0.2, price=8471.9, bid=8471.9, ask=8472.1, comment='Request executed', request_id=1551984259, retcode_external=0, request=TradeRequest(action=1, magic=123456, order=0, symbol='Step Index', volume=0.2, price=8471.8, stoplimit=0.0, sl=8473.353571428572, tp=8468.692857142856, deviation=0, type=1, type_filling=0, type_time=0, expiration=0, comment='market structure bot', position=0, position_by=0))

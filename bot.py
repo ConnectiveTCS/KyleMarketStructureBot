@@ -30,7 +30,7 @@ if 'timeframes' in config:
 elif 'timeframe' in config:
     TIMEFRAME_NAMES = [config['timeframe']]
 else:
-    TIMEFRAME_NAMES = ["TIMEFRAME_M15"]  # Default timeframe
+    TIMEFRAME_NAMES = ["TIMEFRAME_M1"]  # Default timeframe
 
 # map timeframe keys to MT5 constants, monthly uses TIMEFRAME_MN1
 TF_CONST_MAP = {
