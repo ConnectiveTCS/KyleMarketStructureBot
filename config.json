@@ -1,6 +1,6 @@
 {
     "symbol": "Step Index",
-    "timeframes": ["TIMEFRAME_H4", "TIMEFRAME_M30", "TIMEFRAME_M15", "TIMEFRAME_M1"],
+    "timeframes": ["TIMEFRAME_H4", "TIMEFRAME_H1", "TIMEFRAME_M30", "TIMEFRAME_M15", "TIMEFRAME_M1"],
     "lookback": 100,
     "pivot_depth": 6,
     "break_buffer_pips": 1,
@@ -28,5 +28,6 @@
     "stoch_trend_detection": "SMA",
     "stoch_trend_period": 50,
     "profile_select": "",
-    "active_strategy_select": "market_structure"
+    "active_strategy_select": "market_structure",
+    "min_tf_confirmation": 2
 }

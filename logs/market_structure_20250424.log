@@ -531,3 +531,84 @@ AttributeError: module 'MetaTrader5' has no attribute 'normalize_price'
 2025-04-24 12:37:58,650 - market_structure.bot - INFO - Trade direction (bull) confirmed but price (8454.7) not beyond pivot point yet.
 2025-04-24 12:38:58,657 - market_structure.bot - INFO - Bullish structure confirmed on 2 timeframes: TIMEFRAME_H4, TIMEFRAME_M30
 2025-04-24 12:38:58,658 - market_structure.bot - INFO - Trade direction (bull) confirmed but price (8454.7) not beyond pivot point yet.
+2025-04-24 12:39:58,668 - market_structure.bot - INFO - Bullish structure confirmed on 2 timeframes: TIMEFRAME_H4, TIMEFRAME_M30
+2025-04-24 12:39:58,669 - market_structure.bot - INFO - Trade direction (bull) confirmed but price (8454.7) not beyond pivot point yet.
+2025-04-24 12:40:58,682 - market_structure.bot - INFO - Bullish structure confirmed on 2 timeframes: TIMEFRAME_H4, TIMEFRAME_M30
+2025-04-24 12:40:58,683 - market_structure.bot - INFO - Trade direction (bull) confirmed but price (8454.7) not beyond pivot point yet.
+2025-04-24 12:41:58,690 - market_structure.bot - INFO - Bullish structure confirmed on 2 timeframes: TIMEFRAME_H4, TIMEFRAME_M30
+2025-04-24 12:41:58,690 - market_structure.bot - INFO - Trade direction (bull) confirmed but price (8454.7) not beyond pivot point yet.
+2025-04-24 12:42:58,697 - market_structure.bot - INFO - Bullish structure confirmed on 2 timeframes: TIMEFRAME_H4, TIMEFRAME_M30
+2025-04-24 12:42:58,698 - market_structure.bot - INFO - Trade direction (bull) confirmed but price (8454.7) not beyond pivot point yet.
+2025-04-24 12:43:17,133 - market_structure.bot - INFO - Configured timeframes: ['TIMEFRAME_H4', 'TIMEFRAME_M30', 'TIMEFRAME_M15', 'TIMEFRAME_M1']
+2025-04-24 12:43:32,206 - market_structure.bot - INFO - Configured timeframes: ['TIMEFRAME_H4', 'TIMEFRAME_M30', 'TIMEFRAME_M15', 'TIMEFRAME_M1']
+2025-04-24 12:43:35,316 - market_structure.bot - INFO - Bot starting...
+2025-04-24 12:43:35,348 - market_structure.bot - INFO - Bullish structure confirmed on 2 timeframes: TIMEFRAME_H4, TIMEFRAME_M30
+2025-04-24 12:43:35,369 - market_structure.bot - INFO - Trade direction (bull) confirmed but price (8454.7) not beyond pivot point yet.
+2025-04-24 12:44:35,418 - market_structure.bot - INFO - Bullish structure confirmed on 2 timeframes: TIMEFRAME_H4, TIMEFRAME_M30
+2025-04-24 12:44:35,418 - market_structure.bot - INFO - Trade direction (bull) confirmed but price (8454.7) not beyond pivot point yet.
+2025-04-24 12:44:38,708 - market_structure.bot - INFO - Configured timeframes: ["['TIMEFRAME_D1', 'TIMEFRAME_H4', 'TIMEFRAME_H1', 'TIMEFRAME_M30', 'TIMEFRAME_M15', 'TIMEFRAME_M1']"]
+2025-04-24 12:44:38,708 - market_structure.bot - WARNING - No valid timeframes found in configuration. Using TIMEFRAME_M15 as default.
+2025-04-24 12:44:42,692 - market_structure.bot - INFO - Configured timeframes: ["['TIMEFRAME_D1', 'TIMEFRAME_H4', 'TIMEFRAME_H1', 'TIMEFRAME_M30', 'TIMEFRAME_M15', 'TIMEFRAME_M1']"]
+2025-04-24 12:44:42,692 - market_structure.bot - WARNING - No valid timeframes found in configuration. Using TIMEFRAME_M15 as default.
+2025-04-24 12:45:08,851 - market_structure.bot - INFO - Configured timeframes: ["['TIMEFRAME_D1', 'TIMEFRAME_H4', 'TIMEFRAME_H1', 'TIMEFRAME_M30', 'TIMEFRAME_M15', 'TIMEFRAME_M1']"]
+2025-04-24 12:45:08,851 - market_structure.bot - WARNING - No valid timeframes found in configuration. Using TIMEFRAME_M15 as default.
+2025-04-24 12:45:43,047 - market_structure.bot - INFO - Configured timeframes: ["['TIMEFRAME_D1', 'TIMEFRAME_H4', 'TIMEFRAME_H1', 'TIMEFRAME_M30', 'TIMEFRAME_M15', 'TIMEFRAME_M1']"]
+2025-04-24 12:45:43,047 - market_structure.bot - WARNING - No valid timeframes found in configuration. Using TIMEFRAME_M15 as default.
+2025-04-24 12:45:47,996 - market_structure.bot - INFO - Configured timeframes: ["['TIMEFRAME_D1', 'TIMEFRAME_H4', 'TIMEFRAME_H1', 'TIMEFRAME_M30', 'TIMEFRAME_M15', 'TIMEFRAME_M1']"]
+2025-04-24 12:45:47,996 - market_structure.bot - WARNING - No valid timeframes found in configuration. Using TIMEFRAME_M15 as default.
+2025-04-24 12:48:09,059 - market_structure.bot - INFO - Configured timeframes: ["['TIMEFRAME_D1', 'TIMEFRAME_H4', 'TIMEFRAME_H1', 'TIMEFRAME_M30', 'TIMEFRAME_M15', 'TIMEFRAME_M1']"]
+2025-04-24 12:48:09,059 - market_structure.bot - WARNING - No valid timeframes found in configuration. Using TIMEFRAME_M15 as default.
+2025-04-24 12:48:09,827 - market_structure.bot - INFO - Configured timeframes: ["['TIMEFRAME_D1', 'TIMEFRAME_H4', 'TIMEFRAME_H1', 'TIMEFRAME_M30', 'TIMEFRAME_M15', 'TIMEFRAME_M1']"]
+2025-04-24 12:48:09,827 - market_structure.bot - WARNING - No valid timeframes found in configuration. Using TIMEFRAME_M15 as default.
+2025-04-24 12:48:55,247 - market_structure.bot - INFO - Configured timeframes: ["['TIMEFRAME_D1', 'TIMEFRAME_H4', 'TIMEFRAME_H1', 'TIMEFRAME_M30', 'TIMEFRAME_M15', 'TIMEFRAME_M1']"]
+2025-04-24 12:48:55,247 - market_structure.bot - WARNING - No valid timeframes found in configuration. Using TIMEFRAME_M15 as default.
+2025-04-24 12:49:32,605 - market_structure.bot - INFO - Configured timeframes: ["['TIMEFRAME_D1', 'TIMEFRAME_H4', 'TIMEFRAME_H1', 'TIMEFRAME_M30', 'TIMEFRAME_M15', 'TIMEFRAME_M1']"]
+2025-04-24 12:49:32,605 - market_structure.bot - WARNING - No valid timeframes found in configuration. Using TIMEFRAME_M15 as default.
+2025-04-24 12:49:35,556 - market_structure.bot - INFO - Configured timeframes: ["['TIMEFRAME_D1', 'TIMEFRAME_H4', 'TIMEFRAME_H1', 'TIMEFRAME_M30', 'TIMEFRAME_M15', 'TIMEFRAME_M1']"]
+2025-04-24 12:49:35,556 - market_structure.bot - WARNING - No valid timeframes found in configuration. Using TIMEFRAME_M15 as default.
+2025-04-24 12:50:25,076 - market_structure.bot - INFO - Configured timeframes: ["['TIMEFRAME_D1', 'TIMEFRAME_H4', 'TIMEFRAME_H1', 'TIMEFRAME_M30', 'TIMEFRAME_M15', 'TIMEFRAME_M1']"]
+2025-04-24 12:50:25,076 - market_structure.bot - WARNING - No valid timeframes found in configuration. Using TIMEFRAME_M15 as default.
+2025-04-24 12:51:06,414 - market_structure.bot - INFO - Configured timeframes: ["['TIMEFRAME_D1', 'TIMEFRAME_H4', 'TIMEFRAME_H1', 'TIMEFRAME_M30', 'TIMEFRAME_M15', 'TIMEFRAME_M1']"]
+2025-04-24 12:51:06,414 - market_structure.bot - WARNING - No valid timeframes found in configuration. Using TIMEFRAME_M15 as default.
+2025-04-24 12:51:25,599 - market_structure.bot - INFO - Configured timeframes: ['TIMEFRAME_H4', 'TIMEFRAME_M30', 'TIMEFRAME_M15', 'TIMEFRAME_M1']
+2025-04-24 12:52:30,294 - market_structure.bot - INFO - Configured timeframes: ['TIMEFRAME_H4', 'TIMEFRAME_M30', 'TIMEFRAME_M15', 'TIMEFRAME_M1']
+2025-04-24 12:52:35,263 - market_structure.bot - INFO - Configured timeframes: ['TIMEFRAME_H4', 'TIMEFRAME_M30', 'TIMEFRAME_M15', 'TIMEFRAME_M1']
+2025-04-24 12:53:03,702 - market_structure.bot - INFO - Bot starting...
+2025-04-24 12:53:03,755 - market_structure.bot - INFO - Bearish structure confirmed on 2 timeframes: TIMEFRAME_H4, TIMEFRAME_M1
+2025-04-24 12:53:03,757 - market_structure.bot - INFO - Attempting SELL trade entry based on 2+ timeframe confirmation. Price (8454.7) < Pivot Low (8502.0)
+2025-04-24 12:53:03,761 - market_structure.bot - INFO - Using ATR-based SL for SELL
+2025-04-24 12:53:04,899 - market_structure.bot - INFO - OrderSend result: OrderSendResult(retcode=10009, deal=4204450535, order=4208498047, volume=0.2, price=8476.2, bid=8476.2, ask=8476.4, comment='Request executed', request_id=1551984296, retcode_external=0, request=TradeRequest(action=1, magic=123456, order=0, symbol='Step Index', volume=0.2, price=8476.4, stoplimit=0.0, sl=8478.0, tp=8473.1, deviation=0, type=1, type_filling=0, type_time=0, expiration=0, comment='market structure bot', position=0, position_by=0))
+2025-04-24 12:53:20,387 - market_structure.bot - INFO - Configured timeframes: ["['TIMEFRAME_MN', 'TIMEFRAME_D1', 'TIMEFRAME_H4', 'TIMEFRAME_H1', 'TIMEFRAME_M30', 'TIMEFRAME_M15', 'TIMEFRAME_M1']"]
+2025-04-24 12:53:20,388 - market_structure.bot - WARNING - No valid timeframes found in configuration. Using TIMEFRAME_M15 as default.
+2025-04-24 12:53:21,180 - market_structure.bot - INFO - Configured timeframes: ["['TIMEFRAME_MN', 'TIMEFRAME_D1', 'TIMEFRAME_H4', 'TIMEFRAME_H1', 'TIMEFRAME_M30', 'TIMEFRAME_M15', 'TIMEFRAME_M1']"]
+2025-04-24 12:53:21,181 - market_structure.bot - WARNING - No valid timeframes found in configuration. Using TIMEFRAME_M15 as default.
+2025-04-24 12:53:38,069 - market_structure.bot - INFO - Bot starting...
+2025-04-24 12:53:38,104 - market_structure.bot - WARNING - BE Check: Calculated SL 8476.1 is too close to current Bid 8475.5 (StopLevel: 0.8) for SELL position 4208498047. Skipping move.
+2025-04-24 12:53:38,108 - market_structure.bot - DEBUG - Insufficient timeframe confirmation: Bull=0, Bear=0, Required=2
+2025-04-24 12:54:38,133 - market_structure.bot - INFO - Attempting to move position 4208498047 to BE. Request: SL=8476.1, TP=8473.1
+2025-04-24 12:54:38,867 - market_structure.bot - INFO - Position 4208498047 moved to break-even: SL=8476.1
+2025-04-24 12:54:38,872 - market_structure.bot - DEBUG - Insufficient timeframe confirmation: Bull=0, Bear=0, Required=2
+2025-04-24 12:55:38,877 - market_structure.bot - DEBUG - Insufficient timeframe confirmation: Bull=0, Bear=0, Required=2
+2025-04-24 12:56:20,026 - market_structure.bot - INFO - Configured timeframes: ['TIMEFRAME_H1', 'TIMEFRAME_M30', 'TIMEFRAME_M15', 'TIMEFRAME_M1']
+2025-04-24 12:56:20,831 - market_structure.bot - INFO - Configured timeframes: ['TIMEFRAME_H1', 'TIMEFRAME_M30', 'TIMEFRAME_M15', 'TIMEFRAME_M1']
+2025-04-24 12:57:07,747 - market_structure.bot - INFO - Configured timeframes: ['TIMEFRAME_H4', 'TIMEFRAME_H1', 'TIMEFRAME_M30', 'TIMEFRAME_M15', 'TIMEFRAME_M1']
+2025-04-24 12:57:08,580 - market_structure.bot - INFO - Configured timeframes: ['TIMEFRAME_H4', 'TIMEFRAME_H1', 'TIMEFRAME_M30', 'TIMEFRAME_M15', 'TIMEFRAME_M1']
+2025-04-24 12:57:17,349 - market_structure.bot - INFO - Bot starting...
+2025-04-24 12:57:17,406 - market_structure.bot - INFO - Bearish structure confirmed on 3 timeframes: TIMEFRAME_H4, TIMEFRAME_H1
+2025-04-24 12:57:17,407 - market_structure.bot - INFO - Attempting SELL trade entry based on 2+ timeframe confirmation. Price (8454.7) < Pivot Low (8502.0)
+2025-04-24 12:57:17,442 - market_structure.bot - INFO - Using ATR-based SL for SELL
+2025-04-24 12:57:17,877 - market_structure.bot - INFO - OrderSend result: OrderSendResult(retcode=10009, deal=4204454488, order=4208502078, volume=0.2, price=8473.9, bid=8473.9, ask=8474.1, comment='Request executed', request_id=1551984298, retcode_external=0, request=TradeRequest(action=1, magic=123456, order=0, symbol='Step Index', volume=0.2, price=8474.0, stoplimit=0.0, sl=8475.6, tp=8470.8, deviation=0, type=1, type_filling=0, type_time=0, expiration=0, comment='market structure bot', position=0, position_by=0))
+2025-04-24 12:58:17,899 - market_structure.bot - INFO - Bearish structure confirmed on 3 timeframes: TIMEFRAME_H4, TIMEFRAME_H1
+2025-04-24 12:58:17,900 - market_structure.bot - INFO - Attempting SELL trade entry based on 2+ timeframe confirmation. Price (8454.7) < Pivot Low (8502.0)
+2025-04-24 12:58:17,902 - market_structure.bot - INFO - Using ATR-based SL for SELL
+2025-04-24 12:58:18,868 - market_structure.bot - INFO - OrderSend result: OrderSendResult(retcode=10009, deal=4204455494, order=4208503113, volume=0.2, price=8474.0, bid=8474.0, ask=8474.2, comment='Request executed', request_id=1551984299, retcode_external=0, request=TradeRequest(action=1, magic=123456, order=0, symbol='Step Index', volume=0.2, price=8474.1, stoplimit=0.0, sl=8475.7, tp=8471.0, deviation=0, type=1, type_filling=0, type_time=0, expiration=0, comment='market structure bot', position=0, position_by=0))
+2025-04-24 12:59:18,884 - market_structure.bot - INFO - Bearish structure confirmed on 3 timeframes: TIMEFRAME_H4, TIMEFRAME_H1
+2025-04-24 12:59:18,885 - market_structure.bot - INFO - Attempting SELL trade entry based on 2+ timeframe confirmation. Price (8454.7) < Pivot Low (8502.0)
+2025-04-24 12:59:18,886 - market_structure.bot - INFO - Using ATR-based SL for SELL
+2025-04-24 12:59:19,875 - market_structure.bot - INFO - OrderSend result: OrderSendResult(retcode=10009, deal=4204456803, order=4208504453, volume=0.2, price=8474.9, bid=8474.9, ask=8475.1, comment='Request executed', request_id=1551984300, retcode_external=0, request=TradeRequest(action=1, magic=123456, order=0, symbol='Step Index', volume=0.2, price=8475.0, stoplimit=0.0, sl=8476.6, tp=8471.9, deviation=0, type=1, type_filling=0, type_time=0, expiration=0, comment='market structure bot', position=0, position_by=0))
+2025-04-24 13:00:19,877 - market_structure.bot - INFO - Attempting to move position 4208504453 to BE. Request: SL=8474.8, TP=8471.9
+2025-04-24 13:00:20,872 - market_structure.bot - INFO - Position 4208504453 moved to break-even: SL=8474.8
+2025-04-24 13:00:20,891 - market_structure.bot - INFO - Bearish structure confirmed on 3 timeframes: TIMEFRAME_H4, TIMEFRAME_H1
+2025-04-24 13:00:20,893 - market_structure.bot - INFO - Attempting SELL trade entry based on 2+ timeframe confirmation. Price (8454.7) < Pivot Low (8502.0)
+2025-04-24 13:00:20,894 - market_structure.bot - INFO - Using ATR-based SL for SELL
+2025-04-24 13:00:21,900 - market_structure.bot - INFO - OrderSend result: OrderSendResult(retcode=10009, deal=4204457861, order=4208505527, volume=0.2, price=8473.9, bid=8473.9, ask=8474.1, comment='Request executed', request_id=1551984302, retcode_external=0, request=TradeRequest(action=1, magic=123456, order=0, symbol='Step Index', volume=0.2, price=8473.8, stoplimit=0.0, sl=8475.4, tp=8470.6, deviation=0, type=1, type_filling=0, type_time=0, expiration=0, comment='market structure bot', position=0, position_by=0))

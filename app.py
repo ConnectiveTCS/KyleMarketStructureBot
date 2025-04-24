@@ -882,7 +882,18 @@ def update_config():
     config = load_config()
     
     for key, value in request.form.items():
-        if value.lower() in ['true', 'false']:
+        # --- Normalize timeframes into a Python list ---
+        if key == 'timeframes':
+            if isinstance(value, str):
+                try:
+                    parsed = json.loads(value)
+                    config[key] = parsed if isinstance(parsed, list) else [value]
+                except ValueError:
+                    config[key] = [value]
+            else:
+                config[key] = value
+        # --- Existing type coercion ---
+        elif value.lower() in ['true', 'false']:
             config[key] = value.lower() == 'true'
         elif value.replace('.', '', 1).isdigit():
             if '.' in value:
