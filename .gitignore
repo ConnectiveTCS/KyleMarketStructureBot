@@ -3,3 +3,14 @@ bot.*.log
 
 # Ignore bot compiled Python files
 bot.*.pyc
+
+# Ignore bot cache files
+bot.*.cache
+
+# Ignore log files
+*.log
+
+# Ignore service_log.txt
+service_log.txt
+# Ignore all .pyc files
+*.pyc
