@@ -55,3 +55,7 @@
 2025-04-24 07:15:17,846 - market_structure.bot - INFO - OrderSend result: OrderSendResult(retcode=10009, deal=4204135033, order=4208175150, volume=0.2, price=8471.3, bid=8471.3, ask=8471.5, comment='Request executed', request_id=1551984178, retcode_external=0, request=TradeRequest(action=1, magic=123456, order=0, symbol='Step Index', volume=0.2, price=8471.4, stoplimit=0.0, sl=8473.017857142857, tp=8468.164285714287, deviation=0, type=1, type_filling=0, type_time=0, expiration=0, comment='market structure bot', position=0, position_by=0))
 2025-04-24 07:15:58,528 - market_structure.bot - INFO - Configured timeframes: ['TIMEFRAME_H4', 'TIMEFRAME_M30', 'TIMEFRAME_M15', 'TIMEFRAME_M1']
 2025-04-24 07:16:04,065 - market_structure.bot - INFO - Configured timeframes: ['TIMEFRAME_H4', 'TIMEFRAME_M30', 'TIMEFRAME_M15', 'TIMEFRAME_M1']
+2025-04-24 07:24:05,086 - market_structure.bot - INFO - Configured timeframes: ['TIMEFRAME_H4', 'TIMEFRAME_M30', 'TIMEFRAME_M15', 'TIMEFRAME_M1']
+2025-04-24 07:25:03,852 - market_structure.bot - INFO - Configured timeframes: ['TIMEFRAME_H4', 'TIMEFRAME_M30', 'TIMEFRAME_M15', 'TIMEFRAME_M1']
+2025-04-24 07:27:12,106 - market_structure.bot - INFO - Configured timeframes: ['TIMEFRAME_H4', 'TIMEFRAME_M30', 'TIMEFRAME_M15', 'TIMEFRAME_M1']
+2025-04-24 07:27:36,832 - market_structure.bot - INFO - Configured timeframes: ['TIMEFRAME_H4', 'TIMEFRAME_M30', 'TIMEFRAME_M15', 'TIMEFRAME_M1']

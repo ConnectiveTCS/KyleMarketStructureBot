@@ -97,21 +97,31 @@ def get_positions():
     open_pos = [p for p in all_pos if p.symbol == symbol and p.magic == magic]
     return [format_position(p) for p in open_pos]
 
-# Get trade history
-def get_history(limit=10):
+# Get trade history with date range parameters
+def get_history(from_date=None, to_date=None, limit=None):
     if not mt5.initialize():
         return []
     with open('config.json', 'r') as f:
         cfg = json.load(f)
     magic = cfg['magic']
-    # last 2 weeks
-    to_date = datetime.datetime.now()
-    from_date = to_date - datetime.timedelta(days=14)
+    
+    # Set default date range if not provided (last 30 days)
+    if to_date is None:
+        to_date = datetime.datetime.now()
+    if from_date is None:
+        from_date = to_date - datetime.timedelta(days=30)
+    
+    # Get history for the specified date range
     deals = mt5.history_deals_get(from_date, to_date) or []
+    
     # filter by magic
     my_deals = [d for d in deals if getattr(d, 'magic', None) == magic]
     trades = process_history(my_deals)
-    return trades[:limit]
+    
+    # Apply limit if specified
+    if limit and limit > 0:
+        return trades[:limit]
+    return trades
 
 # Process history deals into completed trades
 def process_history(deals):
@@ -200,15 +210,64 @@ def get_market_structures():
     overall = next((s['market_direction'] for s in structures if s['market_direction']), None)
     return overall, structures
 
+@app.route('/filter_history', methods=['GET', 'POST'])
+def filter_history():
+    from_date_str = request.form.get('from_date') or request.args.get('from_date')
+    to_date_str = request.form.get('to_date') or request.args.get('to_date')
+    
+    try:
+        if from_date_str:
+            from_date = datetime.datetime.strptime(from_date_str, '%Y-%m-%d')
+        else:
+            from_date = datetime.datetime.now() - datetime.timedelta(days=30)
+            
+        if to_date_str:
+            to_date = datetime.datetime.strptime(to_date_str, '%Y-%m-%d')
+            # Set to end of day
+            to_date = to_date.replace(hour=23, minute=59, second=59)
+        else:
+            to_date = datetime.datetime.now()
+    except ValueError:
+        # Handle invalid date format
+        from_date = datetime.datetime.now() - datetime.timedelta(days=30)
+        to_date = datetime.datetime.now()
+    
+    # For form submissions, redirect back to dashboard with query params and ensure the anchor is included
+    return redirect(url_for('dashboard', 
+                          from_date=from_date.strftime('%Y-%m-%d'),
+                          to_date=to_date.strftime('%Y-%m-%d')) + '#history')
+
 @app.route('/')
 def dashboard():
     with open('config.json', 'r') as f:
         config = json.load(f)
     status = 'running' if bot_thread and bot_thread.is_alive() else 'stopped'
     
+    # Get date filter parameters
+    from_date_str = request.args.get('from_date')
+    to_date_str = request.args.get('to_date')
+    
+    try:
+        if from_date_str:
+            from_date = datetime.datetime.strptime(from_date_str, '%Y-%m-%d')
+        else:
+            # Default to the last 30 days
+            from_date = datetime.datetime.now() - datetime.timedelta(days=30)
+            
+        if to_date_str:
+            to_date = datetime.datetime.strptime(to_date_str, '%Y-%m-%d')
+            # Set to end of day
+            to_date = to_date.replace(hour=23, minute=59, second=59)
+        else:
+            to_date = datetime.datetime.now()
+    except ValueError:
+        # Handle invalid date format
+        from_date = datetime.datetime.now() - datetime.timedelta(days=30)
+        to_date = datetime.datetime.now()
+    
     # Get monitoring data
     positions = get_positions()
-    history = get_history()
+    history = get_history(from_date=from_date, to_date=to_date)
     account = get_account_info()
     
     # Get market structures data
@@ -256,7 +315,10 @@ def dashboard():
                           log_level=log_level,
                           log_component=log_component,
                           log_components=log_components,
-                          profiles=profiles)  # Add profiles here
+                          profiles=profiles,
+                          # Add date filter parameters
+                          from_date=from_date.strftime('%Y-%m-%d'),
+                          to_date=to_date.strftime('%Y-%m-%d'))
 
 @app.route('/logs')
 def view_logs():
