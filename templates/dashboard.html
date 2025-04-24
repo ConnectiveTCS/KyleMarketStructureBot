@@ -188,6 +188,11 @@
         <a href="/" class="header-btn bg-blue-500 text-white hover:bg-blue-600">
           <i class="fas fa-sync-alt mr-1"></i>Refresh
         </a>
+        {% if update_available %}
+        <a href="/update_version" class="header-btn bg-green-500 text-white hover:bg-green-600">
+          <i class="fas fa-download mr-1"></i>Update to {{ latest_version }}
+        </a>
+        {% endif %}
       </div>
     </header>
 

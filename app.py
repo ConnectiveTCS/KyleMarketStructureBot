@@ -3,6 +3,8 @@ import json
 import datetime  # Import the standard datetime module
 import os  # Add this import
 import sys  # Add this import for the system module
+import subprocess  # New import
+import requests  # New import
 from flask import Flask, render_template, request, redirect, url_for, jsonify  # Add jsonify
 import bot as trading_bot
 import MetaTrader5 as mt5
@@ -23,6 +25,9 @@ CONFIG_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config.j
 # Create profiles directory if it doesn't exist
 if not os.path.exists(PROFILES_DIR):
     os.makedirs(PROFILES_DIR)
+
+# GitHub repo to check
+GITHUB_REPO = os.environ.get('GITHUB_REPO', 'your_github_user/market-structure-bot')
 
 # Get all available profiles
 def get_available_profiles():
@@ -217,6 +222,29 @@ def get_market_structures():
     overall = next((s['market_direction'] for s in structures if s['market_direction']), None)
     return overall, structures
 
+def get_latest_github_release():
+    """Return (latest_version_str or None)."""
+    url = f"https://api.github.com/repos/{GITHUB_REPO}/releases/latest"
+    try:
+        r = requests.get(url, timeout=5)
+        r.raise_for_status()
+        return r.json().get("tag_name")
+    except Exception:
+        return None
+
+@app.route('/update_version')
+def update_version():
+    """Pull latest code from Git and restart (manual restart may still be needed)."""
+    try:
+        # Perform git pull in project root
+        root = os.path.dirname(os.path.abspath(__file__))
+        result = subprocess.run(['git', 'pull'], cwd=root, capture_output=True, text=True)
+        # Optionally stop and restart bot
+        stop_event.set()
+        return redirect(url_for('dashboard'))
+    except Exception:
+        return redirect(url_for('dashboard'))
+
 @app.route('/filter_history', methods=['GET', 'POST'])
 def filter_history():
     from_date_str = request.form.get('from_date') or request.args.get('from_date')
@@ -301,6 +329,13 @@ def dashboard():
     # Get available profiles
     profiles = get_available_profiles()
     
+    # Load local version
+    with open(CONFIG_FILE, 'r') as f:
+        local_conf = json.load(f)
+    local_ver = local_conf.get('version', '0.0.0')
+    latest_ver = get_latest_github_release()
+    update_available = bool(latest_ver and latest_ver != local_ver)
+    
     return render_template('dashboard.html', 
                           config=config, 
                           status=status,
@@ -325,7 +360,9 @@ def dashboard():
                           profiles=profiles,
                           # Add date filter parameters
                           from_date=from_date.strftime('%Y-%m-%d'),
-                          to_date=to_date.strftime('%Y-%m-%d'))
+                          to_date=to_date.strftime('%Y-%m-%d'),
+                          latest_version=latest_ver,
+                          update_available=update_available)
 
 @app.route('/logs')
 def view_logs():

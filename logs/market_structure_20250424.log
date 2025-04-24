@@ -137,3 +137,5 @@
 2025-04-24 08:43:09,106 - market_structure.bot - INFO - Configured timeframes: ['TIMEFRAME_H4', 'TIMEFRAME_M30', 'TIMEFRAME_M15', 'TIMEFRAME_M1']
 2025-04-24 08:43:31,099 - market_structure.bot - INFO - Configured timeframes: ['TIMEFRAME_H4', 'TIMEFRAME_M30', 'TIMEFRAME_M15', 'TIMEFRAME_M1']
 2025-04-24 08:43:31,526 - market_structure.bot - INFO - Configured timeframes: ['TIMEFRAME_H4', 'TIMEFRAME_M30', 'TIMEFRAME_M15', 'TIMEFRAME_M1']
+2025-04-24 08:47:46,643 - market_structure.bot - INFO - Configured timeframes: ['TIMEFRAME_H4', 'TIMEFRAME_M30', 'TIMEFRAME_M15', 'TIMEFRAME_M1']
+2025-04-24 08:48:21,922 - market_structure.bot - INFO - Configured timeframes: ['TIMEFRAME_H4', 'TIMEFRAME_M30', 'TIMEFRAME_M15', 'TIMEFRAME_M1']
