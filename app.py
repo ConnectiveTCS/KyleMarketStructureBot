@@ -7,6 +7,7 @@ import subprocess  # New import
 import requests  # New import
 import random
 import time
+import numpy as np  # New import for numerical operations
 from flask import Flask, render_template, request, redirect, url_for, jsonify  # Add jsonify
 import bot as trading_bot
 import MetaTrader5 as mt5
@@ -257,6 +258,261 @@ def get_latest_github_release():
     except Exception:
         return None
 
+def run_backtest(start_date, end_date):
+    """Run backtest simulation for the trading bot strategy"""
+    if not mt5.initialize():
+        return {'error': 'MT5 initialization failed'}
+        
+    config = load_config()
+    symbol = config['symbol']
+    
+    # Get timeframe configuration
+    if 'timeframes' in config:
+        if isinstance(config['timeframes'], list):
+            tf_names = config['timeframes']
+        elif isinstance(config['timeframes'], str):
+            try:
+                tf_names = ast.literal_eval(config['timeframes'])
+            except (SyntaxError, ValueError):
+                tf_names = ["TIMEFRAME_M15"]
+        else:
+            tf_names = ["TIMEFRAME_M15"]
+    elif 'timeframe' in config:
+        tf_names = [config['timeframe']]
+    else:
+        tf_names = ["TIMEFRAME_M15"]
+    
+    # Convert to actual MT5 timeframe constants
+    timeframes = [trading_bot.TF_CONST_MAP[name] for name in tf_names if name in trading_bot.TF_CONST_MAP]
+    if not timeframes:
+        timeframes = [mt5.TIMEFRAME_M15]  # Default
+    
+    # Load strategy parameters
+    lookback = int(config['lookback'])
+    lot_size = float(config['lot_size'])
+    max_positions = int(config['max_positions'])
+    use_dynamic_sl = bool(config.get('use_dynamic_sl', False))
+    pivot_depth = int(config.get('pivot_depth', 1))
+    atr_period = int(config.get('atr_period', 14))
+    atr_mult_sl = float(config.get('atr_multiplier_sl', 1.5))
+    atr_mult_tp = float(config.get('atr_multiplier_tp', 3.0))
+    break_buffer_pips = float(config.get('break_buffer_pips', 0))
+    
+    # Get symbol info
+    symbol_info = mt5.symbol_info(symbol)
+    if not symbol_info:
+        return {'error': f'Failed to get symbol info for {symbol}'}
+    
+    # Get historical data for primary timeframe
+    main_timeframe = timeframes[0]  # Use first timeframe as primary
+    rates = mt5.copy_rates_range(symbol, main_timeframe, start_date, end_date)
+    if rates is None or len(rates) == 0:
+        return {'error': f'Failed to get historical data for {symbol}'}
+    
+    # Initialize backtest variables
+    initial_balance = 10000.0  # Starting balance
+    current_balance = initial_balance
+    equity_curve = [{'time': datetime.datetime.fromtimestamp(rates[0]['time']).strftime('%Y-%m-%d %H:%M'), 
+                     'equity': current_balance}]
+    trades = []
+    open_positions = []
+    
+    # For tracking performance metrics
+    winning_trades = 0
+    losing_trades = 0
+    total_profit = 0
+    total_loss = 0
+    
+    # Simulate trading day by day
+    for i in range(lookback, len(rates)):
+        bar = rates[i]
+        current_time = datetime.datetime.fromtimestamp(bar['time'])
+        
+        # Update open positions
+        for pos in list(open_positions):
+            # Check if TP hit
+            if (pos['type'] == 'BUY' and bar['high'] >= pos['tp']) or \
+               (pos['type'] == 'SELL' and bar['low'] <= pos['tp']):
+                
+                # Calculate profit
+                if pos['type'] == 'BUY':
+                    profit = (pos['tp'] - pos['entry']) * pos['volume'] * 100000
+                else:
+                    profit = (pos['entry'] - pos['tp']) * pos['volume'] * 100000
+                
+                current_balance += profit
+                total_profit += profit
+                winning_trades += 1
+                
+                trades.append({
+                    'entry_time': pos['entry_time'],
+                    'exit_time': current_time.strftime('%Y-%m-%d %H:%M'),
+                    'type': pos['type'],
+                    'entry': pos['entry'],
+                    'exit': pos['tp'],
+                    'profit': profit,
+                    'reason': 'TP'
+                })
+                
+                open_positions.remove(pos)
+            
+            # Check if SL hit
+            elif (pos['type'] == 'BUY' and bar['low'] <= pos['sl']) or \
+                 (pos['type'] == 'SELL' and bar['high'] >= pos['sl']):
+                
+                # Calculate loss
+                if pos['type'] == 'BUY':
+                    loss = (pos['sl'] - pos['entry']) * pos['volume'] * 100000
+                else:
+                    loss = (pos['entry'] - pos['sl']) * pos['volume'] * 100000
+                
+                current_balance += loss
+                total_loss += loss
+                losing_trades += 1
+                
+                trades.append({
+                    'entry_time': pos['entry_time'],
+                    'exit_time': current_time.strftime('%Y-%m-%d %H:%M'),
+                    'type': pos['type'],
+                    'entry': pos['entry'],
+                    'exit': pos['sl'],
+                    'profit': loss,
+                    'reason': 'SL'
+                })
+                
+                open_positions.remove(pos)
+        
+        # Check for new trade signals
+        if len(open_positions) < max_positions:
+            # Get historical window for analysis
+            historical_window = rates[i-lookback:i+1]
+            highs, lows = trading_bot.find_pivots(historical_window)
+            
+            # Check for market structure break
+            direction = trading_bot.check_break(historical_window, highs, lows, symbol_info)
+            
+            if direction:
+                # Calculate entry, SL and TP similar to how the bot would
+                atr = trading_bot.calculate_atr(historical_window, atr_period)
+                entry = bar['close']  # Simulating entry at close price
+                
+                if direction == 'bull':
+                    # Set stop loss based on strategy settings
+                    if use_dynamic_sl and lows:
+                        last_low = lows[-1][1]
+                        buffer = trading_bot.pips_to_points(break_buffer_pips, symbol_info)
+                        sl = last_low - buffer
+                    else:
+                        sl = entry - atr * atr_mult_sl
+                    
+                    # Ensure SL is valid
+                    if sl >= entry:
+                        sl = entry - atr * atr_mult_sl
+                    
+                    tp = entry + atr * atr_mult_tp
+                    trade_type = 'BUY'
+                else:  # bear
+                    # Set stop loss based on strategy settings
+                    if use_dynamic_sl and highs:
+                        last_high = highs[-1][1]
+                        buffer = trading_bot.pips_to_points(break_buffer_pips, symbol_info)
+                        sl = last_high + buffer
+                    else:
+                        sl = entry + atr * atr_mult_sl
+                    
+                    # Ensure SL is valid
+                    if sl <= entry:
+                        sl = entry + atr * atr_mult_sl
+                    
+                    tp = entry - atr * atr_mult_tp
+                    trade_type = 'SELL'
+                
+                # Create new position
+                open_positions.append({
+                    'entry_time': current_time.strftime('%Y-%m-%d %H:%M'),
+                    'type': trade_type,
+                    'entry': entry,
+                    'sl': sl,
+                    'tp': tp,
+                    'volume': lot_size
+                })
+        
+        # Update equity curve
+        equity_curve.append({
+            'time': current_time.strftime('%Y-%m-%d %H:%M'),
+            'equity': current_balance
+        })
+    
+    # Close any remaining open positions at the last price
+    last_price = rates[-1]['close']
+    last_time = datetime.datetime.fromtimestamp(rates[-1]['time'])
+    
+    for pos in open_positions:
+        if pos['type'] == 'BUY':
+            profit = (last_price - pos['entry']) * pos['volume'] * 100000
+        else:
+            profit = (pos['entry'] - last_price) * pos['volume'] * 100000
+        
+        current_balance += profit
+        
+        if profit > 0:
+            winning_trades += 1
+            total_profit += profit
+        else:
+            losing_trades += 1
+            total_loss += abs(profit)
+        
+        trades.append({
+            'entry_time': pos['entry_time'],
+            'exit_time': last_time.strftime('%Y-%m-%d %H:%M'),
+            'type': pos['type'],
+            'entry': pos['entry'],
+            'exit': last_price,
+            'profit': profit,
+            'reason': 'End of test'
+        })
+    
+    # Calculate performance metrics
+    total_trades = winning_trades + losing_trades
+    win_rate = (winning_trades / total_trades * 100) if total_trades > 0 else 0
+    profit_factor = (total_profit / abs(total_loss)) if abs(total_loss) > 0 else float('inf')
+    
+    avg_win = (total_profit / winning_trades) if winning_trades > 0 else 0
+    avg_loss = (total_loss / losing_trades) if losing_trades > 0 else 0
+    
+    # Calculate max drawdown
+    max_dd = 0
+    peak = initial_balance
+    
+    for point in equity_curve:
+        equity = point['equity']
+        if equity > peak:
+            peak = equity
+        dd = (peak - equity) / peak * 100 if peak > 0 else 0
+        max_dd = max(max_dd, dd)
+    
+    # Sample equity curve to reduce data size if needed
+    sampled_equity = equity_curve
+    if len(equity_curve) > 300:
+        step = len(equity_curve) // 300
+        sampled_equity = equity_curve[::step]
+    
+    return {
+        'success': True,
+        'total_trades': total_trades,
+        'winning_trades': winning_trades,
+        'losing_trades': losing_trades,
+        'win_rate': round(win_rate, 2),
+        'profit_factor': round(profit_factor, 2),
+        'total_profit': round(total_profit, 2),
+        'avg_win': round(avg_win, 2),
+        'avg_loss': round(abs(avg_loss), 2),
+        'max_drawdown': round(max_dd, 2),
+        'final_balance': round(current_balance, 2),
+        'trades': trades[:100],  # Limit for UI display
+        'equity_curve': sampled_equity
+    }
+
 @app.route('/api/status', methods=['GET'])
 def api_status():
     """API: Get bot status"""
@@ -456,6 +712,33 @@ def api_trigger_update():
          return jsonify({'success': False, 'message': 'Git pull failed.', 'details': e.stderr}), 500
     except Exception as e:
         return jsonify({'success': False, 'message': f"Error triggering update: {str(e)}"}), 500
+
+@app.route('/api/backtest', methods=['POST'])
+def api_backtest():
+    """API: Run backtest simulation using historical data"""
+    try:
+        data = request.json
+        start_date_str = data.get('start_date')
+        end_date_str = data.get('end_date')
+        
+        if not start_date_str or not end_date_str:
+            return jsonify({'success': False, 'message': 'Start and end dates are required'}), 400
+        
+        try:
+            start_date = datetime.datetime.strptime(start_date_str, '%Y-%m-%d')
+            end_date = datetime.datetime.strptime(end_date_str, '%Y-%m-%d')
+            end_date = end_date.replace(hour=23, minute=59, second=59)
+        except ValueError:
+            return jsonify({'success': False, 'message': 'Invalid date format. Use YYYY-MM-DD.'}), 400
+        
+        results = run_backtest(start_date, end_date)
+        
+        if 'error' in results:
+            return jsonify({'success': False, 'message': results['error']}), 500
+            
+        return jsonify(results)
+    except Exception as e:
+        return jsonify({'success': False, 'message': f"Error running backtest: {str(e)}"}), 500
 
 @app.route('/update_version')
 def update_version():

@@ -379,3 +379,85 @@ Traceback (most recent call last):
     normalized_sl = mt5.normalize_price(new_sl, symbol_info.digits)
                     ^^^^^^^^^^^^^^^^^^^
 AttributeError: module 'MetaTrader5' has no attribute 'normalize_price'
+2025-04-24 12:04:27,904 - market_structure.bot - INFO - Market structure shift detected on TIMEFRAME_M15: BULL
+2025-04-24 12:04:27,908 - market_structure.bot - INFO - Attempting BULL trade entry based on TIMEFRAME_M15 structure break. Positions: 2/5
+2025-04-24 12:04:27,909 - market_structure.bot - INFO - Using ATR-based SL for BUY
+2025-04-24 12:04:28,865 - market_structure.bot - INFO - OrderSend result: OrderSendResult(retcode=10009, deal=4204395129, order=4208441366, volume=0.2, price=8478.0, bid=8477.8, ask=8478.0, comment='Request executed', request_id=1551984283, retcode_external=0, request=TradeRequest(action=1, magic=123456, order=0, symbol='Step Index', volume=0.2, price=8478.1, stoplimit=0.0, sl=8476.578571428572, tp=8481.142857142857, deviation=0, type=0, type_filling=0, type_time=0, expiration=0, comment='market structure bot', position=0, position_by=0))
+2025-04-24 12:05:28,867 - market_structure.bot - ERROR - Error in main bot loop: module 'MetaTrader5' has no attribute 'normalize_price'
+Traceback (most recent call last):
+  File "C:\Coding\Market Structure Shift\bot.py", line 398, in run
+    move_to_break_even(position, new_sl)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "C:\Coding\Market Structure Shift\bot.py", line 214, in move_to_break_even
+    normalized_sl = mt5.normalize_price(new_sl, symbol_info.digits)
+                    ^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'MetaTrader5' has no attribute 'normalize_price'
+2025-04-24 12:06:33,881 - market_structure.bot - INFO - Market structure shift detected on TIMEFRAME_M1: BULL
+2025-04-24 12:06:33,882 - market_structure.bot - INFO - Attempting BULL trade entry based on TIMEFRAME_M1 structure break. Positions: 3/5
+2025-04-24 12:06:33,883 - market_structure.bot - INFO - Using ATR-based SL for BUY
+2025-04-24 12:06:34,875 - market_structure.bot - INFO - OrderSend result: OrderSendResult(retcode=10009, deal=4204398017, order=4208444422, volume=0.2, price=8477.8, bid=8477.6, ask=8477.8, comment='Request executed', request_id=1551984284, retcode_external=0, request=TradeRequest(action=1, magic=123456, order=0, symbol='Step Index', volume=0.2, price=8478.0, stoplimit=0.0, sl=8476.392857142857, tp=8481.214285714286, deviation=0, type=0, type_filling=0, type_time=0, expiration=0, comment='market structure bot', position=0, position_by=0))
+2025-04-24 12:07:34,877 - market_structure.bot - ERROR - Error in main bot loop: module 'MetaTrader5' has no attribute 'normalize_price'
+Traceback (most recent call last):
+  File "C:\Coding\Market Structure Shift\bot.py", line 398, in run
+    move_to_break_even(position, new_sl)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "C:\Coding\Market Structure Shift\bot.py", line 214, in move_to_break_even
+    normalized_sl = mt5.normalize_price(new_sl, symbol_info.digits)
+                    ^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'MetaTrader5' has no attribute 'normalize_price'
+2025-04-24 12:08:39,885 - market_structure.bot - ERROR - Error in main bot loop: module 'MetaTrader5' has no attribute 'normalize_price'
+Traceback (most recent call last):
+  File "C:\Coding\Market Structure Shift\bot.py", line 398, in run
+    move_to_break_even(position, new_sl)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "C:\Coding\Market Structure Shift\bot.py", line 214, in move_to_break_even
+    normalized_sl = mt5.normalize_price(new_sl, symbol_info.digits)
+                    ^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'MetaTrader5' has no attribute 'normalize_price'
+2025-04-24 12:09:44,893 - market_structure.bot - ERROR - Error in main bot loop: module 'MetaTrader5' has no attribute 'normalize_price'
+Traceback (most recent call last):
+  File "C:\Coding\Market Structure Shift\bot.py", line 398, in run
+    move_to_break_even(position, new_sl)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "C:\Coding\Market Structure Shift\bot.py", line 214, in move_to_break_even
+    normalized_sl = mt5.normalize_price(new_sl, symbol_info.digits)
+                    ^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'MetaTrader5' has no attribute 'normalize_price'
+2025-04-24 12:10:49,901 - market_structure.bot - ERROR - Error in main bot loop: module 'MetaTrader5' has no attribute 'normalize_price'
+Traceback (most recent call last):
+  File "C:\Coding\Market Structure Shift\bot.py", line 398, in run
+    move_to_break_even(position, new_sl)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "C:\Coding\Market Structure Shift\bot.py", line 214, in move_to_break_even
+    normalized_sl = mt5.normalize_price(new_sl, symbol_info.digits)
+                    ^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'MetaTrader5' has no attribute 'normalize_price'
+2025-04-24 12:11:45,098 - market_structure.bot - INFO - Configured timeframes: ['TIMEFRAME_M15', 'TIMEFRAME_M1']
+2025-04-24 12:12:17,390 - market_structure.bot - INFO - Configured timeframes: ['TIMEFRAME_M15', 'TIMEFRAME_M1']
+2025-04-24 12:12:54,525 - market_structure.bot - INFO - Configured timeframes: ['TIMEFRAME_M15', 'TIMEFRAME_M1']
+2025-04-24 12:13:26,629 - market_structure.bot - INFO - Configured timeframes: ['TIMEFRAME_M15', 'TIMEFRAME_M1']
+2025-04-24 12:14:02,023 - market_structure.bot - INFO - Bot starting...
+2025-04-24 12:14:02,050 - market_structure.bot - INFO - Market structure shift detected on TIMEFRAME_M15: BULL
+2025-04-24 12:14:02,053 - market_structure.bot - INFO - Attempting BULL trade entry based on TIMEFRAME_M15 structure break. Positions: 0/5
+2025-04-24 12:14:02,100 - market_structure.bot - INFO - Using ATR-based SL for BUY
+2025-04-24 12:14:02,875 - market_structure.bot - INFO - OrderSend result: OrderSendResult(retcode=10009, deal=4204405897, order=4208452613, volume=0.2, price=8480.6, bid=8480.4, ask=8480.6, comment='Request executed', request_id=1551984285, retcode_external=0, request=TradeRequest(action=1, magic=123456, order=0, symbol='Step Index', volume=0.2, price=8480.7, stoplimit=0.0, sl=8479.14642857143, tp=8483.807142857144, deviation=0, type=0, type_filling=0, type_time=0, expiration=0, comment='market structure bot', position=0, position_by=0))
+2025-04-24 12:15:02,878 - market_structure.bot - INFO - Market structure shift detected on TIMEFRAME_M15: BULL
+2025-04-24 12:15:02,880 - market_structure.bot - INFO - Attempting BULL trade entry based on TIMEFRAME_M15 structure break. Positions: 0/5
+2025-04-24 12:15:02,881 - market_structure.bot - INFO - Using ATR-based SL for BUY
+2025-04-24 12:15:03,876 - market_structure.bot - INFO - OrderSend result: OrderSendResult(retcode=10009, deal=4204407413, order=4208454263, volume=0.2, price=8480.9, bid=8480.7, ask=8480.9, comment='Request executed', request_id=1551984287, retcode_external=0, request=TradeRequest(action=1, magic=123456, order=0, symbol='Step Index', volume=0.2, price=8480.8, stoplimit=0.0, sl=8479.246428571429, tp=8483.907142857142, deviation=0, type=0, type_filling=0, type_time=0, expiration=0, comment='market structure bot', position=0, position_by=0))
+2025-04-24 12:16:03,878 - market_structure.bot - ERROR - Error in main bot loop: module 'MetaTrader5' has no attribute 'normalize_price'
+Traceback (most recent call last):
+  File "C:\Coding\Market Structure Shift\bot.py", line 398, in run
+    move_to_break_even(position, new_sl)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "C:\Coding\Market Structure Shift\bot.py", line 214, in move_to_break_even
+    normalized_sl = mt5.normalize_price(new_sl, symbol_info.digits)
+                    ^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'MetaTrader5' has no attribute 'normalize_price'
+2025-04-24 12:16:32,321 - market_structure.bot - INFO - Configured timeframes: ['TIMEFRAME_M15', 'TIMEFRAME_M1']
+2025-04-24 12:17:09,500 - market_structure.bot - INFO - Configured timeframes: ['TIMEFRAME_M15', 'TIMEFRAME_M1']
+2025-04-24 12:17:13,889 - market_structure.bot - INFO - Bot starting...
+2025-04-24 12:17:13,913 - market_structure.bot - INFO - Market structure shift detected on TIMEFRAME_M15: BULL
+2025-04-24 12:17:13,914 - market_structure.bot - INFO - Attempting BULL trade entry based on TIMEFRAME_M15 structure break. Positions: 1/5
+2025-04-24 12:17:13,915 - market_structure.bot - INFO - Using ATR-based SL for BUY
+2025-04-24 12:17:14,924 - market_structure.bot - INFO - OrderSend result: OrderSendResult(retcode=10009, deal=4204409963, order=4208456847, volume=0.2, price=8481.4, bid=8481.2, ask=8481.4, comment='Request executed', request_id=1551984288, retcode_external=0, request=TradeRequest(action=1, magic=123456, order=0, symbol='Step Index', volume=0.2, price=8481.5, stoplimit=0.0, sl=8479.903571428571, tp=8484.692857142858, deviation=0, type=0, type_filling=0, type_time=0, expiration=0, comment='market structure bot', position=0, position_by=0))

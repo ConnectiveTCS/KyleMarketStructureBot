@@ -631,6 +631,9 @@
           <div id="config" class="dashboard-section hidden">
             {% include 'partials/configuration.partial.html' %}
           </div>
+
+          <!-- Include the backtest section -->
+          {% include 'backtest_section.html' %}
         </div>
       </main>
     </div>
@@ -967,5 +970,10 @@
         });
       });
     </script>
+
+    <!-- Chart.js for equity curve visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Custom backtest JS -->
+    <script src="{{ url_for('static', filename='js/backtest.js') }}"></script>
   </body>
 </html>
