@@ -1059,70 +1059,276 @@
           </div>
           
           <div id="account" class="dashboard-section hidden">
-            <div class="mb-6">
-              <h2 class="text-xl font-bold text-slate-800">
-                <i class="fas fa-wallet mr-2 text-blue-500"></i>Account Information
+            <!-- Executive Dashboard Header -->
+            <div class="bg-gradient-to-r from-slate-800 to-slate-700 text-white rounded-t-lg p-5 flex justify-between items-center">
+              <h2 class="text-xl font-bold">
+                <i class="fas fa-wallet mr-2"></i>Account Information Dashboard
               </h2>
+              <div class="flex items-center">
+                <span class="text-sm opacity-80 mr-3">{{ symbol }}</span>
+                <span class="bg-blue-500 text-xs font-bold px-2.5 py-1 rounded">LIVE</span>
+              </div>
             </div>
             
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div class="dashboard-card bg-white rounded-lg shadow-card p-6">
-                <div class="flex items-center mb-4">
-                  <div class="mr-4 p-3 bg-blue-100 text-blue-600 rounded-full">
-                    <i class="fas fa-dollar-sign"></i>
-                  </div>
-                  <div>
-                    <h3 class="text-sm font-semibold text-slate-500">Balance</h3>
-                    <p class="text-2xl font-bold text-slate-800">{{ account.balance if account else 'N/A' }}</p>
+            <!-- Key Metrics Bar -->
+            <div class="bg-white grid grid-cols-4 divide-x divide-slate-200 shadow-md">
+              <div class="p-5 text-center">
+                <p class="text-xs uppercase tracking-wider text-slate-500 mb-2 font-medium">Balance</p>
+                <p class="text-lg font-bold">{{ account.balance|round(2) if account else 'N/A' }}</p>
+              </div>
+              <div class="p-5 text-center">
+                <p class="text-xs uppercase tracking-wider text-slate-500 mb-2 font-medium">Equity</p>
+                <p class="text-lg font-bold">{{ account.equity|round(2) if account else 'N/A' }}</p>
+              </div>
+              <div class="p-5 text-center">
+                <p class="text-xs uppercase tracking-wider text-slate-500 mb-2 font-medium">Margin Level</p>
+                {% if account and account.margin and account.margin > 0 %}
+                  {% set margin_level = (account.equity / account.margin * 100)|round(2) %}
+                  <p class="text-lg font-bold 
+                      {% if margin_level > 200 %}text-emerald-600
+                      {% elif margin_level > 100 %}text-amber-500
+                      {% else %}text-red-600{% endif %}">
+                    {{ margin_level }}%
+                  </p>
+                {% else %}
+                  <p class="text-lg font-bold text-slate-600">N/A</p>
+                {% endif %}
+              </div>
+              <div class="p-5 text-center">
+                <p class="text-xs uppercase tracking-wider text-slate-500 mb-2 font-medium">Open Positions</p>
+                <p class="text-lg font-bold">{{ positions|length if positions else 0 }}</p>
+              </div>
+            </div>
+            
+            <!-- Dashboard Main Content -->
+            <div class="p-6 bg-slate-50 mt-6">
+              <div class="grid grid-cols-12 gap-6">
+                <!-- Account Health Card -->
+                <div class="col-span-12 md:col-span-4">
+                  <div class="bg-white rounded-lg shadow-card overflow-hidden h-full">
+                    <div class="border-b p-4">
+                      <h3 class="font-semibold text-slate-800">Account Health</h3>
+                    </div>
+                    <div class="p-5">
+                      {% if account and account.margin and account.margin > 0 %}
+                        {% set margin_level = (account.equity / account.margin * 100)|round(2) %}
+                        {% set health_status = "Excellent" if margin_level > 500 else "Good" if margin_level > 200 else "Fair" if margin_level > 100 else "At Risk" %}
+                        {% set health_color = "emerald" if margin_level > 500 else "blue" if margin_level > 200 else "amber" if margin_level > 100 else "red" %}
+                      {% else %}
+                        {% set margin_level = 0 %}
+                        {% set health_status = "Unknown" %}
+                        {% set health_color = "slate" %}
+                      {% endif %}
+                      
+                      <!-- Health Gauge -->
+                      <div class="flex flex-col items-center mb-6">
+                        <div class="relative w-40 h-40 mb-4">
+                          <!-- Background Circle -->
+                          <div class="absolute inset-0 rounded-full bg-slate-100"></div>
+                          <!-- Health Level Indicator (semi-circle) -->
+                          <div class="absolute inset-0 rounded-full bg-{{ health_color }}-100 overflow-hidden">
+                            <div class="absolute bottom-0 left-0 right-0 bg-white" style="height: {{ 100 - min(100, margin_level/10) }}%"></div>
+                          </div>
+                          <!-- Center Content -->
+                          <div class="absolute inset-0 flex flex-col items-center justify-center">
+                            <div class="text-3xl font-bold text-{{ health_color }}-600">
+                              {% if margin_level > 0 %}{{ margin_level }}%{% else %}N/A{% endif %}
+                            </div>
+                            <div class="text-sm font-medium text-slate-500">Margin Level</div>
+                          </div>
+                        </div>
+                        <div class="text-lg font-bold text-{{ health_color }}-600">{{ health_status }}</div>
+                      </div>
+                      
+                      <!-- Health Status Info -->
+                      <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                          <span class="text-sm text-slate-600">Account Status:</span>
+                          <span class="px-3 py-1 rounded-full text-xs font-medium bg-{{ health_color }}-100 text-{{ health_color }}-800">{{ health_status }}</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                          <span class="text-sm text-slate-600">Risk Level:</span>
+                          <span class="px-3 py-1 rounded-full text-xs font-medium 
+                            {% if margin_level > 200 %}bg-emerald-100 text-emerald-800
+                            {% elif margin_level > 100 %}bg-amber-100 text-amber-800
+                            {% else %}bg-red-100 text-red-800{% endif %}">
+                            {{ "Low" if margin_level > 200 else "Medium" if margin_level > 100 else "High" }}
+                          </span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                          <span class="text-sm text-slate-600">Margin Call Level:</span>
+                          <span class="px-3 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-800">
+                            100%
+                          </span>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
-                <div class="text-sm text-slate-500">
-                  <i class="fas fa-info-circle mr-1"></i>Total account balance without unrealized P/L
+                
+                <!-- Account Balance Distribution Card -->
+                <div class="col-span-12 md:col-span-8">
+                  <div class="bg-white rounded-lg shadow-card overflow-hidden h-full">
+                    <div class="border-b p-4">
+                      <h3 class="font-semibold text-slate-800">Balance Analysis</h3>
+                    </div>
+                    <div class="p-5">
+                      {% if account %}
+                        <!-- Balance vs Equity -->
+                        <div class="mb-6">
+                          <div class="flex justify-between mb-2">
+                            <span class="text-sm font-medium text-slate-700">Balance vs Equity</span>
+                            {% set profit_loss = account.equity - account.balance %}
+                            <span class="text-sm font-medium {{ 'text-emerald-600' if profit_loss >= 0 else 'text-red-600' }}">
+                              {{ "+" if profit_loss > 0 else "" }}{{ profit_loss|round(2) }}
+                            </span>
+                          </div>
+                          <div class="relative pt-1">
+                            <div class="flex h-4 overflow-hidden text-xs bg-slate-100 rounded-full">
+                              {% if account.balance > 0 %}
+                                <div class="flex flex-col justify-center w-full text-center text-white bg-blue-500 shadow-none whitespace-nowrap"
+                                     style="width: 100%">
+                                  <span class="font-semibold">Balance: {{ account.balance|round(2) }}</span>
+                                </div>
+                              {% endif %}
+                            </div>
+                            {% if account.equity > 0 %}
+                              {% set equity_percent = (account.equity / account.balance * 100) if account.balance > 0 else 100 %}
+                              <div class="absolute top-1 left-0 flex h-4 overflow-hidden text-xs rounded-full border-2 border-white"
+                                   style="width: {{ min(100, equity_percent) }}%">
+                                <div class="flex flex-col justify-center w-full text-center {{ 'text-white bg-emerald-500' if account.equity >= account.balance else 'text-white bg-red-500' }}">
+                                  <span class="font-semibold">Equity: {{ account.equity|round(2) }}</span>
+                                </div>
+                              </div>
+                            {% endif %}
+                          </div>
+                          <div class="flex justify-between mt-2 text-xs text-slate-500">
+                            <span>0</span>
+                            <span>{{ account.balance|round(2) if account.balance > 0 else 'N/A' }}</span>
+                            {% if account.equity > account.balance %}
+                              <span>{{ account.equity|round(2) }}</span>
+                            {% endif %}
+                          </div>
+                        </div>
+                        
+                        <!-- Margin Usage Distribution -->
+                        <div class="mb-6">
+                          <div class="flex justify-between mb-2">
+                            <span class="text-sm font-medium text-slate-700">Margin Usage</span>
+                            <span class="text-sm font-medium {{ 'text-emerald-600' if account.margin_free > account.margin else 'text-slate-600' }}">
+                              {{ ((account.margin / account.equity * 100) if account.equity > 0 else 0)|round(2) }}% Used
+                            </span>
+                          </div>
+                          <div class="relative pt-1">
+                            <div class="flex h-4 overflow-hidden text-xs bg-slate-100 rounded-full">
+                              {% if account.equity > 0 %}
+                                {% set margin_percent = (account.margin / account.equity * 100) if account.equity > 0 else 0 %}
+                                <div class="flex flex-col justify-center text-center text-white bg-amber-500 shadow-none whitespace-nowrap"
+                                     style="width: {{ min(100, margin_percent) }}%">
+                                  <span class="px-2 font-semibold">{{ account.margin|round(2) }}</span>
+                                </div>
+                              {% endif %}
+                            </div>
+                          </div>
+                          <div class="flex justify-between mt-2 text-xs text-slate-500">
+                            <span>0</span>
+                            <span>Used Margin: {{ account.margin|round(2) }}</span>
+                            <span>Free: {{ account.margin_free|round(2) }}</span>
+                            <span>Equity: {{ account.equity|round(2) }}</span>
+                          </div>
+                        </div>
+                        
+                        <!-- Detailed Metrics -->
+                        <div class="grid grid-cols-2 gap-4 mt-6">
+                          <div class="rounded-lg bg-slate-50 p-4">
+                            <div class="flex justify-between items-center">
+                              <h4 class="text-sm font-medium text-slate-700">Free Margin</h4>
+                              <span class="text-lg font-bold text-slate-800">{{ account.margin_free|round(2) }}</span>
+                            </div>
+                            <p class="text-xs text-slate-500 mt-1">Available for new positions</p>
+                          </div>
+                          <div class="rounded-lg bg-slate-50 p-4">
+                            <div class="flex justify-between items-center">
+                              <h4 class="text-sm font-medium text-slate-700">Used Margin</h4>
+                              <span class="text-lg font-bold text-slate-800">{{ account.margin|round(2) }}</span>
+                            </div>
+                            <p class="text-xs text-slate-500 mt-1">Required for open positions</p>
+                          </div>
+                        </div>
+                      {% else %}
+                        <div class="py-10 text-center">
+                          <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-exclamation-triangle text-slate-400 text-xl"></i>
+                          </div>
+                          <h3 class="text-lg font-medium text-slate-700 mb-2">Account Data Unavailable</h3>
+                          <p class="text-sm text-slate-500">Unable to retrieve account information. Please check your connection to the trading platform.</p>
+                        </div>
+                      {% endif %}
+                    </div>
+                  </div>
                 </div>
               </div>
               
-              <div class="dashboard-card bg-white rounded-lg shadow-card p-6">
-                <div class="flex items-center mb-4">
-                  <div class="mr-4 p-3 bg-emerald-100 text-emerald-600 rounded-full">
-                    <i class="fas fa-chart-line"></i>
+              <!-- Additional Metrics Grid -->
+              <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mt-6">
+                <div class="bg-white rounded-lg shadow-card p-6">
+                  <div class="flex items-center mb-4">
+                    <div class="mr-4 p-3 bg-blue-100 text-blue-600 rounded-full">
+                      <i class="fas fa-dollar-sign"></i>
+                    </div>
+                    <div>
+                      <h3 class="text-sm font-semibold text-slate-500">Balance</h3>
+                      <p class="text-2xl font-bold text-slate-800">{{ account.balance|round(2) if account else 'N/A' }}</p>
+                    </div>
                   </div>
-                  <div>
-                    <h3 class="text-sm font-semibold text-slate-500">Equity</h3>
-                    <p class="text-2xl font-bold text-slate-800">{{ account.equity if account else 'N/A' }}</p>
-                  </div>
-                </div>
-                <div class="text-sm text-slate-500">
-                  <i class="fas fa-info-circle mr-1"></i>Balance + unrealized profit/loss
-                </div>
-              </div>
-              
-              <div class="dashboard-card bg-white rounded-lg shadow-card p-6">
-                <div class="flex items-center mb-4">
-                  <div class="mr-4 p-3 bg-yellow-100 text-yellow-600 rounded-full">
-                    <i class="fas fa-lock"></i>
-                  </div>
-                  <div>
-                    <h3 class="text-sm font-semibold text-slate-500">Margin</h3>
-                    <p class="text-2xl font-bold text-slate-800">{{ account.margin if account else 'N/A' }}</p>
+                  <div class="text-sm text-slate-500">
+                    <i class="fas fa-info-circle mr-1"></i>Total account balance without unrealized P/L
                   </div>
                 </div>
-                <div class="text-sm text-slate-500">
-                  <i class="fas fa-info-circle mr-1"></i>Margin required for open positions
-                </div>
-              </div>
-              
-              <div class="dashboard-card bg-white rounded-lg shadow-card p-6">
-                <div class="flex items-center mb-4">
-                  <div class="mr-4 p-3 bg-purple-100 text-purple-600 rounded-full">
-                    <i class="fas fa-hand-holding-usd"></i>
+                
+                <div class="bg-white rounded-lg shadow-card p-6">
+                  <div class="flex items-center mb-4">
+                    <div class="mr-4 p-3 bg-emerald-100 text-emerald-600 rounded-full">
+                      <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div>
+                      <h3 class="text-sm font-semibold text-slate-500">Equity</h3>
+                      <p class="text-2xl font-bold text-slate-800">{{ account.equity|round(2) if account else 'N/A' }}</p>
+                    </div>
                   </div>
-                  <div>
-                    <h3 class="text-sm font-semibold text-slate-500">Free Margin</h3>
-                    <p class="text-2xl font-bold text-slate-800">{{ account.margin_free if account else 'N/A' }}</p>
+                  <div class="text-sm text-slate-500">
+                    <i class="fas fa-info-circle mr-1"></i>Balance + unrealized profit/loss
                   </div>
                 </div>
-                <div class="text-sm text-slate-500">
-                  <i class="fas fa-info-circle mr-1"></i>Available margin for new positions
+                
+                <div class="bg-white rounded-lg shadow-card p-6">
+                  <div class="flex items-center mb-4">
+                    <div class="mr-4 p-3 bg-yellow-100 text-yellow-600 rounded-full">
+                      <i class="fas fa-lock"></i>
+                    </div>
+                    <div>
+                      <h3 class="text-sm font-semibold text-slate-500">Margin</h3>
+                      <p class="text-2xl font-bold text-slate-800">{{ account.margin|round(2) if account else 'N/A' }}</p>
+                    </div>
+                  </div>
+                  <div class="text-sm text-slate-500">
+                    <i class="fas fa-info-circle mr-1"></i>Margin required for open positions
+                  </div>
+                </div>
+                
+                <div class="bg-white rounded-lg shadow-card p-6">
+                  <div class="flex items-center mb-4">
+                    <div class="mr-4 p-3 bg-purple-100 text-purple-600 rounded-full">
+                      <i class="fas fa-hand-holding-usd"></i>
+                    </div>
+                    <div>
+                      <h3 class="text-sm font-semibold text-slate-500">Free Margin</h3>
+                      <p class="text-2xl font-bold text-slate-800">{{ account.margin_free|round(2) if account else 'N/A' }}</p>
+                    </div>
+                  </div>
+                  <div class="text-sm text-slate-500">
+                    <i class="fas fa-info-circle mr-1"></i>Available margin for new positions
+                  </div>
                 </div>
               </div>
             </div>

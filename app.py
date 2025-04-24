@@ -10,6 +10,9 @@ import MetaTrader5 as mt5
 from logs import get_logs, get_available_components
 
 app = Flask(__name__)
+# Add min function to Jinja environment
+app.jinja_env.globals.update(min=min, max=max)
+
 bot_thread = None
 stop_event = threading.Event()
 
