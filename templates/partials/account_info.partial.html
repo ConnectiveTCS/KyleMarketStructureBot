@@ -1,0 +1,227 @@
+<!-- Executive Dashboard Header -->
+<div
+  class="bg-gradient-to-r from-slate-900 to-slate-800 text-white rounded-t-lg p-5 sm:p-6 flex flex-wrap sm:flex-nowrap justify-between items-center shadow-lg"
+>
+  <h2 class="text-xl sm:text-2xl font-bold w-full sm:w-auto">
+    <i class="fas fa-chart-line mr-2"></i>Executive Account Dashboard
+  </h2>
+  <div class="flex items-center mt-2 sm:mt-0 w-full sm:w-auto justify-end">
+    <span class="text-sm opacity-80 mr-3 font-medium">{{ symbol }}</span>
+    <span
+      class="bg-emerald-500 text-xs font-bold px-3 py-1.5 rounded-full shadow-sm"
+      >LIVE</span
+    >
+  </div>
+</div>
+
+<!-- Key Metrics Bar -->
+<div
+  class="bg-white grid grid-cols-2 sm:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-slate-200 shadow-lg border-b border-slate-200"
+>
+  <div
+    class="p-4 sm:p-6 text-center hover:bg-slate-50 transition duration-150 ease-in-out"
+  >
+    <p
+      class="text-xs uppercase tracking-wider text-slate-500 mb-2 font-semibold"
+    >
+      <i class="fas fa-dollar-sign mr-1 text-slate-400"></i>Account Balance
+    </p>
+    <p class="text-lg sm:text-xl font-bold text-slate-800">
+      ${{ account.balance|round(2) if account else 'N/A' }}
+    </p>
+    <div class="text-xs text-slate-500 mt-1">Available Capital</div>
+  </div>
+  <div
+    class="p-4 sm:p-6 text-center hover:bg-slate-50 transition duration-150 ease-in-out"
+  >
+    <p
+      class="text-xs uppercase tracking-wider text-slate-500 mb-2 font-semibold"
+    >
+      <i class="fas fa-balance-scale mr-1 text-slate-400"></i>Equity
+    </p>
+    <p class="text-lg sm:text-xl font-bold text-slate-800">
+      ${{ account.equity|round(2) if account else 'N/A' }}
+    </p>
+    <div class="text-xs text-slate-500 mt-1">Total Portfolio Value</div>
+  </div>
+  <div
+    class="p-4 sm:p-6 text-center hover:bg-slate-50 transition duration-150 ease-in-out"
+  >
+    <p
+      class="text-xs uppercase tracking-wider text-slate-500 mb-2 font-semibold"
+    >
+      <i class="fas fa-percentage mr-1 text-slate-400"></i>Margin Level
+    </p>
+    {% if account and account.margin and account.margin > 0 %} {% set
+    margin_level = (account.equity / account.margin * 100)|round(2) %}
+    <p
+      class="text-lg sm:text-xl font-bold {% if margin_level > 500 %}text-emerald-600 {% elif margin_level > 200 %}text-blue-600 {% elif margin_level > 100 %}text-amber-500 {% else %}text-red-600{% endif %}"
+    >
+      {{ margin_level }}%
+    </p>
+    <div
+      class="text-xs mt-1 font-medium {% if margin_level > 500 %}text-emerald-600 {% elif margin_level > 200 %}text-blue-600 {% elif margin_level > 100 %}text-amber-500 {% else %}text-red-600{% endif %}"
+    >
+      {{ "Excellent" if margin_level > 500 else "Strong" if margin_level > 200
+      else "Adequate" if margin_level > 100 else "Attention Required" }}
+    </div>
+    {% else %}
+    <p class="text-lg sm:text-xl font-bold text-slate-600">N/A</p>
+    <div class="text-xs text-slate-500 mt-1">No Data Available</div>
+    {% endif %}
+  </div>
+  <div
+    class="p-4 sm:p-6 text-center hover:bg-slate-50 transition duration-150 ease-in-out"
+  >
+    <p
+      class="text-xs uppercase tracking-wider text-slate-500 mb-2 font-semibold"
+    >
+      <i class="fas fa-briefcase mr-1 text-slate-400"></i>Open Positions
+    </p>
+    <p class="text-lg sm:text-xl font-bold text-slate-800">
+      {{ positions|length if positions else 0 }}
+    </p>
+    <div class="text-xs text-slate-500 mt-1">Active Investments</div>
+  </div>
+</div>
+
+<!-- Dashboard Main Content -->
+<div class="p-5 sm:p-7 bg-slate-100 rounded-b-lg shadow-inner">
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-5 sm:gap-7">
+    <!-- Account Health Card -->
+    <div class="col-span-1 md:col-span-4">
+      <div
+        class="bg-white rounded-lg shadow-xl overflow-hidden h-full border border-slate-200"
+      >
+        <div class="border-b p-4 sm:p-5 bg-slate-50">
+          <h3 class="font-bold text-lg text-slate-800 flex items-center">
+            <i class="fas fa-heartbeat mr-2 text-slate-600"></i>Executive
+            Account Health Summary
+          </h3>
+        </div>
+        <div class="p-5 sm:p-7 md:flex items-start">
+          {% if account and account.margin and account.margin > 0 %} {% set
+          margin_level = (account.equity / account.margin * 100)|round(2) %} {%
+          set health_status = "Excellent" if margin_level > 500 else "Strong" if
+          margin_level > 200 else "Adequate" if margin_level > 100 else "At
+          Risk" %} {% set health_color = "emerald" if margin_level > 500 else
+          "blue" if margin_level > 200 else "amber" if margin_level > 100 else
+          "red" %} {% else %} {% set margin_level = 0 %} {% set health_status =
+          "Unknown" %} {% set health_color = "slate" %} {% endif %}
+
+          <!-- Health Gauge -->
+          <div class="flex flex-col items-center md:w-1/3 mb-8 md:mb-0 md:pr-8">
+            <div class="relative w-48 h-48 mb-4">
+              <!-- Background Circle -->
+              <svg class="absolute inset-0 w-full h-full" viewBox="0 0 36 36">
+                <path
+                  class="text-slate-200"
+                  d="M18 2.0845
+                         a 15.9155 15.9155 0 0 1 0 31.831
+                         a 15.9155 15.9155 0 0 1 0 -31.831"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="3.8"
+                />
+                <path
+                  class="text-{{ health_color }}-500 transition-all duration-1000 ease-out"
+                  stroke-dasharray="{{ min(100, margin_level/1.5)|round(0) }}, 100"
+                  d="M18 2.0845
+                         a 15.9155 15.9155 0 0 1 0 31.831
+                         a 15.9155 15.9155 0 0 1 0 -31.831"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="3.8"
+                  stroke-linecap="round"
+                />
+              </svg>
+              <!-- Center Content -->
+              <div
+                class="absolute inset-0 flex flex-col items-center justify-center"
+              >
+                <div class="text-4xl font-bold text-{{ health_color }}-600">
+                  {% if margin_level > 0 %}{{ margin_level }}%{% else %}N/A{%
+                  endif %}
+                </div>
+                <div class="text-sm font-medium text-slate-500 mt-1">
+                  Margin Level
+                </div>
+              </div>
+            </div>
+            <div class="text-xl font-bold text-{{ health_color }}-600">
+              {{ health_status }}
+            </div>
+            <p class="text-xs text-slate-500 mt-1 text-center">
+              Overall account risk assessment based on margin level.
+            </p>
+          </div>
+
+          <!-- Health Status Info -->
+          <div class="md:w-2/3 md:pl-8 md:border-l border-slate-200">
+            <h4 class="text-lg font-semibold text-slate-800 mb-5">
+              Key Performance Indicators
+            </h4>
+            <div class="space-y-5">
+              <div
+                class="flex items-center justify-between pb-3 border-b border-slate-100"
+              >
+                <span
+                  class="text-sm font-medium text-slate-600 flex items-center"
+                  ><i class="fas fa-shield-alt mr-2 text-slate-400"></i
+                  >Executive Status:</span
+                >
+                <span
+                  class="px-4 py-1.5 rounded-full text-sm font-semibold bg-{{ health_color }}-100 text-{{ health_color }}-800 shadow-sm"
+                  >{{ health_status }}</span
+                >
+              </div>
+              <div
+                class="flex items-center justify-between pb-3 border-b border-slate-100"
+              >
+                <span
+                  class="text-sm font-medium text-slate-600 flex items-center"
+                  ><i
+                    class="fas fa-exclamation-triangle mr-2 text-slate-400"
+                  ></i
+                  >Portfolio Risk Level:</span
+                >
+                <span
+                  class="px-4 py-1.5 rounded-full text-sm font-semibold {% if margin_level > 200 %}bg-emerald-100 text-emerald-800 {% elif margin_level > 100 %}bg-amber-100 text-amber-800 {% else %}bg-red-100 text-red-800{% endif %} shadow-sm"
+                >
+                  {{ "Low Risk" if margin_level > 200 else "Moderate Risk" if
+                  margin_level > 100 else "High Risk" }}
+                </span>
+              </div>
+              <div
+                class="flex items-center justify-between pb-3 border-b border-slate-100"
+              >
+                <span
+                  class="text-sm font-medium text-slate-600 flex items-center"
+                  ><i class="fas fa-bullseye mr-2 text-slate-400"></i>Margin
+                  Call Threshold:</span
+                >
+                <span
+                  class="px-4 py-1.5 rounded-full text-sm font-semibold bg-slate-100 text-slate-800 shadow-sm"
+                >
+                  100%
+                </span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span
+                  class="text-sm font-medium text-slate-600 flex items-center"
+                  ><i class="fas fa-chart-pie mr-2 text-slate-400"></i>Free
+                  Margin:</span
+                >
+                <span
+                  class="px-4 py-1.5 rounded-full text-sm font-semibold bg-blue-100 text-blue-800 shadow-sm"
+                >
+                  ${{ account.margin_free|round(2) if account else 'N/A' }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

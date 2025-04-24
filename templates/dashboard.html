@@ -7,38 +7,45 @@
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
     <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
     <title>Market Structure Bot Dashboard</title>
     <script>
       tailwind.config = {
         theme: {
           extend: {
             colors: {
-              primary: '#1e3a8a',
-              secondary: '#334155',
-              success: '#059669',
-              danger: '#dc2626',
-              warning: '#d97706',
-              info: '#0284c7',
+              primary: "#1e3a8a",
+              secondary: "#334155",
+              success: "#059669",
+              danger: "#dc2626",
+              warning: "#d97706",
+              info: "#0284c7",
             },
             fontFamily: {
-              sans: ['Inter', 'sans-serif'],
+              sans: ["Inter", "sans-serif"],
             },
             boxShadow: {
-              card: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1)',
-              'card-hover': '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1)',
-            }
-          }
-        }
-      }
+              card: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1)",
+              "card-hover":
+                "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1)",
+            },
+          },
+        },
+      };
     </script>
     <style>
       body {
-        font-family: 'Inter', sans-serif;
+        font-family: "Inter", sans-serif;
       }
       .sidebar {
         min-height: calc(100vh - 2rem);
@@ -62,10 +69,12 @@
       .dashboard-card {
         transition: all 0.2s ease-in-out;
         border-radius: 0.5rem;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+          0 2px 4px -2px rgba(0, 0, 0, 0.1);
       }
       .dashboard-card:hover {
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+          0 4px 6px -4px rgba(0, 0, 0, 0.1);
         transform: translateY(-2px);
       }
       .market-indicator {
@@ -175,17 +184,17 @@
           overflow-x: auto;
           -webkit-overflow-scrolling: touch;
         }
-        
+
         .mobile-full-width {
           width: 100% !important;
         }
-        
+
         .touch-target {
           min-height: 44px;
           min-width: 44px;
         }
       }
-      
+
       /* Bottom mobile navigation */
       .mobile-nav-bar {
         display: none;
@@ -194,20 +203,20 @@
         left: 0;
         right: 0;
         background: white;
-        box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+        box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
         z-index: 40;
       }
-      
+
       @media (max-width: 768px) {
         .mobile-nav-bar {
           display: flex;
         }
-        
+
         .mobile-pb-safe {
           padding-bottom: 5rem !important;
         }
       }
-      
+
       .mobile-nav-item {
         flex: 1;
         display: flex;
@@ -218,16 +227,16 @@
         color: #64748b;
         font-size: 0.75rem;
       }
-      
+
       .mobile-nav-item.active {
         color: #1e40af;
       }
-      
+
       .mobile-nav-item i {
         font-size: 1.25rem;
         margin-bottom: 0.25rem;
       }
-      
+
       /* Mobile sidebar handling */
       @media (max-width: 768px) {
         .sidebar-modal {
@@ -236,18 +245,18 @@
           left: 0;
           width: 100%;
           height: 100%;
-          background: rgba(0,0,0,0.5);
+          background: rgba(0, 0, 0, 0.5);
           z-index: 50;
           opacity: 0;
           pointer-events: none;
           transition: opacity 0.3s ease;
         }
-        
+
         .sidebar-modal.active {
           opacity: 1;
           pointer-events: auto;
         }
-        
+
         .sidebar {
           position: fixed;
           top: 0;
@@ -260,7 +269,7 @@
           z-index: 51;
           overflow-y: auto;
         }
-        
+
         .sidebar.active {
           transform: translateX(0);
         }
@@ -270,11 +279,14 @@
   <body class="bg-slate-100 text-slate-800">
     <!-- Mobile sidebar overlay -->
     <div id="sidebar-modal" class="sidebar-modal"></div>
-    
+
     <!-- header -->
     <header class="flex items-center justify-between px-4 sm:px-6 py-3">
       <div class="flex items-center space-x-2 sm:space-x-4">
-        <button id="nav-toggle" class="md:hidden header-btn text-white hover:bg-white/10 touch-target">
+        <button
+          id="nav-toggle"
+          class="md:hidden header-btn text-white hover:bg-white/10 touch-target"
+        >
           <i class="fas fa-bars"></i>
         </button>
         <div class="header-brand flex items-center">
@@ -284,15 +296,23 @@
         </div>
       </div>
       <div class="flex items-center space-x-2 sm:space-x-4">
-        <span class="status-badge {{ 'status-running' if status=='running' else 'status-stopped' }}">
+        <span
+          class="status-badge {{ 'status-running' if status=='running' else 'status-stopped' }}"
+        >
           {{ status.upper() }}
         </span>
-        <a href="/" class="header-btn bg-blue-500 text-white hover:bg-blue-600 touch-target flex items-center">
+        <a
+          href="/"
+          class="header-btn bg-blue-500 text-white hover:bg-blue-600 touch-target flex items-center"
+        >
           <i class="fas fa-sync-alt"></i>
           <span class="hidden sm:inline ml-1">Refresh</span>
         </a>
         {% if update_available %}
-        <a href="/update_version" class="header-btn bg-green-500 text-white hover:bg-green-600 hidden sm:flex items-center">
+        <a
+          href="/update_version"
+          class="header-btn bg-green-500 text-white hover:bg-green-600 hidden sm:flex items-center"
+        >
           <i class="fas fa-download mr-1"></i>Update
         </a>
         {% endif %}
@@ -302,67 +322,101 @@
     <div class="flex">
       <!-- sidebar -->
       <aside class="sidebar w-64 hidden md:block p-4">
-        <div class="mb-10">
+        <!-- <div class="mb-10">
           <h1 class="text-xl font-bold text-white mb-1">
             <i class="fas fa-chart-line mr-2"></i>Market Structure
           </h1>
           <p class="text-sm text-slate-400">Trading Bot Dashboard</p>
-        </div>
-        
+        </div> -->
+
         <nav>
           <div class="mb-8">
-            <p class="text-xs uppercase font-semibold text-slate-400 mb-4 tracking-wider">
+            <p
+              class="text-xs uppercase font-semibold text-slate-400 mb-4 tracking-wider"
+            >
               Bot Controls
             </p>
             <div class="space-y-1">
-              <a href="/start" class="flex items-center p-2 rounded hover:bg-white/10 text-green-400">
+              <a
+                href="/start"
+                class="flex items-center p-2 rounded hover:bg-white/10 text-green-400"
+              >
                 <i class="fas fa-play mr-3 w-5 text-center"></i>
                 <span>Start Bot</span>
               </a>
-              <a href="/stop" class="flex items-center p-2 rounded hover:bg-white/10 text-red-400">
+              <a
+                href="/stop"
+                class="flex items-center p-2 rounded hover:bg-white/10 text-red-400"
+              >
                 <i class="fas fa-stop mr-3 w-5 text-center"></i>
                 <span>Stop Bot</span>
               </a>
-              <a href="/" class="flex items-center p-2 rounded hover:bg-white/10 text-blue-400">
+              <a
+                href="/"
+                class="flex items-center p-2 rounded hover:bg-white/10 text-blue-400"
+              >
                 <i class="fas fa-sync-alt mr-3 w-5 text-center"></i>
                 <span>Refresh Data</span>
               </a>
             </div>
           </div>
-          
+
           <div class="mb-8">
-            <p class="text-xs uppercase font-semibold text-slate-400 mb-4 tracking-wider">
+            <p
+              class="text-xs uppercase font-semibold text-slate-400 mb-4 tracking-wider"
+            >
               Monitoring
             </p>
             <div class="space-y-1">
-              <button onclick="showSection('market_structure')" class="nav-btn flex items-center p-2 rounded hover:bg-white/10 w-full text-left">
+              <button
+                onclick="showSection('market_structure')"
+                class="nav-btn flex items-center p-2 rounded hover:bg-white/10 w-full text-left"
+              >
                 <i class="fas fa-chart-bar mr-3 w-5 text-center"></i>
                 <span>Market Structure</span>
               </button>
               <!-- Add Stochastic Dashboard button when active strategy is stochastic -->
               {% if config.active_strategy == 'stochastic' %}
-              <button onclick="showSection('stochastic_dashboard')" class="nav-btn flex items-center p-2 rounded hover:bg-white/10 w-full text-left">
+              <button
+                onclick="showSection('stochastic_dashboard')"
+                class="nav-btn flex items-center p-2 rounded hover:bg-white/10 w-full text-left"
+              >
                 <i class="fas fa-wave-square mr-3 w-5 text-center"></i>
                 <span>Stochastic Dashboard</span>
               </button>
               {% endif %}
-              <button onclick="showSection('positions')" class="nav-btn flex items-center p-2 rounded hover:bg-white/10 w-full text-left">
+              <button
+                onclick="showSection('positions')"
+                class="nav-btn flex items-center p-2 rounded hover:bg-white/10 w-full text-left"
+              >
                 <i class="fas fa-list-ul mr-3 w-5 text-center"></i>
                 <span>Open Positions</span>
               </button>
-              <button onclick="showSection('history')" class="nav-btn flex items-center p-2 rounded hover:bg-white/10 w-full text-left">
+              <button
+                onclick="showSection('history')"
+                class="nav-btn flex items-center p-2 rounded hover:bg-white/10 w-full text-left"
+              >
                 <i class="fas fa-history mr-3 w-5 text-center"></i>
                 <span>Trading History</span>
               </button>
-              <button onclick="showSection('logs')" class="nav-btn flex items-center p-2 rounded hover:bg-white/10 w-full text-left">
+              <button
+                onclick="showSection('logs')"
+                class="nav-btn flex items-center p-2 rounded hover:bg-white/10 w-full text-left"
+              >
                 <i class="fas fa-terminal mr-3 w-5 text-center"></i>
                 <span>System Logs</span>
               </button>
-              <button onclick="showSection('account')" class="nav-btn flex items-center p-2 rounded hover:bg-white/10 w-full text-left">
+              <button
+                onclick="showSection('account')"
+                class="nav-btn flex items-center p-2 rounded hover:bg-white/10 w-full text-left"
+              >
                 <i class="fas fa-wallet mr-3 w-5 text-center"></i>
                 <span>Account Info</span>
               </button>
-              <button onclick="showSection('config')" class="nav-btn flex items-center p-2 rounded hover:bg-white/10 w-full text-left">
+              <button
+                onclick="showSection('config')"
+                class="nav-btn flex items-center p-2 rounded hover:bg-white/10 w-full text-left"
+              >
                 <i class="fas fa-cog mr-3 w-5 text-center"></i>
                 <span>Configuration</span>
               </button>
@@ -375,519 +429,180 @@
       <main class="flex-1 overflow-auto p-4 sm:p-6 mobile-pb-safe">
         <!-- Dashboard Sections -->
         <div class="section-container">
-          <!-- Market Structure Section -->
           <div id="market_structure" class="dashboard-section">
-            <!-- Executive Dashboard Header -->
-            <div class="bg-gradient-to-r from-slate-800 to-slate-700 text-white rounded-t-lg p-4 sm:p-5 flex flex-wrap sm:flex-nowrap justify-between items-center">
-              <h2 class="text-lg sm:text-xl font-bold w-full sm:w-auto">
-                <i class="fas fa-chart-bar mr-2"></i>Market Structure
-                <span class="text-blue-300 text-sm sm:text-base block sm:inline mt-1 sm:mt-0">{{ symbol }}</span>
-              </h2>
-              <div class="flex items-center mt-2 sm:mt-0 w-full sm:w-auto justify-end space-x-2">
-                <a href="/chart/{{ symbol }}" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-2.5 py-1 rounded flex items-center">
-                  <i class="fas fa-chart-line mr-1"></i>
-                  <span>View Chart</span>
-                </a>
-                <span class="bg-blue-500 text-xs font-bold px-2.5 py-1 rounded">LIVE</span>
-              </div>
-            </div>
-            
-            <!-- Key Metrics Bar -->
-            <div class="bg-white grid grid-cols-2 sm:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-slate-200 shadow-md">
-              <div class="p-3 sm:p-5 text-center">
-                <p class="text-xs uppercase tracking-wider text-slate-500 mb-1 sm:mb-2 font-medium">Overall Direction</p>
-                <div class="flex justify-center items-center">
-                  <div class="w-3 h-3 rounded-full mt-1 mr-2 {% if overall_direction=='bull' %}bg-emerald-500{% elif overall_direction=='bear' %}bg-red-500{% else %}bg-slate-400{% endif %}"></div>
-                  <p class="text-base sm:text-lg font-bold {% if overall_direction=='bull' %}text-emerald-600{% elif overall_direction=='bear' %}text-red-600{% else %}text-slate-600{% endif %}">
-                    {{ overall_direction|default('Neutral')|title }}
-                  </p>
-                </div>
-              </div>
-              <div class="p-3 sm:p-5 text-center">
-                <p class="text-xs uppercase tracking-wider text-slate-500 mb-1 sm:mb-2 font-medium">Current Price</p>
-                <p class="text-base sm:text-lg font-bold">{{ current_price }}</p>
-              </div>
-              <div class="p-3 sm:p-5 text-center">
-                <p class="text-xs uppercase tracking-wider text-slate-500 mb-1 sm:mb-2 font-medium">Daily Change</p>
-                <p class="text-base sm:text-lg font-bold {% if current_price and last_pivot_high and current_price > last_pivot_high %}text-emerald-600{% elif current_price and last_pivot_low and current_price < last_pivot_low %}text-red-600{% else %}text-slate-600{% endif %}">
-                  <i class="fas {% if current_price and last_pivot_high and current_price > last_pivot_high %}fa-arrow-up{% elif current_price and last_pivot_low and current_price < last_pivot_low %}fa-arrow-down{% else %}fa-minus{% endif %} mr-1"></i>
-                  {% if current_price and last_pivot_high and current_price > last_pivot_high %}+{{ ((current_price - last_pivot_high) / last_pivot_high * 100)|round(2) }}%
-                  {% elif current_price and last_pivot_low and current_price < last_pivot_low %}-{{ ((last_pivot_low - current_price) / last_pivot_low * 100)|round(2) }}%
-                  {% else %}0.00%{% endif %}
-                </p>
-              </div>
-              <div class="p-3 sm:p-5 text-center">
-                <p class="text-xs uppercase tracking-wider text-slate-500 mb-1 sm:mb-2 font-medium">Positions</p>
-                <p class="text-base sm:text-lg font-bold">{{ positions|length if positions else 0 }}</p>
-              </div>
-            </div>
-          
-            <!-- Dashboard Main Content -->
-            <div class="p-4 sm:p-6 bg-slate-50 mt-4 sm:mt-6">
-              <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6">
-                <!-- Multi-Timeframe Analysis Card -->
-                <div class="col-span-1 lg:col-span-8">
-                  <div class="bg-white rounded-lg shadow-card h-full">
-                    <div class="border-b p-3 sm:p-4">
-                      <h3 class="font-semibold text-slate-800">Multi-Timeframe Analysis</h3>
-                    </div>
-                    <div class="p-3 sm:p-5">
-                      <!-- Timeframe Signals Panel -->
-                      <div class="flex flex-wrap justify-center">
-                        {% if market_structures %}
-                          {% for ms in market_structures %}
-                          <div class="w-1/3 md:w-1/4 lg:w-1/6 mb-5 flex flex-col items-center">
-                            <div class="multi-tf-indicator 
-                              {% if ms.market_direction=='bull' %}bg-emerald-100 text-emerald-600
-                              {% elif ms.market_direction=='bear' %}bg-red-100 text-red-600
-                              {% else %}bg-slate-100 text-slate-600{% endif %}">
-                              <i class="fas 
-                                {% if ms.market_direction=='bull' %}fa-arrow-up
-                                {% elif ms.market_direction=='bear' %}fa-arrow-down
-                                {% else %}fa-minus{% endif %} 
-                                text-xl sm:text-2xl"></i>
-                            </div>
-                            <p class="font-bold text-xs text-center">{{ ms.timeframe }}</p>
-                            <p class="text-xs text-center text-slate-500">
-                              {{ ms.market_direction|default('Neutral')|title }}
-                            </p>
-                          </div>
-                          {% endfor %}
-                        {% else %}
-                          <div class="w-full p-4 text-center text-slate-500">
-                            <i class="fas fa-info-circle mr-2"></i>No market structure data available
-                          </div>
-                        {% endif %}
-                      </div>
-                      
-                      <!-- Market Strength Gauge -->
-                      <div class="mt-6 sm:mt-8 border-t pt-4 sm:pt-6">
-                        <h4 class="font-medium text-sm mb-3 sm:mb-4 text-slate-700">Market Strength</h4>
-                        <div class="h-4 bg-slate-200 rounded-full overflow-hidden">
-                          {% set bull_count = market_structures|selectattr('market_direction', 'equalto', 'bull')|list|length %}
-                          {% set bear_count = market_structures|selectattr('market_direction', 'equalto', 'bear')|list|length %}
-                          {% set neutral_count = market_structures|length - bull_count - bear_count %}
-                          {% set bull_percent = bull_count / market_structures|length * 100 if market_structures else 0 %}
-                          {% set bear_percent = bear_count / market_structures|length * 100 if market_structures else 0 %}
-                          {% set neutral_percent = neutral_count / market_structures|length * 100 if market_structures else 0 %}
-                          
-                          <div class="h-full flex">
-                            <div class="bg-emerald-500 h-full" style="width: {{ bull_percent }}%"></div>
-                            <div class="bg-slate-400 h-full" style="width: {{ neutral_percent }}%"></div>
-                            <div class="bg-red-500 h-full" style="width: {{ bear_percent }}%"></div>
-                          </div>
-                        </div>
-                        <div class="flex justify-between mt-2 text-xs text-slate-500">
-                          <span>Bullish ({{ bull_count }})</span>
-                          <span>Neutral ({{ neutral_count }})</span>
-                          <span>Bearish ({{ bear_count }})</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                
-                <!-- Current Status Card -->
-                <div class="col-span-1 lg:col-span-4">
-                  <div class="bg-white rounded-lg shadow-card h-full">
-                    <div class="border-b p-4">
-                      <h3 class="font-semibold text-slate-800">Market Status</h3>
-                    </div>
-                    <div class="p-5">
-                      <div class="text-center">
-                        <div class="inline-block p-5 rounded-full mb-4
-                          {% if market_direction == 'bull' %}bg-emerald-100 text-emerald-600
-                          {% elif market_direction == 'bear' %}bg-red-100 text-red-600
-                          {% else %}bg-slate-100 text-slate-600{% endif %}">
-                          <i class="fas 
-                            {% if market_direction == 'bull' %}fa-arrow-up
-                            {% elif market_direction == 'bear' %}fa-arrow-down
-                            {% else %}fa-minus{% endif %} text-3xl"></i>
-                        </div>
-                        <div class="text-xl font-bold mb-2
-                          {% if market_direction == 'bull' %}text-emerald-600
-                          {% elif market_direction == 'bear' %}text-red-600
-                          {% else %}text-slate-600{% endif %}">
-                          {{ market_direction|title if market_direction else 'Neutral' }}
-                        </div>
-                        <p class="text-sm text-slate-500 mb-5">
-                          {% if market_direction == 'bull' %}
-                            Bullish structure confirmed on {{ timeframe }} timeframe
-                          {% elif market_direction == 'bear' %}
-                            Bearish structure confirmed on {{ timeframe }} timeframe
-                          {% else %}
-                            No clear market structure detected
-                          {% endif %}
-                        </p>
-                      </div>
-          
-                      <!-- Price Position Indicator -->
-                      <div class="mt-8 pt-4">
-                        <h4 class="text-sm font-medium mb-5 text-center text-slate-700">Price Position</h4>
-                        <div class="price-position-indicator">
-                          {% if last_pivot_high and last_pivot_low and current_price %}
-                            {% set range = last_pivot_high - last_pivot_low %}
-                            {% if range > 0 %}
-                              <!-- Calculate position with clamping to ensure it's between 0-100% -->
-                              {% set raw_position = (current_price - last_pivot_low) / range * 100 %}
-                              {% set position = [0, [raw_position, 100]|min]|max %}
-                              
-                              <!-- Add position status labels -->
-                              {% set position_status = "Between Pivots" %}
-                              {% if current_price < last_pivot_low %}
-                                {% set position_status = "Below Pivot Low" %}
-                              {% elif current_price > last_pivot_high %}
-                                {% set position_status = "Above Pivot High" %}
-                              {% endif %}
-                              
-                              <div class="price-position-track" style="left: 0; width: {{ position }}%"></div>
-                              <div class="price-position-handle" style="left: {{ position }}%"></div>
-                              <div class="absolute -bottom-5 left-0 text-xs font-medium text-slate-500">{{ last_pivot_low }}</div>
-                              <div class="absolute -bottom-5 right-0 text-xs font-medium text-slate-500">{{ last_pivot_high }}</div>
-                            {% else %}
-                              <div class="h-full flex items-center justify-center text-xs text-slate-500">
-                                Invalid pivot range (high <= low)
-                              </div>
-                            {% endif %}
-                          {% else %}
-                            <div class="h-full flex items-center justify-center text-xs text-slate-500">
-                              No pivot data available
-                            </div>
-                          {% endif %}
-                        </div>
-                      </div>
-                      
-                      <!-- Add position status display -->
-                      {% if last_pivot_high and last_pivot_low and current_price and last_pivot_high > last_pivot_low %}
-                      <div class="mt-2 text-center">
-                        <span class="text-xs text-slate-500">Current Price: <span class="font-medium text-slate-700">{{ current_price }}</span></span>
-                        <span class="text-xs {% if current_price < last_pivot_low %}text-red-500{% elif current_price > last_pivot_high %}text-emerald-500{% else %}text-blue-500{% endif %} ml-2">({{ position_status }})</span>
-                      </div>
-                      {% endif %}
-
-                      <div class="space-y-3">
-                        <!-- Existing conditions... -->
-                        
-                        <!-- Buy Conditions -->
-                        <div class="mt-6 mb-3">
-                          <h4 class="text-sm font-semibold text-emerald-600 mb-2">Buy Conditions</h4>
-                          
-                          <!-- Buy Condition 1: Bull structure detected -->
-                          <div class="flex items-center py-1">
-                            <div class="w-6 h-6 rounded-full flex items-center justify-center
-                              {% if market_direction == 'bull' %}bg-emerald-100 text-emerald-600{% else %}bg-slate-100 text-slate-400{% endif %}">
-                              <i class="fas {% if market_direction == 'bull' %}fa-check{% else %}fa-times{% endif %} text-xs"></i>
-                            </div>
-                            <div class="ml-3">
-                              <p class="text-sm text-slate-700">Bullish Structure Detected</p>
-                            </div>
-                          </div>
-                          
-                          <!-- Buy Condition 2: Price above pivot high -->
-                          <div class="flex items-center py-1">
-                            <div class="w-6 h-6 rounded-full flex items-center justify-center
-                              {% if last_pivot_high and current_price and current_price > last_pivot_high %}bg-emerald-100 text-emerald-600{% else %}bg-slate-100 text-slate-400{% endif %}">
-                              <i class="fas {% if last_pivot_high and current_price and current_price > last_pivot_high %}fa-check{% else %}fa-times{% endif %} text-xs"></i>
-                            </div>
-                            <div class="ml-3">
-                              <p class="text-sm text-slate-700">Price Above Previous High</p>
-                            </div>
-                          </div>
-                          
-                          <!-- Buy Condition 3: Confirming timeframes -->
-                          {% set bull_count = market_structures|selectattr('market_direction', 'equalto', 'bull')|list|length %}
-                          {% set is_confirmed = bull_count >= 2 %}
-                          <div class="flex items-center py-1">
-                            <div class="w-6 h-6 rounded-full flex items-center justify-center
-                              {% if is_confirmed %}bg-emerald-100 text-emerald-600{% else %}bg-slate-100 text-slate-400{% endif %}">
-                              <i class="fas {% if is_confirmed %}fa-check{% else %}fa-times{% endif %} text-xs"></i>
-                            </div>
-                            <div class="ml-3">
-                              <p class="text-sm text-slate-700">Multiple Timeframes Confirm ({{ bull_count }})</p>
-                            </div>
-                          </div>
-                        </div>
-                        
-                        <!-- Sell Conditions -->
-                        <div class="mt-4 mb-3">
-                          <h4 class="text-sm font-semibold text-red-600 mb-2">Sell Conditions</h4>
-                          
-                          <!-- Sell Condition 1: Bear structure detected -->
-                          <div class="flex items-center py-1">
-                            <div class="w-6 h-6 rounded-full flex items-center justify-center
-                              {% if market_direction == 'bear' %}bg-emerald-100 text-emerald-600{% else %}bg-slate-100 text-slate-400{% endif %}">
-                              <i class="fas {% if market_direction == 'bear' %}fa-check{% else %}fa-times{% endif %} text-xs"></i>
-                            </div>
-                            <div class="ml-3">
-                              <p class="text-sm text-slate-700">Bearish Structure Detected</p>
-                            </div>
-                          </div>
-                          
-                          <!-- Sell Condition 2: Price below pivot low -->
-                          <div class="flex items-center py-1">
-                            <div class="w-6 h-6 rounded-full flex items-center justify-center
-                              {% if last_pivot_low and current_price and current_price < last_pivot_low %}bg-emerald-100 text-emerald-600{% else %}bg-slate-100 text-slate-400{% endif %}">
-                              <i class="fas {% if last_pivot_low and current_price and current_price < last_pivot_low %}fa-check{% else %}fa-times{% endif %} text-xs"></i>
-                            </div>
-                            <div class="ml-3">
-                              <p class="text-sm text-slate-700">Price Below Previous Low</p>
-                            </div>
-                          </div>
-                          
-                          <!-- Sell Condition 3: Confirming timeframes -->
-                          {% set bear_count = market_structures|selectattr('market_direction', 'equalto', 'bear')|list|length %}
-                          {% set is_confirmed = bear_count >= 2 %}
-                          <div class="flex items-center py-1">
-                            <div class="w-6 h-6 rounded-full flex items-center justify-center
-                              {% if is_confirmed %}bg-emerald-100 text-emerald-600{% else %}bg-slate-100 text-slate-400{% endif %}">
-                              <i class="fas {% if is_confirmed %}fa-check{% else %}fa-times{% endif %} text-xs"></i>
-                            </div>
-                            <div class="ml-3">
-                              <p class="text-sm text-slate-700">Multiple Timeframes Confirm ({{ bear_count }})</p>
-                            </div>
-                          </div>
-                        </div>
-
-                        <!-- Existing ready status... -->
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-              <div class="grid grid-cols-1 md:grid-cols-12 gap-4 sm:gap-6 mt-4 sm:mt-6">
-                <!-- Market Structure Strategy Card -->
-                <div class="col-span-1 md:col-span-7">
-                  <div class="bg-white rounded-lg shadow-card">
-                    <div class="border-b p-3 sm:p-4">
-                      <h3 class="font-semibold text-slate-800">Market Structure Strategy</h3>
-                    </div>
-                    <div class="p-3 sm:p-5">
-                      <div class="flex flex-col sm:flex-row sm:space-x-6 space-y-6 sm:space-y-0">
-                        <div class="sm:flex-1">
-                          <h4 class="font-medium text-emerald-600 mb-2 flex items-center">
-                            <i class="fas fa-arrow-up mr-2"></i>Bullish Structure
-                          </h4>
-                          <ul class="list-disc ml-5 space-y-1 text-sm text-slate-600">
-                            <li>Price breaks above recent pivot high</li>
-                            <li>Enter long after confirmation</li>
-                            <li>Stop loss below recent swing low</li>
-                            <li>Break-even at {{ config.break_even_pips }} pips</li>
-                            <li>Partial close at {{ config.partial_close_pips }} pips</li>
-                          </ul>
-                        </div>
-                        <div class="sm:flex-1">
-                          <h4 class="font-medium text-red-600 mb-2 flex items-center">
-                            <i class="fas fa-arrow-down mr-2"></i>Bearish Structure
-                          </h4>
-                          <ul class="list-disc ml-5 space-y-1 text-sm text-slate-600">
-                            <li>Price breaks below recent pivot low</li>
-                            <li>Enter short after confirmation</li>
-                            <li>Stop loss above recent swing high</li>
-                            <li>Break-even at {{ config.break_even_pips }} pips</li>
-                            <li>Partial close at {{ config.partial_close_pips }} pips</li>
-                          </ul>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                
-                <!-- Strategy Condition Checks Card -->
-                <div class="col-span-1 md:col-span-5">
-                  <div class="bg-white rounded-lg shadow-card h-full">
-                    <div class="border-b p-4">
-                      <h3 class="font-semibold text-slate-800">Signal Status</h3>
-                    </div>
-                    <div class="p-5">
-                      <div class="space-y-3">
-                        <!-- Condition 1 -->
-                        <div class="flex items-center">
-                          <div class="w-8 h-8 rounded-full flex items-center justify-center
-                            {% if last_pivot_high and last_pivot_low %}bg-emerald-100 text-emerald-600{% else %}bg-slate-100 text-slate-400{% endif %}">
-                            <i class="fas {% if last_pivot_high and last_pivot_low %}fa-check{% else %}fa-times{% endif %}"></i>
-                          </div>
-                          <div class="ml-3">
-                            <p class="font-medium text-slate-800">Pivot Points Detected</p>
-                            <p class="text-xs text-slate-500">Both high and low pivots found</p>
-                          </div>
-                        </div>
-                        
-                        <!-- Condition 2 -->
-                        <div class="flex items-center">
-                          <div class="w-8 h-8 rounded-full flex items-center justify-center
-                            {% if market_direction %}bg-emerald-100 text-emerald-600{% else %}bg-slate-100 text-slate-400{% endif %}">
-                            <i class="fas {% if market_direction %}fa-check{% else %}fa-times{% endif %}"></i>
-                          </div>
-                          <div class="ml-3">
-                            <p class="font-medium text-slate-800">Structure Break Detected</p>
-                            <p class="text-xs text-slate-500">Price broke structure boundary</p>
-                          </div>
-                        </div>
-                        
-                        <!-- Condition 3 -->
-                        <div class="flex items-center">
-                          <div class="w-8 h-8 rounded-full flex items-center justify-center
-                            {% if positions|length < config.max_positions %}bg-emerald-100 text-emerald-600{% else %}bg-yellow-100 text-yellow-600{% endif %}">
-                            <i class="fas {% if positions|length < config.max_positions %}fa-check{% else %}fa-exclamation{% endif %}"></i>
-                          </div>
-                          <div class="ml-3">
-                            <p class="font-medium text-slate-800">Position Capacity</p>
-                            <p class="text-xs text-slate-500">{{ positions|length }}/{{ config.max_positions }} positions open</p>
-                          </div>
-                        </div>
-                      </div>
-                      
-                      <!-- Ready Status -->
-                      <div class="mt-5 p-3 text-center rounded
-                        {% if market_direction and positions|length < config.max_positions %}bg-emerald-100 text-emerald-800
-                        {% elif positions|length >= config.max_positions %}bg-yellow-100 text-yellow-800
-                        {% else %}bg-slate-100 text-slate-600{% endif %}">
-                        <p class="font-semibold">
-                          {% if market_direction and positions|length < config.max_positions %}
-                            Ready to Trade
-                          {% elif positions|length >= config.max_positions %}
-                            Maximum Positions Reached
-                          {% else %}
-                            Waiting for Signal
-                          {% endif %}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            {% include 'partials/market_structure.partial.html' %}
           </div>
-          
+
           <!-- Add a new section for Stochastic Dashboard -->
           <div id="stochastic_dashboard" class="dashboard-section hidden">
             <!-- Executive Dashboard Header -->
-            <div class="bg-gradient-to-r from-slate-800 to-slate-700 text-white rounded-t-lg p-4 sm:p-5 flex flex-wrap sm:flex-nowrap justify-between items-center">
+            <div
+              class="bg-gradient-to-r from-slate-800 to-slate-700 text-white rounded-t-lg p-4 sm:p-5 flex flex-wrap sm:flex-nowrap justify-between items-center"
+            >
               <h2 class="text-lg sm:text-xl font-bold w-full sm:w-auto">
                 <i class="fas fa-wave-square mr-2"></i>Stochastic Dashboard
-                <span class="text-blue-300 text-sm sm:text-base block sm:inline mt-1 sm:mt-0">{{ symbol }}</span>
+                <span
+                  class="text-blue-300 text-sm sm:text-base block sm:inline mt-1 sm:mt-0"
+                  >{{ symbol }}</span
+                >
               </h2>
-              <div class="flex items-center mt-2 sm:mt-0 w-full sm:w-auto justify-end space-x-2">
-                <a href="/chart/{{ symbol }}" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-2.5 py-1 rounded flex items-center">
+              <div
+                class="flex items-center mt-2 sm:mt-0 w-full sm:w-auto justify-end space-x-2"
+              >
+                <a
+                  href="/chart/{{ symbol }}"
+                  class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-2.5 py-1 rounded flex items-center"
+                >
                   <i class="fas fa-chart-line mr-1"></i>
                   <span>View Chart</span>
                 </a>
-                <span class="bg-blue-500 text-xs font-bold px-2.5 py-1 rounded">LIVE</span>
+                <span class="bg-blue-500 text-xs font-bold px-2.5 py-1 rounded"
+                  >LIVE</span
+                >
               </div>
             </div>
-            
+
             <!-- Key Metrics Bar -->
-            <div class="bg-white grid grid-cols-2 sm:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-slate-200 shadow-md">
+            <div
+              class="bg-white grid grid-cols-2 sm:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-slate-200 shadow-md"
+            >
               <div class="p-3 sm:p-5 text-center">
-                <p class="text-xs uppercase tracking-wider text-slate-500 mb-1 sm:mb-2 font-medium">Signal Status</p>
+                <p
+                  class="text-xs uppercase tracking-wider text-slate-500 mb-1 sm:mb-2 font-medium"
+                >
+                  Signal Status
+                </p>
                 <div class="flex justify-center items-center">
-                  <div class="w-3 h-3 rounded-full mt-1 mr-2 
-                    {% if stochastic and stochastic.signal == 'buy' %}bg-emerald-500
-                    {% elif stochastic and stochastic.signal == 'sell' %}bg-red-500
-                    {% else %}bg-slate-400{% endif %}"></div>
-                  <p class="text-base sm:text-lg font-bold 
-                    {% if stochastic and stochastic.signal == 'buy' %}text-emerald-600
-                    {% elif stochastic and stochastic.signal == 'sell' %}text-red-600
-                    {% else %}text-slate-600{% endif %}">
-                    {{ stochastic.signal|title if stochastic and stochastic.signal else 'No Signal' }}
+                  <div
+                    class="w-3 h-3 rounded-full mt-1 mr-2 {% if stochastic and stochastic.signal == 'buy' %}bg-emerald-500 {% elif stochastic and stochastic.signal == 'sell' %}bg-red-500 {% else %}bg-slate-400{% endif %}"
+                  ></div>
+                  <p
+                    class="text-base sm:text-lg font-bold {% if stochastic and stochastic.signal == 'buy' %}text-emerald-600 {% elif stochastic and stochastic.signal == 'sell' %}text-red-600 {% else %}text-slate-600{% endif %}"
+                  >
+                    {{ stochastic.signal|title if stochastic and
+                    stochastic.signal else 'No Signal' }}
                   </p>
                 </div>
               </div>
               <div class="p-3 sm:p-5 text-center">
-                <p class="text-xs uppercase tracking-wider text-slate-500 mb-1 sm:mb-2 font-medium">Current Price</p>
-                <p class="text-base sm:text-lg font-bold">{{ current_price }}</p>
-              </div>
-              <div class="p-3 sm:p-5 text-center">
-                <p class="text-xs uppercase tracking-wider text-slate-500 mb-1 sm:mb-2 font-medium">Trend Direction</p>
-                <p class="text-base sm:text-lg font-bold 
-                  {% if stochastic and stochastic.trend == 'uptrend' %}text-emerald-600
-                  {% elif stochastic and stochastic.trend == 'downtrend' %}text-red-600
-                  {% else %}text-slate-600{% endif %}">
-                  {{ stochastic.trend|title if stochastic and stochastic.trend else 'Neutral' }}
+                <p
+                  class="text-xs uppercase tracking-wider text-slate-500 mb-1 sm:mb-2 font-medium"
+                >
+                  Current Price
+                </p>
+                <p class="text-base sm:text-lg font-bold">
+                  {{ current_price }}
                 </p>
               </div>
               <div class="p-3 sm:p-5 text-center">
-                <p class="text-xs uppercase tracking-wider text-slate-500 mb-1 sm:mb-2 font-medium">Positions</p>
-                <p class="text-base sm:text-lg font-bold">{{ positions|length if positions else 0 }}</p>
+                <p
+                  class="text-xs uppercase tracking-wider text-slate-500 mb-1 sm:mb-2 font-medium"
+                >
+                  Trend Direction
+                </p>
+                <p
+                  class="text-base sm:text-lg font-bold {% if stochastic and stochastic.trend == 'uptrend' %}text-emerald-600 {% elif stochastic and stochastic.trend == 'downtrend' %}text-red-600 {% else %}text-slate-600{% endif %}"
+                >
+                  {{ stochastic.trend|title if stochastic and stochastic.trend
+                  else 'Neutral' }}
+                </p>
+              </div>
+              <div class="p-3 sm:p-5 text-center">
+                <p
+                  class="text-xs uppercase tracking-wider text-slate-500 mb-1 sm:mb-2 font-medium"
+                >
+                  Positions
+                </p>
+                <p class="text-base sm:text-lg font-bold">
+                  {{ positions|length if positions else 0 }}
+                </p>
               </div>
             </div>
-            
+
             <!-- Dashboard Main Content -->
             <div class="p-4 sm:p-6 bg-slate-50 mt-4 sm:mt-6">
               <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6">
                 <!-- Include the Stochastic Dashboard Template -->
                 {% include 'stochastic_dashboard.html' %}
-                
+
                 <!-- Current Status Card -->
                 <div class="col-span-1 lg:col-span-4">
                   <!-- Use the existing status card -->
                   <div class="bg-white rounded-lg shadow-card h-full">
                     <div class="border-b p-4">
-                      <h3 class="font-semibold text-slate-800">Signal Status</h3>
+                      <h3 class="font-semibold text-slate-800">
+                        Signal Status
+                      </h3>
                     </div>
                     <div class="p-5">
                       <div class="space-y-3">
                         <!-- Stochastic Specific Conditions -->
                         <div class="flex items-center">
-                          <div class="w-8 h-8 rounded-full flex items-center justify-center
-                            {% if stochastic and stochastic.trend %}bg-emerald-100 text-emerald-600{% else %}bg-slate-100 text-slate-400{% endif %}">
-                            <i class="fas {% if stochastic and stochastic.trend %}fa-check{% else %}fa-times{% endif %}"></i>
+                          <div
+                            class="w-8 h-8 rounded-full flex items-center justify-center {% if stochastic and stochastic.trend %}bg-emerald-100 text-emerald-600{% else %}bg-slate-100 text-slate-400{% endif %}"
+                          >
+                            <i
+                              class="fas {% if stochastic and stochastic.trend %}fa-check{% else %}fa-times{% endif %}"
+                            ></i>
                           </div>
                           <div class="ml-3">
-                            <p class="font-medium text-slate-800">Trend Direction Detected</p>
+                            <p class="font-medium text-slate-800">
+                              Trend Direction Detected
+                            </p>
                             <p class="text-xs text-slate-500">
-                              {% if stochastic and stochastic.trend %}
-                                {{ stochastic.trend|title }} detected using {{ config.stoch_trend_detection }}
-                              {% else %}
-                                No clear trend detected
-                              {% endif %}
+                              {% if stochastic and stochastic.trend %} {{
+                              stochastic.trend|title }} detected using {{
+                              config.stoch_trend_detection }} {% else %} No
+                              clear trend detected {% endif %}
                             </p>
                           </div>
                         </div>
-                        
+
                         <div class="flex items-center">
-                          <div class="w-8 h-8 rounded-full flex items-center justify-center
-                            {% if stochastic and stochastic.k_value is not none and (stochastic.k_value < config.stoch_oversold or stochastic.k_value > config.stoch_overbought) %}bg-emerald-100 text-emerald-600{% else %}bg-slate-100 text-slate-400{% endif %}">
-                            <i class="fas {% if stochastic and stochastic.k_value is not none and (stochastic.k_value < config.stoch_oversold or stochastic.k_value > config.stoch_overbought) %}fa-check{% else %}fa-times{% endif %}"></i>
+                          <div
+                            class="w-8 h-8 rounded-full flex items-center justify-center {% if stochastic and stochastic.k_value is not none and (stochastic.k_value < config.stoch_oversold or stochastic.k_value > config.stoch_overbought) %}bg-emerald-100 text-emerald-600{% else %}bg-slate-100 text-slate-400{% endif %}"
+                          >
+                            <i
+                              class="fas {% if stochastic and stochastic.k_value is not none and (stochastic.k_value < config.stoch_oversold or stochastic.k_value > config.stoch_overbought) %}fa-check{% else %}fa-times{% endif %}"
+                            ></i>
                           </div>
                           <div class="ml-3">
-                            <p class="font-medium text-slate-800">Extreme Level Reached</p>
-                            <p class="text-xs text-slate-500">Stochastic in overbought or oversold zone</p>
+                            <p class="font-medium text-slate-800">
+                              Extreme Level Reached
+                            </p>
+                            <p class="text-xs text-slate-500">
+                              Stochastic in overbought or oversold zone
+                            </p>
                           </div>
                         </div>
-                        
+
                         <div class="flex items-center">
-                          <div class="w-8 h-8 rounded-full flex items-center justify-center
-                            {% if stochastic and stochastic.signal %}bg-emerald-100 text-emerald-600{% else %}bg-slate-100 text-slate-400{% endif %}">
-                            <i class="fas {% if stochastic and stochastic.signal %}fa-check{% else %}fa-times{% endif %}"></i>
+                          <div
+                            class="w-8 h-8 rounded-full flex items-center justify-center {% if stochastic and stochastic.signal %}bg-emerald-100 text-emerald-600{% else %}bg-slate-100 text-slate-400{% endif %}"
+                          >
+                            <i
+                              class="fas {% if stochastic and stochastic.signal %}fa-check{% else %}fa-times{% endif %}"
+                            ></i>
                           </div>
                           <div class="ml-3">
-                            <p class="font-medium text-slate-800">Crossover Signal</p>
-                            <p class="text-xs text-slate-500">
-                              {% if stochastic and stochastic.signal %}
-                                {{ stochastic.signal|upper }} signal from K/D crossover
-                              {% else %}
-                                No crossover detected
-                              {% endif %}
+                            <p class="font-medium text-slate-800">
+                              Crossover Signal
                             </p>
+                            <p class="text-xs text-slate-500"></p>
                           </div>
                         </div>
                       </div>
-                      
+
                       <!-- Ready Status -->
-                      <div class="mt-5 p-3 text-center rounded
-                        {% if stochastic and stochastic.signal and positions|length < config.max_positions %}bg-emerald-100 text-emerald-800
-                        {% elif positions|length >= config.max_positions %}bg-yellow-100 text-yellow-800
-                        {% else %}bg-slate-100 text-slate-600{% endif %}">
+                      <div
+                        class="mt-5 p-3 text-center rounded {% if stochastic and stochastic.signal and positions|length < config.max_positions %}bg-emerald-100 text-emerald-800 {% elif positions|length >= config.max_positions %}bg-yellow-100 text-yellow-800 {% else %}bg-slate-100 text-slate-600{% endif %}"
+                      >
                         <p class="font-semibold">
-                          {% if stochastic and stochastic.signal and positions|length < config.max_positions %}
-                            Ready to Trade
-                          {% elif positions|length >= config.max_positions %}
-                            Maximum Positions Reached
-                          {% else %}
-                            Waiting for Signal
-                          {% endif %}
+                          {% if stochastic and stochastic.signal and
+                          positions|length < config.max_positions %} Ready to
+                          Trade {% elif positions|length >= config.max_positions
+                          %} Maximum Positions Reached {% else %} Waiting for
+                          Signal {% endif %}
                         </p>
                       </div>
                     </div>
@@ -896,937 +611,55 @@
               </div>
             </div>
           </div>
-          
+
           <div id="positions" class="dashboard-section hidden">
-            <!-- Executive Dashboard Header -->
-            <div class="bg-gradient-to-r from-slate-800 to-slate-700 text-white rounded-t-lg p-4 sm:p-5 flex flex-wrap sm:flex-nowrap justify-between items-center">
-              <h2 class="text-lg sm:text-xl font-bold w-full sm:w-auto">
-                <i class="fas fa-list-ul mr-2"></i>Open Positions
-              </h2>
-              <div class="flex items-center mt-2 sm:mt-0 w-full sm:w-auto justify-end">
-                <span class="text-sm opacity-80 mr-3">{{ symbol }}</span>
-                <span class="bg-blue-500 text-xs font-bold px-2.5 py-1 rounded">LIVE</span>
-              </div>
-            </div>
-            
-            <!-- Key Metrics Bar -->
-            <div class="bg-white grid grid-cols-2 sm:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-slate-200 shadow-md">
-              {% set total_positions = positions|length if positions else 0 %}
-              {% set total_volume = positions|sum(attribute='volume') if positions else 0 %}
-              {% set long_positions = positions|selectattr('type', 'equalto', 'BUY')|list|length if positions else 0 %}
-              {% set short_positions = positions|selectattr('type', 'equalto', 'SELL')|list|length if positions else 0 %}
-              {% set total_profit = positions|sum(attribute='profit') if positions else 0 %}
-              
-              <div class="p-3 sm:p-5 text-center">
-                <p class="text-xs uppercase tracking-wider text-slate-500 mb-1 sm:mb-2 font-medium">Total Positions</p>
-                <p class="text-base sm:text-lg font-bold">{{ total_positions }}</p>
-              </div>
-              <div class="p-3 sm:p-5 text-center">
-                <p class="text-xs uppercase tracking-wider text-slate-500 mb-1 sm:mb-2 font-medium">Total Volume</p>
-                <p class="text-base sm:text-lg font-bold">{{ total_volume|round(2) }}</p>
-              </div>
-              <div class="p-3 sm:p-5 text-center">
-                <p class="text-xs uppercase tracking-wider text-slate-500 mb-1 sm:mb-2 font-medium">Market Exposure</p>
-                <div class="flex justify-center items-center">
-                  <span class="bg-emerald-100 text-emerald-800 text-xs font-medium px-2 py-1 rounded">LONG: {{ long_positions }}</span>
-                  <span class="mx-1">/</span>
-                  <span class="bg-red-100 text-red-800 text-xs font-medium px-2 py-1 rounded">SHORT: {{ short_positions }}</span>
-                </div>
-              </div>
-              <div class="p-3 sm:p-5 text-center">
-                <p class="text-xs uppercase tracking-wider text-slate-500 mb-1 sm:mb-2 font-medium">Unrealized P/L</p>
-                <p class="text-base sm:text-lg font-bold {% if total_profit >= 0 %}text-emerald-600{% else %}text-red-600{% endif %}">
-                  {{ total_profit|round(2) }}
-                </p>
-              </div>
-            </div>
-            
-            <!-- Dashboard Main Content -->
-            <div class="p-4 sm:p-6 bg-slate-50 mt-4 sm:mt-6">
-              <!-- Position Distribution Overview -->
-              {% if positions %}
-              <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-4 sm:mb-6">
-                <!-- Position Direction Chart -->
-                <div class="bg-white rounded-lg shadow-card p-5">
-                  <h3 class="font-medium text-slate-800 mb-4">Position Direction</h3>
-                  <div class="flex">
-                    <!-- Long Positions Bar -->
-                    <div class="flex-1">
-                      <div class="h-24 flex items-end justify-center">
-                        <div class="w-16 bg-emerald-500 rounded-t-md relative" 
-                             style="height: {{ (long_positions / total_positions * 100) if total_positions else 0 }}%">
-                          {% if long_positions > 0 %}
-                          <div class="absolute -top-6 w-full text-center text-sm font-bold text-slate-700">{{ long_positions }}</div>
-                          {% endif %}
-                        </div>
-                      </div>
-                      <div class="text-center mt-2 text-sm font-medium text-slate-600">Long</div>
-                    </div>
-                    
-                    <!-- Short Positions Bar -->
-                    <div class="flex-1">
-                      <div class="h-24 flex items-end justify-center">
-                        <div class="w-16 bg-red-500 rounded-t-md relative" 
-                             style="height: {{ (short_positions / total_positions * 100) if total_positions else 0 }}%">
-                          {% if short_positions > 0 %}
-                          <div class="absolute -top-6 w-full text-center text-sm font-bold text-slate-700">{{ short_positions }}</div>
-                          {% endif %}
-                        </div>
-                      </div>
-                      <div class="text-center mt-2 text-sm font-medium text-slate-600">Short</div>
-                    </div>
-                  </div>
-                </div>
-                
-                <!-- Position Performance -->
-                <div class="bg-white rounded-lg shadow-card p-5">
-                  <h3 class="font-medium text-slate-800 mb-4">Position Performance</h3>
-                  {% set profitable_positions = positions|selectattr('profit', 'ge', 0)|list|length %}
-                  {% set unprofitable_positions = positions|selectattr('profit', 'lt', 0)|list|length %}
-                  
-                  <div class="flex items-center mb-3">
-                    <div class="w-full bg-slate-200 rounded-full h-2.5">
-                      {% if total_positions > 0 %}
-                      <div class="bg-emerald-500 h-2.5 rounded-full" style="width: {{ (profitable_positions / total_positions * 100)|round }}%"></div>
-                      {% endif %}
-                    </div>
-                  </div>
-                  
-                  <div class="flex justify-between text-sm">
-                    <div>
-                      <span class="font-medium text-emerald-600">{{ profitable_positions }}</span>
-                      <span class="text-slate-500"> profitable</span>
-                    </div>
-                    <div>
-                      <span class="font-medium text-red-600">{{ unprofitable_positions }}</span>
-                      <span class="text-slate-500"> unprofitable</span>
-                    </div>
-                  </div>
-                </div>
-                
-                <!-- Risk Exposure -->
-                <div class="bg-white rounded-lg shadow-card p-5">
-                  <h3 class="font-medium text-slate-800 mb-4">Risk Exposure</h3>
-                  {% set max_risk = positions|sum(attribute='volume')|float * 100 if positions else 0 %}
-                  {% set current_risk = positions|selectattr('profit', 'lt', 0)|sum(attribute='profit')|abs|float if positions else 0 %}
-                  {% set risk_percent = (current_risk / max_risk * 100)|round if max_risk > 0 else 0 %}
-                  
-                  <div class="text-center mb-2">
-                    <div class="text-3xl font-bold {% if risk_percent < 25 %}text-emerald-600{% elif risk_percent < 50 %}text-amber-500{% else %}text-red-600{% endif %}">
-                      {{ risk_percent }}%
-                    </div>
-                    <div class="text-slate-500 text-sm">of max risk exposure</div>
-                  </div>
-                  
-                  <div class="flex items-center">
-                    <div class="w-full bg-slate-200 rounded-full h-2.5">
-                      <div class="h-2.5 rounded-full {% if risk_percent < 25 %}bg-emerald-500{% elif risk_percent < 50 %}bg-amber-500{% else %}bg-red-500{% endif %}" style="width: {{ risk_percent }}%"></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              {% endif %}
-              
-              <!-- Enhanced Positions Table -->
-              <div class="bg-white rounded-lg shadow-card overflow-hidden">
-                <div class="border-b p-3 sm:p-4 bg-slate-50 flex justify-between items-center">
-                  <h3 class="font-semibold text-slate-800">Active Positions</h3>
-                  <span class="text-sm text-slate-500">{{ positions|length if positions else 0 }} positions</span>
-                </div>
-                
-                <div class="overflow-x-auto mobile-scroll-x">
-                  <table class="min-w-full divide-y divide-slate-200">
-                    <thead class="bg-slate-50">
-                      <tr>
-                        <th class="py-3 px-4 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Position</th>
-                        <th class="py-3 px-4 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Symbol</th>
-                        <th class="py-3 px-4 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Type</th>
-                        <th class="py-3 px-4 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Volume</th>
-                        <th class="py-3 px-4 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Entry</th>
-                        <th class="py-3 px-4 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">SL/TP</th>
-                        <th class="py-3 px-4 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">P/L</th>
-                        <th class="py-3 px-4 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Status</th>
-                      </tr>
-                    </thead>
-                    <tbody class="divide-y divide-slate-200 bg-white">
-                      {% if positions %} 
-                        {% for pos in positions %}
-                        <tr class="hover:bg-slate-50">
-                          <td class="py-3 px-4 whitespace-nowrap font-medium text-slate-700">#{{ pos.ticket }}</td>
-                          <td class="py-3 px-4 whitespace-nowrap">{{ pos.symbol }}</td>
-                          <td class="py-3 px-4 whitespace-nowrap">
-                            <span class="px-2 py-1 text-xs rounded-full 
-                              {{ 'bg-emerald-100 text-emerald-800' if pos.type == 'BUY' else 'bg-red-100 text-red-800' }}">
-                              {{ pos.type }}
-                            </span>
-                          </td>
-                          <td class="py-3 px-4 whitespace-nowrap">{{ pos.volume }}</td>
-                          <td class="py-3 px-4 whitespace-nowrap">{{ pos.price_open }}</td>
-                          <td class="py-3 px-4 whitespace-nowrap text-xs">
-                            <div class="grid grid-cols-2 gap-1">
-                              <div class="rounded px-1.5 py-0.5 bg-red-50 text-red-700">SL: {{ pos.sl }}</div>
-                              <div class="rounded px-1.5 py-0.5 bg-emerald-50 text-emerald-700">TP: {{ pos.tp }}</div>
-                            </div>
-                          </td>
-                          <td class="py-3 px-4 whitespace-nowrap font-medium {{ 'text-emerald-600' if pos.profit >= 0 else 'text-red-600' }}">
-                            {{ pos.profit|round(2) }}
-                          </td>
-                          <td class="py-3 px-4 whitespace-nowrap">
-                            <div class="flex items-center">
-                              <div class="w-2 h-8 rounded-l-full {{ 'bg-emerald-500' if pos.profit >= 0 else 'bg-red-500' }}"></div>
-                              <div class="w-16 h-8 rounded-r-full flex items-center justify-center {{ 'bg-emerald-100 text-emerald-800' if pos.profit >= 0 else 'bg-red-100 text-red-800' }}">
-                                {{ 'PROFIT' if pos.profit >= 0 else 'LOSS' }}
-                              </div>
-                            </div>
-                          </td>
-                        </tr>
-                        {% endfor %}
-                      {% else %}
-                        <tr>
-                          <td colspan="8" class="py-8 text-center">
-                            <div class="flex flex-col items-center justify-center">
-                              <div class="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center mb-4">
-                                <i class="fas fa-inbox text-slate-400 text-2xl"></i>
-                              </div>
-                              <h3 class="text-lg font-medium text-slate-700 mb-1">No Open Positions</h3>
-                              <p class="text-sm text-slate-500">There are currently no active trading positions.</p>
-                            </div>
-                          </td>
-                        </tr>
-                      {% endif %}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
+            {% include 'partials/open_positions.partial.html' %}
           </div>
-          
-          <!-- Add similar responsive patterns to remaining sections -->
+
           <div id="history" class="dashboard-section hidden">
-            <!-- Executive Dashboard Header -->
-            <div class="bg-gradient-to-r from-slate-800 to-slate-700 text-white rounded-t-lg p-4 sm:p-5 flex flex-wrap sm:flex-nowrap justify-between items-center">
-              <h2 class="text-lg sm:text-xl font-bold w-full sm:w-auto">
-                <i class="fas fa-history mr-2"></i>Trading History Dashboard
-              </h2>
-              <div class="flex items-center mt-2 sm:mt-0 w-full sm:w-auto justify-end">
-                <span class="text-sm opacity-80 mr-3">{{ symbol }}</span>
-                <span class="bg-blue-500 text-xs font-bold px-2.5 py-1 rounded">REPORT</span>
-              </div>
-            </div>
-            
-            <!-- Date Range Filter -->
-            <div class="bg-white p-4 border-b border-slate-200">
-              <form id="history-filter-form" action="/filter_history" method="get" class="flex flex-wrap items-end gap-4">
-                <div>
-                  <label class="block text-xs font-medium text-slate-700 mb-1">From Date</label>
-                  <input type="date" name="from_date" value="{{ from_date }}" class="text-sm bg-white border border-slate-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none">
-                </div>
-                <div>
-                  <label class="block text-xs font-medium text-slate-700 mb-1">To Date</label>
-                  <input type="date" name="to_date" value="{{ to_date }}" class="text-sm bg-white border border-slate-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none">
-                </div>
-                <div>
-                  <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white rounded-md px-4 py-2 text-sm flex items-center">
-                    <i class="fas fa-filter mr-2"></i> Filter History
-                  </button>
-                </div>
-                <div>
-                  <a href="/" class="bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-md px-4 py-2 text-sm flex items-center">
-                    <i class="fas fa-redo mr-2"></i> Reset Filter
-                  </a>
-                </div>
-              </form>
-            </div>
-            
-            <!-- Key Metrics Bar -->
-            <div class="bg-white grid grid-cols-2 sm:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-slate-200 shadow-md">
-              {% set total_trades = history|length if history else 0 %}
-              {% set profitable_trades = history|selectattr('profit', 'ge', 0)|list|length if history else 0 %}
-              {% set win_rate = (profitable_trades / total_trades * 100)|round if total_trades > 0 else 0 %}
-              {% set total_profit = history|sum(attribute='profit') if history else 0 %}
-              
-              <div class="p-3 sm:p-5 text-center">
-                <p class="text-xs uppercase tracking-wider text-slate-500 mb-1 sm:mb-2 font-medium">Total Trades</p>
-                <p class="text-base sm:text-lg font-bold">{{ total_trades }}</p>
-              </div>
-              <div class="p-3 sm:p-5 text-center">
-                <p class="text-xs uppercase tracking-wider text-slate-500 mb-1 sm:mb-2 font-medium">Win Rate</p>
-                <p class="text-base sm:text-lg font-bold">{{ win_rate }}%</p>
-              </div>
-              <div class="p-3 sm:p-5 text-center">
-                <p class="text-xs uppercase tracking-wider text-slate-500 mb-1 sm:mb-2 font-medium">Total P/L</p>
-                <p class="text-base sm:text-lg font-bold {% if total_profit >= 0 %}text-emerald-600{% else %}text-red-600{% endif %}">
-                  <i class="fas {% if total_profit >= 0 %}fa-arrow-up{% else %}fa-arrow-down{% endif %} mr-1"></i>
-                  {{ total_profit }}
-                </p>
-              </div>
-              <div class="p-3 sm:p-5 text-center">
-                <p class="text-xs uppercase tracking-wider text-slate-500 mb-1 sm:mb-2 font-medium">Avg. Profit/Loss</p>
-                <p class="text-base sm:text-lg font-bold">
-                  {% if total_trades > 0 %}
-                    {{ (total_profit / total_trades)|round(2) }}
-                  {% else %}
-                    0
-                  {% endif %}
-                </p>
-              </div>
-            </div>
-            
-            <!-- Dashboard Main Content -->
-            <div class="p-4 sm:p-6 bg-slate-50 mt-4 sm:mt-6">
-              <div class="bg-white rounded-lg shadow-card">
-                <div class="border-b p-3 sm:p-4 flex justify-between items-center">
-                  <h3 class="font-semibold text-slate-800">Trading Performance</h3>
-                  <div class="flex items-center space-x-2">
-                    <span class="text-xs text-slate-500">
-                      Showing trades from <span class="font-medium">{{ from_date }}</span> to <span class="font-medium">{{ to_date }}</span>
-                    </span>
-                  </div>
-                </div>
-                
-                <div class="overflow-x-auto mobile-scroll-x">
-                  {% if history %}
-                    <table class="min-w-full">
-                      <thead>
-                        <tr class="bg-slate-50">
-                          <th class="py-3 px-4 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Ticket</th>
-                          <th class="py-3 px-4 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Symbol</th>
-                          <th class="py-3 px-4 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Type</th>
-                          <th class="py-3 px-4 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Volume</th>
-                          <th class="py-3 px-4 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Entry</th>
-                          <th class="py-3 px-4 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Exit</th>
-                          <th class="py-3 px-4 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">P/L Status</th>
-                          <th class="py-3 px-4 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Profit</th>
-                        </tr>
-                      </thead>
-                      <tbody class="divide-y divide-slate-200">
-                        {% for trade in history %}
-                        <tr class="hover:bg-slate-50">
-                          <td class="py-3 px-4 whitespace-nowrap font-medium text-slate-700">{{ trade.ticket }}</td>
-                          <td class="py-3 px-4 whitespace-nowrap">{{ trade.symbol }}</td>
-                          <td class="py-3 px-4 whitespace-nowrap">
-                            <span class="px-2 py-1 text-xs rounded-full {{ 'bg-emerald-100 text-emerald-800' if trade.type == 'BUY' else 'bg-red-100 text-red-800' }}">
-                              {{ trade.type }}
-                            </span>
-                          </td>
-                          <td class="py-3 px-4 whitespace-nowrap">{{ trade.volume }}</td>
-                          <td class="py-3 px-4 whitespace-nowrap">{{ trade.price_open }}</td>
-                          <td class="py-3 px-4 whitespace-nowrap">{{ trade.price_close }}</td>
-                          <td class="py-3 px-4 whitespace-nowrap">
-                            <div class="flex items-center">
-                              <div class="w-2 h-8 rounded-l-full {{ 'bg-emerald-500' if trade.profit >= 0 else 'bg-red-500' }}"></div>
-                              <div class="w-16 h-8 rounded-r-full flex items-center justify-center {{ 'bg-emerald-100 text-emerald-800' if trade.profit >= 0 else 'bg-red-100 text-red-800' }}">
-                                {{ 'WIN' if trade.profit >= 0 else 'LOSS' }}
-                              </div>
-                            </div>
-                          </td>
-                          <td class="py-3 px-4 whitespace-nowrap font-medium {{ 'text-emerald-600' if trade.profit >= 0 else 'text-red-600' }}">
-                            {{ trade.profit }}
-                          </td>
-                        </tr>
-                        {% endfor %}
-                      </tbody>
-                    </table>
-                  {% else %}
-                    <div class="py-12 text-center">
-                      <div class="mx-auto w-16 h-16 mb-4 bg-slate-100 rounded-full flex items-center justify-center">
-                        <i class="fas fa-chart-line text-slate-400 text-2xl"></i>
-                      </div>
-                      <h3 class="text-lg font-medium text-slate-700 mb-2">No Trading History</h3>
-                      <p class="text-sm text-slate-500 max-w-md mx-auto">
-                        There's no trading history available for this date range. Try adjusting your filter or check back after some trades are completed.
-                      </p>
-                    </div>
-                  {% endif %}
-                </div>
-              </div>
-            </div>
+            {% include 'partials/trading_history.partial.html' %}
           </div>
-          
+
           <div id="logs" class="dashboard-section hidden">
-            <div class="mb-6 flex justify-between items-center">
-              <h2 class="text-xl font-bold text-slate-800">
-                <i class="fas fa-terminal mr-2 text-blue-500"></i>System Logs
-              </h2>
-              <div class="flex space-x-2">
-                <form action="/logs" method="get" class="flex space-x-2">
-                  <select name="level" class="text-sm bg-white border border-slate-300 rounded-md px-2 py-1 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none">
-                    <option value="">All Levels</option>
-                    <option value="DEBUG" {% if log_level == 'DEBUG' %}selected{% endif %}>Debug</option>
-                    <option value="INFO" {% if log_level == 'INFO' %}selected{% endif %}>Info</option>
-                    <option value="WARNING" {% if log_level == 'WARNING' %}selected{% endif %}>Warning</option>
-                    <option value="ERROR" {% if log_level == 'ERROR' %}selected{% endif %}>Error</option>
-                    <option value="CRITICAL" {% if log_level == 'CRITICAL' %}selected{% endif %}>Critical</option>
-                  </select>
-                  <select name="component" class="text-sm bg-white border border-slate-300 rounded-md px-2 py-1 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none">
-                    <option value="">All Components</option>
-                    {% for comp in log_components %}
-                    <option value="{{ comp }}" {% if log_component == comp %}selected{% endif %}>{{ comp }}</option>
-                    {% endfor %}
-                  </select>
-                  <button type="submit" class="bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-md px-3 py-1 text-sm flex items-center">
-                    <i class="fas fa-filter mr-1"></i> Filter
-                  </button>
-                </form>
-                <a href="/logs?refresh=true" class="bg-blue-500 hover:bg-blue-600 text-white rounded-md px-3 py-1 text-sm flex items-center">
-                  <i class="fas fa-sync-alt mr-1"></i> Refresh
-                </a>
-              </div>
-            </div>
-            
-            <div class="bg-white rounded-lg shadow-card overflow-hidden">
-              <div class="border-b p-4 bg-slate-50 flex justify-between items-center">
-                <h3 class="font-semibold text-slate-800">Application Logs</h3>
-                <span class="text-xs text-slate-500">Showing {{ logs|length if logs else 0 }} entries</span>
-              </div>
-              
-              <div class="p-0 max-h-[600px] overflow-y-auto font-mono text-sm">
-                {% if logs %}
-                  <table class="min-w-full divide-y divide-slate-100">
-                    <thead class="bg-slate-50 sticky top-0">
-                      <tr>
-                        <th class="py-2 px-4 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Time</th>
-                        <th class="py-2 px-4 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Level</th>
-                        <th class="py-2 px-4 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Component</th>
-                        <th class="py-2 px-4 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Message</th>
-                      </tr>
-                    </thead>
-                    <tbody class="divide-y divide-slate-200 bg-white">
-                      {% for log in logs %}
-                      <tr class="hover:bg-slate-50">
-                        <td class="py-2 px-4 whitespace-nowrap text-slate-500">{{ log.timestamp }}</td>
-                        <td class="py-2 px-4 whitespace-nowrap">
-                          <span class="px-2 py-1 text-xs rounded-full font-medium {{ log.color }} {% if log.level == 'ERROR' or log.level == 'CRITICAL' %}bg-red-50{% elif log.level == 'WARNING' %}bg-yellow-50{% elif log.level == 'INFO' %}bg-blue-50{% else %}bg-slate-50{% endif %}">
-                            {{ log.level }}
-                          </span>
-                        </td>
-                        <td class="py-2 px-4 whitespace-nowrap text-slate-600">{{ log.component }}</td>
-                        <td class="py-2 px-4 text-slate-700">{{ log.message }}</td>
-                      </tr>
-                      {% endfor %}
-                    </tbody>
-                  </table>
-                {% else %}
-                  <div class="py-8 text-center text-slate-500">
-                    <i class="fas fa-info-circle mr-2"></i>No logs available
-                  </div>
-                {% endif %}
-              </div>
-            </div>
+            {% include 'partials/system_logs.partial.html' %}
           </div>
-          
+
           <div id="account" class="dashboard-section hidden">
-            <!-- Executive Dashboard Header -->
-            <div class="bg-gradient-to-r from-slate-800 to-slate-700 text-white rounded-t-lg p-4 sm:p-5 flex flex-wrap sm:flex-nowrap justify-between items-center">
-              <h2 class="text-lg sm:text-xl font-bold w-full sm:w-auto">
-                <i class="fas fa-wallet mr-2"></i>Account Information Dashboard
-              </h2>
-              <div class="flex items-center mt-2 sm:mt-0 w-full sm:w-auto justify-end">
-                <span class="text-sm opacity-80 mr-3">{{ symbol }}</span>
-                <span class="bg-blue-500 text-xs font-bold px-2.5 py-1 rounded">LIVE</span>
-              </div>
-            </div>
-            
-            <!-- Key Metrics Bar -->
-            <div class="bg-white grid grid-cols-2 sm:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-slate-200 shadow-md">
-              <div class="p-3 sm:p-5 text-center">
-                <p class="text-xs uppercase tracking-wider text-slate-500 mb-1 sm:mb-2 font-medium">Balance</p>
-                <p class="text-base sm:text-lg font-bold">{{ account.balance|round(2) if account else 'N/A' }}</p>
-              </div>
-              <div class="p-3 sm:p-5 text-center">
-                <p class="text-xs uppercase tracking-wider text-slate-500 mb-1 sm:mb-2 font-medium">Equity</p>
-                <p class="text-base sm:text-lg font-bold">{{ account.equity|round(2) if account else 'N/A' }}</p>
-              </div>
-              <div class="p-3 sm:p-5 text-center">
-                <p class="text-xs uppercase tracking-wider text-slate-500 mb-1 sm:mb-2 font-medium">Margin Level</p>
-                {% if account and account.margin and account.margin > 0 %}
-                  {% set margin_level = (account.equity / account.margin * 100)|round(2) %}
-                  <p class="text-base sm:text-lg font-bold 
-                      {% if margin_level > 200 %}text-emerald-600
-                      {% elif margin_level > 100 %}text-amber-500
-                      {% else %}text-red-600{% endif %}">
-                    {{ margin_level }}%
-                  </p>
-                {% else %}
-                  <p class="text-base sm:text-lg font-bold text-slate-600">N/A</p>
-                {% endif %}
-              </div>
-              <div class="p-3 sm:p-5 text-center">
-                <p class="text-xs uppercase tracking-wider text-slate-500 mb-1 sm:mb-2 font-medium">Open Positions</p>
-                <p class="text-base sm:text-lg font-bold">{{ positions|length if positions else 0 }}</p>
-              </div>
-            </div>
-            
-            <!-- Dashboard Main Content -->
-            <div class="p-4 sm:p-6 bg-slate-50 mt-4 sm:mt-6">
-              <div class="grid grid-cols-1 md:grid-cols-4 gap-4 sm:gap-6">
-                <!-- Account Health Card -->
-                <div class="col-span-1 md:col-span-4">
-                  <div class="bg-white rounded-lg shadow-card overflow-hidden h-full">
-                    <div class="border-b p-3 sm:p-4">
-                      <h3 class="font-semibold text-slate-800">Account Health</h3>
-                    </div>
-                    <div class="p-3 sm:p-5">
-                      {% if account and account.margin and account.margin > 0 %}
-                        {% set margin_level = (account.equity / account.margin * 100)|round(2) %}
-                        {% set health_status = "Excellent" if margin_level > 500 else "Good" if margin_level > 200 else "Fair" if margin_level > 100 else "At Risk" %}
-                        {% set health_color = "emerald" if margin_level > 500 else "blue" if margin_level > 200 else "amber" if margin_level > 100 else "red" %}
-                      {% else %}
-                        {% set margin_level = 0 %}
-                        {% set health_status = "Unknown" %}
-                        {% set health_color = "slate" %}
-                      {% endif %}
-                      
-                      <!-- Health Gauge -->
-                      <div class="flex flex-col items-center mb-6">
-                        <div class="relative w-40 h-40 mb-4">
-                          <!-- Background Circle -->
-                          <div class="absolute inset-0 rounded-full bg-slate-100"></div>
-                          <!-- Health Level Indicator (semi-circle) -->
-                          <div class="absolute inset-0 rounded-full bg-{{ health_color }}-100 overflow-hidden">
-                            <div class="absolute bottom-0 left-0 right-0 bg-white" style="height: {{ 100 - min(100, margin_level/10) }}%"></div>
-                          </div>
-                          <!-- Center Content -->
-                          <div class="absolute inset-0 flex flex-col items-center justify-center">
-                            <div class="text-3xl font-bold text-{{ health_color }}-600">
-                              {% if margin_level > 0 %}{{ margin_level }}%{% else %}N/A{% endif %}
-                            </div>
-                            <div class="text-sm font-medium text-slate-500">Margin Level</div>
-                          </div>
-                        </div>
-                        <div class="text-lg font-bold text-{{ health_color }}-600">{{ health_status }}</div>
-                      </div>
-                      
-                      <!-- Health Status Info -->
-                      <div class="space-y-4">
-                        <div class="flex items-center justify-between">
-                          <span class="text-sm text-slate-600">Account Status:</span>
-                          <span class="px-3 py-1 rounded-full text-xs font-medium bg-{{ health_color }}-100 text-{{ health_color }}-800">{{ health_status }}</span>
-                        </div>
-                        <div class="flex items-center justify-between">
-                          <span class="text-sm text-slate-600">Risk Level:</span>
-                          <span class="px-3 py-1 rounded-full text-xs font-medium 
-                            {% if margin_level > 200 %}bg-emerald-100 text-emerald-800
-                            {% elif margin_level > 100 %}bg-amber-100 text-amber-800
-                            {% else %}bg-red-100 text-red-800{% endif %}">
-                            {{ "Low" if margin_level > 200 else "Medium" if margin_level > 100 else "High" }}
-                          </span>
-                        </div>
-                        <div class="flex items-center justify-between">
-                          <span class="text-sm text-slate-600">Margin Call Level:</span>
-                          <span class="px-3 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-800">
-                            100%
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            {% include 'partials/account_info.partial.html' %}
           </div>
-          
+
           <div id="config" class="dashboard-section hidden">
-            <!-- Executive Dashboard Header -->
-            <div class="bg-gradient-to-r from-slate-800 to-slate-700 text-white rounded-t-lg p-4 sm:p-5 flex flex-wrap sm:flex-nowrap justify-between items-center">
-              <h2 class="text-lg sm:text-xl font-bold w-full sm:w-auto">
-                <i class="fas fa-cog mr-2"></i>Bot Configuration Dashboard
-              </h2>
-              <div class="flex items-center mt-2 sm:mt-0 w-full sm:w-auto justify-end">
-                <span class="text-sm opacity-80 mr-3">{{ symbol }}</span>
-                <span class="bg-blue-500 text-xs font-bold px-2.5 py-1 rounded">CONFIG</span>
-              </div>
-            </div>
-            
-            <div class="p-4 sm:p-6 bg-slate-50 mt-4 sm:mt-6">
-              <!-- Profile Management Section -->
-              <div class="bg-white rounded-lg shadow-card p-6 mb-6">
-                <h3 class="text-lg font-medium text-slate-800 mb-4">Profile Management</h3>
-                
-                <div class="flex flex-wrap items-end gap-4">
-                  <div class="w-full md:w-auto flex-grow">
-                    <label class="block text-sm font-medium text-slate-700 mb-1">
-                      Select Profile
-                    </label>
-                    <select id="profile-select" class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition">
-                      <option value="">-- Select a profile --</option>
-                      {% for profile in profiles %}
-                        <option value="{{ profile }}">{{ profile }}</option>
-                      {% endfor %}
-                    </select>
-                  </div>
-                  
-                  <div class="w-full md:w-auto flex-grow">
-                    <label class="block text-sm font-medium text-slate-700 mb-1">
-                      New Profile Name
-                    </label>
-                    <input type="text" id="new-profile-name" placeholder="Enter profile name" 
-                      class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition" />
-                  </div>
-                  
-                  <div class="flex space-x-2">
-                    <button id="save-profile-btn" class="px-4 py-2 bg-emerald-500 text-white rounded-md shadow-sm hover:bg-emerald-600 transition flex items-center justify-center">
-                      <i class="fas fa-save mr-2"></i>
-                      Save as Profile
-                    </button>
-                    
-                    <button id="load-profile-btn" class="px-4 py-2 bg-blue-500 text-white rounded-md shadow-sm hover:bg-blue-600 transition flex items-center justify-center">
-                      <i class="fas fa-download mr-2"></i>
-                      Load
-                    </button>
-                    
-                    <button id="delete-profile-btn" class="px-4 py-2 bg-red-500 text-white rounded-md shadow-sm hover:bg-red-600 transition flex items-center justify-center">
-                      <i class="fas fa-trash-alt mr-2"></i>
-                      Delete
-                    </button>
-                  </div>
-                </div>
-                
-                <!-- Alert Messages -->
-                <div id="profile-message" class="mt-4 hidden"></div>
-              </div>
-              
-              <div class="bg-white rounded-lg shadow-card p-6 mb-6">
-                <h3 class="text-lg font-medium text-slate-800 mb-4">Strategy Selection</h3>
-                
-                <div class="flex flex-wrap items-end gap-4">
-                  <div class="w-full md:w-auto flex-grow">
-                    <label class="block text-sm font-medium text-slate-700 mb-1">
-                      Trading Strategy
-                    </label>
-                    <select id="strategy-select" name="active_strategy" class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition">
-                      {% for strategy_id, strategy in available_strategies.items() %}
-                        <option value="{{ strategy_id }}" {% if config.active_strategy == strategy_id %}selected{% endif %}>
-                          {{ strategy.name|title }}
-                        </option>
-                      {% endfor %}
-                    </select>
-                  </div>
-                  
-                  <div class="w-full">
-                    <div id="strategy-description" class="text-sm text-slate-600 p-3 bg-slate-50 rounded-md">
-                      {% if config.active_strategy in available_strategies %}
-                        {{ available_strategies[config.active_strategy].description }}
-                      {% else %}
-                        Please select a trading strategy.
-                      {% endif %}
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-              <!-- Update Configuration Form -->
-              <div class="bg-white rounded-lg shadow-card p-6">
-                <form action="/update_config" method="post" class="space-y-4">
-                  <input type="hidden" name="active_strategy" id="active-strategy-input" value="{{ config.active_strategy }}">
-                  
-                  <!-- Common Settings Section -->
-                  <div class="border-b pb-4 mb-4">
-                    <h3 class="text-lg font-medium text-slate-800 mb-4">Common Settings</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div class="mb-4">
-                        <label class="block text-sm font-medium text-slate-700 mb-1">
-                          Symbol:
-                        </label>
-                        <input 
-                          name="symbol" 
-                          value="{{ config.symbol }}" 
-                          class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition"
-                        />
-                      </div>
-                      
-                      <div class="mb-4">
-                        <label class="block text-sm font-medium text-slate-700 mb-1">
-                          Lot Size:
-                        </label>
-                        <input 
-                          name="lot_size" 
-                          value="{{ config.lot_size }}" 
-                          class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition"
-                        />
-                      </div>
-                      
-                      <div class="mb-4">
-                        <label class="block text-sm font-medium text-slate-700 mb-1">
-                          Stop Loss (pips):
-                        </label>
-                        <input 
-                          name="stop_loss_pips" 
-                          value="{{ config.stop_loss_pips }}" 
-                          class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition"
-                        />
-                      </div>
-                      
-                      <div class="mb-4">
-                        <label class="block text-sm font-medium text-slate-700 mb-1">
-                          Take Profit (pips):
-                        </label>
-                        <input 
-                          name="take_profit_pips" 
-                          value="{{ config.take_profit_pips }}" 
-                          class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition"
-                        />
-                      </div>
-                      
-                      <div class="mb-4">
-                        <label class="block text-sm font-medium text-slate-700 mb-1">
-                          Max Positions:
-                        </label>
-                        <input 
-                          name="max_positions" 
-                          value="{{ config.max_positions }}" 
-                          class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition"
-                        />
-                      </div>
-                      
-                      <div class="mb-4">
-                        <label class="block text-sm font-medium text-slate-700 mb-1">
-                          Update Interval (seconds):
-                        </label>
-                        <input 
-                          name="update_interval" 
-                          value="{{ config.update_interval }}" 
-                          class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <!-- Risk Management Settings -->
-                  <div class="border-b pb-4 mb-4">
-                    <h3 class="text-lg font-medium text-slate-800 mb-4">Risk Management Settings</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div class="mb-4">
-                        <label class="block text-sm font-medium text-slate-700 mb-1">
-                          Break Even Pips:
-                        </label>
-                        <input 
-                          name="break_even_pips" 
-                          value="{{ config.break_even_pips }}" 
-                          class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition"
-                        />
-                      </div>
-                      
-                      <div class="mb-4">
-                        <label class="block text-sm font-medium text-slate-700 mb-1">
-                          Break Even Buffer Pips:
-                        </label>
-                        <input 
-                          name="break_even_buffer_pips" 
-                          value="{{ config.break_even_buffer_pips }}" 
-                          class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition"
-                        />
-                      </div>
-                      
-                      <div class="mb-4">
-                        <label class="block text-sm font-medium text-slate-700 mb-1">
-                          Partial Close Enabled:
-                        </label>
-                        <select
-                          name="partial_close_enabled"
-                          class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition"
-                        >
-                          <option value="true" {% if config.partial_close_enabled %}selected{% endif %}>Enabled</option>
-                          <option value="false" {% if not config.partial_close_enabled %}selected{% endif %}>Disabled</option>
-                        </select>
-                      </div>
-                      
-                      <div class="mb-4">
-                        <label class="block text-sm font-medium text-slate-700 mb-1">
-                          Partial Close Percentage:
-                        </label>
-                        <input 
-                          name="partial_close_pct" 
-                          value="{{ config.partial_close_pct }}" 
-                          class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition"
-                        />
-                      </div>
-                      
-                      <div class="mb-4">
-                        <label class="block text-sm font-medium text-slate-700 mb-1">
-                          Partial Close Pips:
-                        </label>
-                        <input 
-                          name="partial_close_pips" 
-                          value="{{ config.partial_close_pips }}" 
-                          class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <!-- Market Structure Strategy Settings -->
-                  <div id="market_structure-settings" class="strategy-settings border-b pb-4 mb-4 {% if config.active_strategy != 'market_structure' %}hidden{% endif %}">
-                    <h3 class="text-lg font-medium text-slate-800 mb-4">Market Structure Strategy Settings</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div class="mb-4">
-                        <label class="block text-sm font-medium text-slate-700 mb-1">
-                          Pivot Depth:
-                        </label>
-                        <input 
-                          name="pivot_depth" 
-                          value="{{ config.pivot_depth }}" 
-                          class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition"
-                        />
-                      </div>
-                      
-                      <div class="mb-4">
-                        <label class="block text-sm font-medium text-slate-700 mb-1">
-                          Break Buffer (pips):
-                        </label>
-                        <input 
-                          name="break_buffer_pips" 
-                          value="{{ config.break_buffer_pips }}" 
-                          class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition"
-                        />
-                      </div>
-                      
-                      <div class="mb-4">
-                        <label class="block text-sm font-medium text-slate-700 mb-1">
-                          ATR Period:
-                        </label>
-                        <input 
-                          name="atr_period" 
-                          value="{{ config.atr_period }}" 
-                          class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition"
-                        />
-                      </div>
-                      
-                      <div class="mb-4">
-                        <label class="block text-sm font-medium text-slate-700 mb-1">
-                          ATR Multiplier SL:
-                        </label>
-                        <input 
-                          name="atr_multiplier_sl" 
-                          value="{{ config.atr_multiplier_sl }}" 
-                          class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition"
-                        />
-                      </div>
-                      
-                      <div class="mb-4">
-                        <label class="block text-sm font-medium text-slate-700 mb-1">
-                          ATR Multiplier TP:
-                        </label>
-                        <input 
-                          name="atr_multiplier_tp" 
-                          value="{{ config.atr_multiplier_tp }}" 
-                          class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <!-- Stochastic Oscillator Strategy Settings -->
-                  <div id="stochastic-settings" class="strategy-settings border-b pb-4 mb-4 {% if config.active_strategy != 'stochastic' %}hidden{% endif %}">
-                    <h3 class="text-lg font-medium text-slate-800 mb-4">Stochastic Oscillator Strategy Settings</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div class="mb-4">
-                        <label class="block text-sm font-medium text-slate-700 mb-1">
-                          %K Period:
-                        </label>
-                        <input 
-                          name="stoch_k_period" 
-                          value="{{ config.stoch_k_period }}" 
-                          class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition"
-                        />
-                      </div>
-                      
-                      <div class="mb-4">
-                        <label class="block text-sm font-medium text-slate-700 mb-1">
-                          %D Period:
-                        </label>
-                        <input 
-                          name="stoch_d_period" 
-                          value="{{ config.stoch_d_period }}" 
-                          class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition"
-                        />
-                      </div>
-                      
-                      <div class="mb-4">
-                        <label class="block text-sm font-medium text-slate-700 mb-1">
-                          Slowing:
-                        </label>
-                        <input 
-                          name="stoch_slowing" 
-                          value="{{ config.stoch_slowing }}" 
-                          class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition"
-                        />
-                      </div>
-                      
-                      <div class="mb-4">
-                        <label class="block text-sm font-medium text-slate-700 mb-1">
-                          Overbought Level:
-                        </label>
-                        <input 
-                          name="stoch_overbought" 
-                          value="{{ config.stoch_overbought }}" 
-                          class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition"
-                        />
-                      </div>
-                      
-                      <div class="mb-4">
-                        <label class="block text-sm font-medium text-slate-700 mb-1">
-                          Oversold Level:
-                        </label>
-                        <input 
-                          name="stoch_oversold" 
-                          value="{{ config.stoch_oversold }}" 
-                          class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition"
-                        />
-                      </div>
-                      
-                      <div class="mb-4">
-                        <label class="block text-sm font-medium text-slate-700 mb-1">
-                          Trend Detection Method:
-                        </label>
-                        <select
-                          name="stoch_trend_detection"
-                          class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition"
-                        >
-                          <option value="SMA" {% if config.stoch_trend_detection == 'SMA' %}selected{% endif %}>Simple Moving Average</option>
-                          <option value="EMA" {% if config.stoch_trend_detection == 'EMA' %}selected{% endif %}>Exponential Moving Average</option>
-                          <option value="NONE" {% if config.stoch_trend_detection == 'NONE' %}selected{% endif %}>No Trend Filter</option>
-                        </select>
-                      </div>
-                      
-                      <div class="mb-4">
-                        <label class="block text-sm font-medium text-slate-700 mb-1">
-                          Trend Period:
-                        </label>
-                        <input 
-                          name="stoch_trend_period" 
-                          value="{{ config.stoch_trend_period }}" 
-                          class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <button type="submit" class="w-full md:w-auto mt-6 px-6 py-2 bg-blue-500 text-white rounded-md shadow-sm hover:bg-blue-600 transition flex items-center justify-center">
-                    <i class="fas fa-save mr-2"></i>
-                    Update Configuration
-                  </button>
-                </form>
-              </div>
-            </div>
+            {% include 'partials/configuration.partial.html' %}
           </div>
         </div>
       </main>
     </div>
-    
+
     <!-- Mobile Navigation -->
     <div class="mobile-nav-bar">
-      <button onclick="showSection('market_structure')" class="mobile-nav-item" id="mobile-nav-market">
+      <button
+        onclick="showSection('market_structure')"
+        class="mobile-nav-item"
+        id="mobile-nav-market"
+      >
         <i class="fas fa-chart-bar"></i>
         <span>Market</span>
       </button>
       {% if config.active_strategy == 'stochastic' %}
-      <button onclick="showSection('stochastic_dashboard')" class="mobile-nav-item" id="mobile-nav-stochasticdashboard">
+      <button
+        onclick="showSection('stochastic_dashboard')"
+        class="mobile-nav-item"
+        id="mobile-nav-stochasticdashboard"
+      >
         <i class="fas fa-wave-square"></i>
         <span>Stoch</span>
       </button>
       {% endif %}
-      <button onclick="showSection('positions')" class="mobile-nav-item" id="mobile-nav-positions">
+      <button
+        onclick="showSection('positions')"
+        class="mobile-nav-item"
+        id="mobile-nav-positions"
+      >
         <i class="fas fa-list-ul"></i>
         <span>Positions</span>
       </button>
@@ -1834,11 +667,19 @@
         <i class="fas fa-chart-line"></i>
         <span>Chart</span>
       </a>
-      <button onclick="showSection('history')" class="mobile-nav-item" id="mobile-nav-history">
+      <button
+        onclick="showSection('history')"
+        class="mobile-nav-item"
+        id="mobile-nav-history"
+      >
         <i class="fas fa-history"></i>
         <span>History</span>
       </button>
-      <button onclick="showSection('config')" class="mobile-nav-item" id="mobile-nav-config">
+      <button
+        onclick="showSection('config')"
+        class="mobile-nav-item"
+        id="mobile-nav-config"
+      >
         <i class="fas fa-cog"></i>
         <span>Settings</span>
       </button>
@@ -1850,14 +691,14 @@
         const navToggle = document.getElementById('nav-toggle');
         const sidebar = document.querySelector('.sidebar');
         const sidebarModal = document.getElementById('sidebar-modal');
-        
+
         navToggle.addEventListener('click', function() {
           sidebar.classList.toggle('hidden');
           sidebar.classList.toggle('active');
           sidebarModal.classList.toggle('active');
           document.body.classList.toggle('overflow-hidden');
         });
-        
+
         sidebarModal.addEventListener('click', function() {
           sidebar.classList.add('hidden');
           sidebar.classList.remove('active');
@@ -1872,27 +713,27 @@
         document.querySelectorAll('.dashboard-section').forEach(section => {
           section.classList.add('hidden');
         });
-        
+
         // Show selected section
         document.getElementById(sectionId).classList.remove('hidden');
-        
+
         // Update sidebar nav buttons
         document.querySelectorAll('.nav-btn').forEach(btn => {
           btn.classList.remove('active');
         });
-        
+
         const activeButton = document.querySelector(`[onclick="showSection('${sectionId}')"]`);
         if (activeButton) {
           activeButton.classList.add('active');
         }
-        
+
         // Update mobile nav buttons
         document.querySelectorAll('.mobile-nav-item').forEach(item => {
           item.classList.remove('active');
         });
-        
+
         document.getElementById(`mobile-nav-${sectionId.replace('_', '')}`).classList.add('active');
-        
+
         // Close sidebar on mobile if open
         const sidebar = document.querySelector('.sidebar');
         const sidebarModal = document.getElementById('sidebar-modal');
@@ -1902,24 +743,24 @@
           sidebarModal.classList.remove('active');
           document.body.classList.remove('overflow-hidden');
         }
-        
+
         // Update URL hash
         history.pushState(null, null, '#' + sectionId);
       }
-      
+
       // Set initial section and mobile nav state
       document.addEventListener("DOMContentLoaded", function() {
         let sectionId = 'market_structure';
-        
+
         if (window.location.hash) {
           const hash = window.location.hash.substring(1);
           if (document.getElementById(hash)) {
             sectionId = hash;
           }
         }
-        
+
         showSection(sectionId);
-        
+
         // Initialize mobile nav
         const mobileNav = document.getElementById(`mobile-nav-${sectionId.replace('_', '')}`);
         if (mobileNav) {
@@ -1935,7 +776,7 @@
         const profileSelect = document.getElementById('profile-select');
         const newProfileName = document.getElementById('new-profile-name');
         const profileMessage = document.getElementById('profile-message');
-        
+
         // Show message function
         function showMessage(message, type) {
           profileMessage.innerHTML = `
@@ -1949,7 +790,7 @@
             profileMessage.classList.add('hidden');
           }, 3000);
         }
-        
+
         // utility: update form inputs from config object
         function updateConfigForm(cfg) {
           console.debug('[DEBUG] updateConfigForm with cfg:', cfg);
@@ -1993,7 +834,7 @@
             showMessage('Please enter a profile name', 'error');
             return;
           }
-          
+
           fetch('/save_profile', {
             method: 'POST',
             headers: {
@@ -2005,7 +846,7 @@
           .then(data => {
             if (data.success) {
               showMessage(`Profile "${profileName}" saved successfully`, 'success');
-              
+
               // Add new profile to select if not exists
               if (!Array.from(profileSelect.options).find(opt => opt.value === profileName)) {
                 const option = document.createElement('option');
@@ -2013,7 +854,7 @@
                 option.textContent = profileName;
                 profileSelect.appendChild(option);
               }
-              
+
               // Select the newly saved profile
               profileSelect.value = profileName;
               newProfileName.value = '';
@@ -2026,7 +867,7 @@
             console.error('Error:', error);
           });
         });
-        
+
         // Load profile
         loadProfileBtn.addEventListener('click', function() {
           const profileName = profileSelect.value;
@@ -2034,7 +875,7 @@
             showMessage('Please select a profile to load', 'error');
             return;
           }
-          
+
           fetch(`/load_profile?name=${encodeURIComponent(profileName)}`)
             .then(response => response.json())
             .then(data => {
@@ -2055,7 +896,7 @@
               console.error('Error:', error);
             });
         });
-        
+
         // Delete profile
         deleteProfileBtn.addEventListener('click', function() {
           const profileName = profileSelect.value;
@@ -2063,20 +904,20 @@
             showMessage('Please select a profile to delete', 'error');
             return;
           }
-          
+
           if (confirm(`Are you sure you want to delete the profile "${profileName}"?`)) {
             fetch(`/delete_profile?name=${encodeURIComponent(profileName)}`)
               .then(response => response.json())
               .then(data => {
                 if (data.success) {
                   showMessage(`Profile "${profileName}" deleted successfully`, 'success');
-                  
+
                   // Remove the option from the select
                   const option = Array.from(profileSelect.options).find(opt => opt.value === profileName);
                   if (option) {
                     profileSelect.removeChild(option);
                   }
-                  
+
                   profileSelect.value = '';
                 } else {
                   showMessage(data.message || 'Failed to delete profile', 'error');
@@ -2096,29 +937,29 @@
         const activeStrategyInput = document.getElementById('active-strategy-input');
         const strategyDescription = document.getElementById('strategy-description');
         const strategySettings = document.querySelectorAll('.strategy-settings');
-        
+
         // Strategy descriptions
         const strategyDescriptions = {
           {% for strategy_id, strategy in available_strategies.items() %}
             "{{ strategy_id }}": `{{ strategy.description }}`,
           {% endfor %}
         };
-        
+
         // Handle strategy selection change
         strategySelect.addEventListener('change', function() {
           const selectedStrategy = this.value;
-          
+
           // Update hidden input
           activeStrategyInput.value = selectedStrategy;
-          
+
           // Update strategy description
           strategyDescription.textContent = strategyDescriptions[selectedStrategy] || 'No description available';
-          
+
           // Show/hide strategy-specific settings
           strategySettings.forEach(section => {
             section.classList.add('hidden');
           });
-          
+
           const selectedSettings = document.getElementById(`${selectedStrategy}-settings`);
           if (selectedSettings) {
             selectedSettings.classList.remove('hidden');
