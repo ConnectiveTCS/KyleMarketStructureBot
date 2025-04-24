@@ -376,7 +376,11 @@
                 <i class="fas fa-chart-bar mr-2"></i>Market Structure
                 <span class="text-blue-300 text-sm sm:text-base block sm:inline mt-1 sm:mt-0">{{ symbol }}</span>
               </h2>
-              <div class="flex items-center mt-2 sm:mt-0 w-full sm:w-auto justify-end">
+              <div class="flex items-center mt-2 sm:mt-0 w-full sm:w-auto justify-end space-x-2">
+                <a href="/chart/{{ symbol }}" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-2.5 py-1 rounded flex items-center">
+                  <i class="fas fa-chart-line mr-1"></i>
+                  <span>View Chart</span>
+                </a>
                 <span class="bg-blue-500 text-xs font-bold px-2.5 py-1 rounded">LIVE</span>
               </div>
             </div>
@@ -1437,13 +1441,13 @@
         <i class="fas fa-list-ul"></i>
         <span>Positions</span>
       </button>
+      <a href="/chart/{{ symbol }}" class="mobile-nav-item">
+        <i class="fas fa-chart-line"></i>
+        <span>Chart</span>
+      </a>
       <button onclick="showSection('history')" class="mobile-nav-item" id="mobile-nav-history">
         <i class="fas fa-history"></i>
         <span>History</span>
-      </button>
-      <button onclick="showSection('account')" class="mobile-nav-item" id="mobile-nav-account">
-        <i class="fas fa-wallet"></i>
-        <span>Account</span>
       </button>
       <button onclick="showSection('config')" class="mobile-nav-item" id="mobile-nav-config">
         <i class="fas fa-cog"></i>

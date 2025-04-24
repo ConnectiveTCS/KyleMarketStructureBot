@@ -491,6 +491,209 @@ def get_config():
     except Exception as e:
         return jsonify({'success': False, 'message': str(e)}), 500
 
+# Chart view route
+@app.route('/chart/<symbol>')
+def chart_view(symbol):
+    """Render the chart view for a specific symbol"""
+    return render_template('chart_view.html', symbol=symbol)
+
+# API endpoint for candle data
+@app.route('/api/candles')
+def get_candles():
+    """API endpoint to get candlestick data for a specific symbol and timeframe"""
+    symbol = request.args.get('symbol', '')
+    timeframe = request.args.get('timeframe', '1h')
+    
+    try:
+        # In a real implementation, you would fetch data from your trading platform
+        # or market data provider here. This is just demo data.
+        
+        # For this example, I'll generate some random candle data
+        candles = generate_demo_candles(timeframe)
+        
+        # Get pivot points if available
+        pivots = get_pivot_points(symbol, timeframe)
+        
+        return jsonify({
+            'success': True,
+            'symbol': symbol,
+            'timeframe': timeframe,
+            'candles': candles,
+            'pivots': pivots
+        })
+    except Exception as e:
+        app.logger.error(f"Error getting candle data: {str(e)}")
+        return jsonify({
+            'success': False,
+            'message': f"Error getting candle data: {str(e)}"
+        })
+
+# API endpoint for indicators
+@app.route('/api/indicator')
+def get_indicator():
+    """API endpoint to get indicator data"""
+    symbol = request.args.get('symbol', '')
+    indicator_type = request.args.get('type', '')
+    period = int(request.args.get('period', 14))
+    timeframe = request.args.get('timeframe', '1h')
+    
+    try:
+        # In a real implementation, you would calculate indicators based on
+        # actual price data. This is just demo data.
+        
+        # For this example, I'll generate some random indicator values
+        values = generate_demo_indicator(timeframe, indicator_type, period)
+        
+        return jsonify({
+            'success': True,
+            'symbol': symbol,
+            'type': indicator_type,
+            'period': period,
+            'values': values
+        })
+    except Exception as e:
+        app.logger.error(f"Error getting indicator data: {str(e)}")
+        return jsonify({
+            'success': False,
+            'message': f"Error getting indicator data: {str(e)}"
+        })
+
+# Helper function to generate demo candle data
+def generate_demo_candles(timeframe):
+    """Generate demo candle data for testing"""
+    candles = []
+    now = int(time.time())
+    
+    # Determine candlestick interval based on timeframe
+    if timeframe.endswith('h'):
+        interval = 3600 * int(timeframe[:-1])
+    elif timeframe.endswith('d'):
+        interval = 86400 * int(timeframe[:-1])
+    elif timeframe.endswith('w'):
+        interval = 604800 * int(timeframe[:-1])
+    elif timeframe.endswith('m'):
+        interval = 2592000 * int(timeframe[:-1])
+    else:
+        interval = 3600  # Default to 1 hour
+    
+    # Start price around 100
+    base_price = 100
+    price = base_price
+    
+    # Generate 100 candles
+    for i in range(100):
+        # Calculate timestamp for this candle
+        timestamp = now - (99 - i) * interval
+        
+        # Generate random price movements
+        price_change = random.uniform(-2, 2)
+        price += price_change
+        
+        open_price = price
+        close_price = price + random.uniform(-1, 1)
+        high_price = max(open_price, close_price) + random.uniform(0, 1)
+        low_price = min(open_price, close_price) - random.uniform(0, 1)
+        
+        candles.append({
+            'time': timestamp,
+            'open': round(open_price, 2),
+            'high': round(high_price, 2),
+            'low': round(low_price, 2),
+            'close': round(close_price, 2)
+        })
+    
+    return candles
+
+# Helper function to generate demo indicator values
+def generate_demo_indicator(timeframe, indicator_type, period):
+    """Generate demo indicator values for testing"""
+    values = []
+    now = int(time.time())
+    
+    # Determine interval based on timeframe
+    if timeframe.endswith('h'):
+        interval = 3600 * int(timeframe[:-1])
+    elif timeframe.endswith('d'):
+        interval = 86400 * int(timeframe[:-1])
+    elif timeframe.endswith('w'):
+        interval = 604800 * int(timeframe[:-1])
+    elif timeframe.endswith('m'):
+        interval = 2592000 * int(timeframe[:-1])
+    else:
+        interval = 3600  # Default to 1 hour
+    
+    # Start value around 100
+    base_value = 100
+    value = base_value
+    
+    # Generate 100 values
+    for i in range(100):
+        # Calculate timestamp for this value
+        timestamp = now - (99 - i) * interval
+        
+        # Generate random value movements (smoother for indicators)
+        if indicator_type == 'sma':
+            value = base_value + random.uniform(-5, 5)
+        elif indicator_type == 'ema':
+            value = base_value + random.uniform(-3, 3) + (i * 0.05)
+        else:
+            value = base_value + random.uniform(-4, 4)
+        
+        values.append({
+            'time': timestamp,
+            'value': round(value, 2)
+        })
+    
+    return values
+
+# Helper function to get pivot points
+def get_pivot_points(symbol, timeframe):
+    """Get pivot points for a symbol and timeframe"""
+    # In a real implementation, you would fetch actual pivot points
+    # from your market structure analysis. This is just demo data.
+    
+    # Generate a few random pivot highs and lows
+    now = int(time.time())
+    
+    # Determine interval based on timeframe
+    if timeframe.endswith('h'):
+        interval = 3600 * int(timeframe[:-1])
+    elif timeframe.endswith('d'):
+        interval = 86400 * int(timeframe[:-1])
+    elif timeframe.endswith('w'):
+        interval = 604800 * int(timeframe[:-1])
+    elif timeframe.endswith('m'):
+        interval = 2592000 * int(timeframe[:-1])
+    else:
+        interval = 3600  # Default to 1 hour
+    
+    base_price = 100
+    
+    # Generate some pivot highs
+    pivot_highs = []
+    for i in range(1, 6):  # 5 pivot highs
+        timestamp = now - (90 - i * 15) * interval  # Spread them out
+        value = base_price + random.uniform(5, 10)  # Higher than base price
+        pivot_highs.append({
+            'time': timestamp,
+            'value': round(value, 2)
+        })
+    
+    # Generate some pivot lows
+    pivot_lows = []
+    for i in range(1, 6):  # 5 pivot lows
+        timestamp = now - (82 - i * 15) * interval  # Offset from highs
+        value = base_price - random.uniform(3, 8)  # Lower than base price
+        pivot_lows.append({
+            'time': timestamp,
+            'value': round(value, 2)
+        })
+    
+    return {
+        'highs': pivot_highs,
+        'lows': pivot_lows
+    }
+
 if __name__ == '__main__':
     # When running as a service, bind to all interfaces (0.0.0.0)
     # and don't use debug mode

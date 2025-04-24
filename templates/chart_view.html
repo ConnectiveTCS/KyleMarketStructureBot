@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Lightweight Charts -->
+    <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
+    <title>{{ symbol }} Chart | Market Structure Bot</title>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: "#1e3a8a",
+              secondary: "#334155",
+              success: "#059669",
+              danger: "#dc2626",
+              warning: "#d97706",
+              info: "#0284c7",
+            },
+            fontFamily: {
+              sans: ["Inter", "sans-serif"],
+            },
+            boxShadow: {
+              card: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1)",
+              "card-hover":
+                "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1)",
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+      }
+      header {
+        background: #1e293b;
+        color: white;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      }
+      .header-brand {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: white;
+      }
+      .header-btn {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.5rem;
+        border-radius: 0.375rem;
+      }
+      .toolbar-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.375rem 0.75rem;
+        border-radius: 0.375rem;
+        transition: all 0.15s ease;
+        font-size: 0.875rem;
+        font-weight: 500;
+      }
+      .toolbar-btn:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
+      }
+      .toolbar-btn.active {
+        background-color: #1e40af;
+        color: white;
+      }
+      .chart-container {
+        width: 100%;
+        height: calc(100vh - 160px);
+        min-height: 400px;
+      }
+
+      /* Responsive styling */
+      @media (max-width: 768px) {
+        .chart-container {
+          height: calc(100vh - 220px);
+        }
+
+        .touch-target {
+          min-height: 44px;
+          min-width: 44px;
+        }
+
+        .toolbar-overflow {
+          overflow-x: auto;
+          -webkit-overflow-scrolling: touch;
+          padding-bottom: 0.5rem;
+        }
+      }
+    </style>
+  </head>
+  <body class="bg-slate-100 text-slate-800">
+    <!-- header -->
+    <header class="flex items-center justify-between px-4 sm:px-6 py-3">
+      <div class="flex items-center space-x-2 sm:space-x-4">
+        <a
+          href="/"
+          class="header-btn text-white hover:bg-white/10 touch-target flex items-center"
+        >
+          <i class="fas fa-arrow-left mr-2"></i>
+          <span>Back to Dashboard</span>
+        </a>
+      </div>
+      <div class="header-brand flex items-center">
+        <i class="fas fa-chart-line mr-2"></i>
+        <span class="hidden sm:inline">{{ symbol }} Chart</span>
+        <span class="inline sm:hidden">{{ symbol }}</span>
+      </div>
+      <div class="flex items-center space-x-2 sm:space-x-4">
+        <button
+          id="refresh-btn"
+          class="header-btn bg-blue-500 text-white hover:bg-blue-600 touch-target flex items-center"
+        >
+          <i class="fas fa-sync-alt"></i>
+          <span class="hidden sm:inline ml-1">Refresh</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Chart Toolbar -->
+    <div
+      class="bg-white border-b border-slate-200 p-3 sticky top-0 z-10 shadow-sm"
+    >
+      <div class="flex flex-wrap justify-between items-center">
+        <div class="flex space-x-1 toolbar-overflow">
+          <button
+            class="toolbar-btn bg-slate-100 hover:bg-slate-200 timeframe-btn active"
+            data-tf="1H"
+          >
+            1H
+          </button>
+          <button
+            class="toolbar-btn bg-slate-100 hover:bg-slate-200 timeframe-btn"
+            data-tf="4H"
+          >
+            4H
+          </button>
+          <button
+            class="toolbar-btn bg-slate-100 hover:bg-slate-200 timeframe-btn"
+            data-tf="1D"
+          >
+            D1
+          </button>
+          <button
+            class="toolbar-btn bg-slate-100 hover:bg-slate-200 timeframe-btn"
+            data-tf="1W"
+          >
+            W1
+          </button>
+          <button
+            class="toolbar-btn bg-slate-100 hover:bg-slate-200 timeframe-btn"
+            data-tf="1M"
+          >
+            MN
+          </button>
+        </div>
+        <div class="flex space-x-1 mt-2 sm:mt-0 toolbar-overflow">
+          <button
+            class="toolbar-btn bg-slate-100 hover:bg-slate-200 indicator-btn"
+            data-indicator="sma"
+          >
+            <i class="fas fa-chart-line mr-1"></i>SMA
+          </button>
+          <button
+            class="toolbar-btn bg-slate-100 hover:bg-slate-200 indicator-btn"
+            data-indicator="ema"
+          >
+            <i class="fas fa-chart-line mr-1"></i>EMA
+          </button>
+          <button
+            class="toolbar-btn bg-slate-100 hover:bg-slate-200 indicator-btn"
+            data-indicator="bollinger"
+          >
+            <i class="fas fa-chart-area mr-1"></i>Bollinger
+          </button>
+          <button
+            class="toolbar-btn bg-slate-100 hover:bg-slate-200 indicator-btn"
+            data-indicator="volume"
+          >
+            <i class="fas fa-chart-bar mr-1"></i>Volume
+          </button>
+          <button
+            id="toggle-pivots"
+            class="toolbar-btn bg-slate-100 hover:bg-slate-200"
+          >
+            <i class="fas fa-project-diagram mr-1"></i>Pivots
+          </button>
+        </div>
+      </div>
+      <div class="flex justify-between items-center mt-3">
+        <div class="text-sm font-medium text-slate-600">
+          <span id="chart-symbol" class="mr-2">{{ symbol }}</span>
+          <span id="chart-timeframe">1H</span>
+        </div>
+        <div id="chart-price" class="text-sm font-medium text-slate-600">
+          Loading price...
+        </div>
+      </div>
+    </div>
+
+    <!-- Chart Container -->
+    <div class="p-3 sm:p-6">
+      <div
+        id="chart-container"
+        class="chart-container bg-white rounded-lg shadow-card"
+      ></div>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        // Chart initialization
+        const chartContainer = document.getElementById("chart-container");
+        const chart = LightweightCharts.createChart(chartContainer, {
+          width: chartContainer.clientWidth,
+          height: chartContainer.clientHeight,
+          layout: {
+            backgroundColor: "#ffffff",
+            textColor: "#333",
+            fontSize: 12,
+            fontFamily: "Inter, sans-serif",
+          },
+          grid: {
+            vertLines: {
+              color: "rgba(224, 227, 235, 0.6)",
+            },
+            horzLines: {
+              color: "rgba(224, 227, 235, 0.6)",
+            },
+          },
+          crosshair: {
+            mode: LightweightCharts.CrosshairMode.Normal,
+            vertLine: {
+              width: 1,
+              color: "rgba(30, 58, 138, 0.5)",
+              style: LightweightCharts.LineStyle.Dashed,
+            },
+            horzLine: {
+              width: 1,
+              color: "rgba(30, 58, 138, 0.5)",
+              style: LightweightCharts.LineStyle.Dashed,
+            },
+          },
+          timeScale: {
+            borderColor: "#e5e7eb",
+            timeVisible: true,
+            secondsVisible: false,
+          },
+          rightPriceScale: {
+            borderColor: "#e5e7eb",
+          },
+        });
+
+        // Create candlestick series
+        const candleSeries = chart.addCandlestickSeries({
+          upColor: "#059669",
+          downColor: "#dc2626",
+          borderDownColor: "#dc2626",
+          borderUpColor: "#059669",
+          wickDownColor: "#dc2626",
+          wickUpColor: "#059669",
+        });
+
+        // Series for pivot points
+        let pivotHighSeries = chart.addLineSeries({
+          color: "#1e40af",
+          lineWidth: 2,
+          priceLineVisible: false,
+          lastValueVisible: false,
+        });
+
+        let pivotLowSeries = chart.addLineSeries({
+          color: "#b91c1c",
+          lineWidth: 2,
+          priceLineVisible: false,
+          lastValueVisible: false,
+        });
+
+        // Helper function to format dates
+        function formatDate(date) {
+          const year = date.getFullYear();
+          const month = String(date.getMonth() + 1).padStart(2, "0");
+          const day = String(date.getDate()).padStart(2, "0");
+          return `${year}-${month}-${day}`;
+        }
+
+        // Helper function to fetch candlestick data
+        async function fetchCandleData(symbol, timeframe) {
+          try {
+            document.getElementById("chart-symbol").textContent = symbol;
+            document.getElementById("chart-timeframe").textContent = timeframe;
+
+            // Update UI to show loading
+            document.getElementById("chart-price").textContent = "Loading...";
+
+            // Calculate timeframe parameter for API
+            const tfParam =
+              timeframe.replace(/[^0-9]/g, "") +
+              timeframe.replace(/[0-9]/g, "").toLowerCase();
+
+            // API endpoint to get candle data
+            const response = await fetch(
+              `/api/candles?symbol=${symbol}&timeframe=${tfParam}`
+            );
+            const data = await response.json();
+
+            if (data.success) {
+              // Map API data to chart format
+              const candles = data.candles.map((candle) => ({
+                time: candle.time,
+                open: candle.open,
+                high: candle.high,
+                low: candle.low,
+                close: candle.close,
+              }));
+
+              // Update the candlestick series
+              candleSeries.setData(candles);
+
+              // Update price display
+              if (candles.length > 0) {
+                const lastCandle = candles[candles.length - 1];
+                document.getElementById(
+                  "chart-price"
+                ).textContent = `Last: ${lastCandle.close}`;
+              }
+
+              // If we have pivot data, update it
+              if (data.pivots) {
+                updatePivots(data.pivots);
+              }
+
+              // Fit content to container
+              chart.timeScale().fitContent();
+            } else {
+              console.error("Failed to fetch candle data:", data.message);
+              document.getElementById("chart-price").textContent =
+                "Error loading data";
+            }
+          } catch (error) {
+            console.error("Error fetching chart data:", error);
+            document.getElementById("chart-price").textContent =
+              "Error loading data";
+          }
+        }
+
+        // Function to update pivot points
+        function updatePivots(pivots) {
+          if (pivots.highs && pivots.highs.length > 0) {
+            pivotHighSeries.setData(
+              pivots.highs.map((p) => ({
+                time: p.time,
+                value: p.value,
+              }))
+            );
+          }
+
+          if (pivots.lows && pivots.lows.length > 0) {
+            pivotLowSeries.setData(
+              pivots.lows.map((p) => ({
+                time: p.time,
+                value: p.value,
+              }))
+            );
+          }
+        }
+
+        // Add an SMA indicator
+        function addSMA(period) {
+          const smaSeries = chart.addLineSeries({
+            color: "#0369a1",
+            lineWidth: 2,
+            priceLineVisible: false,
+          });
+
+          // Fetch SMA data
+          fetch(
+            `/api/indicator?symbol={{ symbol }}&type=sma&period=${period}&timeframe=${
+              document.getElementById("chart-timeframe").textContent
+            }`
+          )
+            .then((response) => response.json())
+            .then((data) => {
+              if (data.success) {
+                smaSeries.setData(
+                  data.values.map((v) => ({
+                    time: v.time,
+                    value: v.value,
+                  }))
+                );
+              }
+            })
+            .catch((error) => console.error("Error fetching SMA data:", error));
+
+          return smaSeries;
+        }
+
+        // Add an EMA indicator
+        function addEMA(period) {
+          const emaSeries = chart.addLineSeries({
+            color: "#7c3aed",
+            lineWidth: 2,
+            priceLineVisible: false,
+          });
+
+          // Fetch EMA data
+          fetch(
+            `/api/indicator?symbol={{ symbol }}&type=ema&period=${period}&timeframe=${
+              document.getElementById("chart-timeframe").textContent
+            }`
+          )
+            .then((response) => response.json())
+            .then((data) => {
+              if (data.success) {
+                emaSeries.setData(
+                  data.values.map((v) => ({
+                    time: v.time,
+                    value: v.value,
+                  }))
+                );
+              }
+            })
+            .catch((error) => console.error("Error fetching EMA data:", error));
+
+          return emaSeries;
+        }
+
+        // Handle responsive chart resizing
+        function handleResize() {
+          chart.applyOptions({
+            width: chartContainer.clientWidth,
+            height: chartContainer.clientHeight,
+          });
+        }
+
+        // Event listeners for timeframe buttons
+        document.querySelectorAll(".timeframe-btn").forEach((button) => {
+          button.addEventListener("click", function () {
+            // Update active state
+            document
+              .querySelectorAll(".timeframe-btn")
+              .forEach((btn) => btn.classList.remove("active"));
+            this.classList.add("active");
+
+            // Fetch data for the selected timeframe
+            const timeframe = this.getAttribute("data-tf");
+            fetchCandleData("{{ symbol }}", timeframe);
+          });
+        });
+
+        // Event listeners for indicator buttons
+        let indicators = {};
+        document.querySelectorAll(".indicator-btn").forEach((button) => {
+          button.addEventListener("click", function () {
+            const indicator = this.getAttribute("data-indicator");
+
+            // Toggle active state
+            this.classList.toggle("active");
+
+            if (this.classList.contains("active")) {
+              // Add indicator
+              switch (indicator) {
+                case "sma":
+                  indicators.sma = addSMA(20);
+                  break;
+                case "ema":
+                  indicators.ema = addEMA(9);
+                  break;
+                case "bollinger":
+                  // Bollinger bands implementation would go here
+                  break;
+                case "volume":
+                  // Volume indicator implementation would go here
+                  break;
+              }
+            } else {
+              // Remove indicator
+              if (indicators[indicator]) {
+                chart.removeSeries(indicators[indicator]);
+                indicators[indicator] = null;
+              }
+            }
+          });
+        });
+
+        // Toggle pivot points
+        let pivotsVisible = true;
+        document
+          .getElementById("toggle-pivots")
+          .addEventListener("click", function () {
+            this.classList.toggle("active");
+            pivotsVisible = !pivotsVisible;
+
+            pivotHighSeries.applyOptions({
+              visible: pivotsVisible,
+            });
+
+            pivotLowSeries.applyOptions({
+              visible: pivotsVisible,
+            });
+          });
+
+        // Refresh button handler
+        document
+          .getElementById("refresh-btn")
+          .addEventListener("click", function () {
+            const timeframe = document
+              .querySelector(".timeframe-btn.active")
+              .getAttribute("data-tf");
+            fetchCandleData("{{ symbol }}", timeframe);
+          });
+
+        // Handle window resize
+        window.addEventListener("resize", handleResize);
+
+        // Initial data load
+        fetchCandleData("{{ symbol }}", "1H");
+      });
+    </script>
+  </body>
+</html>
