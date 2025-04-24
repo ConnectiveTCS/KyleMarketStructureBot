@@ -412,4 +412,18 @@ def delete_profile_route():
     return jsonify({'success': success, 'message': message})
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    # When running as a service, bind to all interfaces (0.0.0.0)
+    # and don't use debug mode
+    is_service = not hasattr(sys, 'getwindowsversion')
+    
+    # Get the port from an environment variable if specified, otherwise use 5000
+    port = int(os.environ.get('FLASK_RUN_PORT', 5000))
+    
+    # Get the host from an environment variable if specified, otherwise use 127.0.0.1
+    # When running as a service, we'll use 0.0.0.0 for all interfaces
+    host = os.environ.get('FLASK_RUN_HOST', '0.0.0.0' if is_service else '127.0.0.1')
+    
+    # Don't use debug mode when running as a service
+    debug_mode = False if is_service else True
+    
+    app.run(host=host, port=port, debug=debug_mode)
