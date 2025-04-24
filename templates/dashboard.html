@@ -142,6 +142,7 @@
       }
       .price-position-track {
         position: absolute;
+        top: 0;
         height: 100%;
         background: rgba(2, 132, 199, 0.2);
         border-radius: 4px;
@@ -156,6 +157,7 @@
         top: 50%;
         transform: translate(-50%, -50%);
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        z-index: 10;
       }
       .multi-tf-indicator {
         width: 60px;
@@ -400,38 +402,134 @@
                         </p>
                       </div>
           
-                      <div class="space-y-4 mt-6">
-                        <div class="flex justify-between items-center py-2 border-b border-slate-100">
-                          <span class="text-sm text-slate-600">Pivot High:</span>
-                          <span class="font-medium">{{ last_pivot_high if last_pivot_high else 'N/A' }}</span>
-                        </div>
-                        <div class="flex justify-between items-center py-2 border-b border-slate-100">
-                          <span class="text-sm text-slate-600">Pivot Low:</span>
-                          <span class="font-medium">{{ last_pivot_low if last_pivot_low else 'N/A' }}</span>
-                        </div>
-                        <div class="flex justify-between items-center py-2 border-b border-slate-100">
-                          <span class="text-sm text-slate-600">Current Price:</span>
-                          <span class="font-medium">{{ current_price }}</span>
-                        </div>
-                      </div>
-                      
                       <!-- Price Position Indicator -->
                       <div class="mt-8 pt-4">
                         <h4 class="text-sm font-medium mb-5 text-center text-slate-700">Price Position</h4>
                         <div class="price-position-indicator">
                           {% if last_pivot_high and last_pivot_low and current_price %}
                             {% set range = last_pivot_high - last_pivot_low %}
-                            {% set position = (current_price - last_pivot_low) / range * 100 if range > 0 else 50 %}
-                            <div class="price-position-track" style="width: {{ position }}%"></div>
-                            <div class="price-position-handle" style="left: {{ position }}%"></div>
-                            <div class="absolute -bottom-5 left-0 text-xs font-medium text-slate-500">Low</div>
-                            <div class="absolute -bottom-5 right-0 text-xs font-medium text-slate-500">High</div>
+                            {% if range > 0 %}
+                              <!-- Calculate position with clamping to ensure it's between 0-100% -->
+                              {% set raw_position = (current_price - last_pivot_low) / range * 100 %}
+                              {% set position = [0, [raw_position, 100]|min]|max %}
+                              
+                              <!-- Add position status labels -->
+                              {% set position_status = "Between Pivots" %}
+                              {% if current_price < last_pivot_low %}
+                                {% set position_status = "Below Pivot Low" %}
+                              {% elif current_price > last_pivot_high %}
+                                {% set position_status = "Above Pivot High" %}
+                              {% endif %}
+                              
+                              <div class="price-position-track" style="left: 0; width: {{ position }}%"></div>
+                              <div class="price-position-handle" style="left: {{ position }}%"></div>
+                              <div class="absolute -bottom-5 left-0 text-xs font-medium text-slate-500">{{ last_pivot_low }}</div>
+                              <div class="absolute -bottom-5 right-0 text-xs font-medium text-slate-500">{{ last_pivot_high }}</div>
+                            {% else %}
+                              <div class="h-full flex items-center justify-center text-xs text-slate-500">
+                                Invalid pivot range (high <= low)
+                              </div>
+                            {% endif %}
                           {% else %}
                             <div class="h-full flex items-center justify-center text-xs text-slate-500">
                               No pivot data available
                             </div>
                           {% endif %}
                         </div>
+                      </div>
+                      
+                      <!-- Add position status display -->
+                      {% if last_pivot_high and last_pivot_low and current_price and last_pivot_high > last_pivot_low %}
+                      <div class="mt-2 text-center">
+                        <span class="text-xs text-slate-500">Current Price: <span class="font-medium text-slate-700">{{ current_price }}</span></span>
+                        <span class="text-xs {% if current_price < last_pivot_low %}text-red-500{% elif current_price > last_pivot_high %}text-emerald-500{% else %}text-blue-500{% endif %} ml-2">({{ position_status }})</span>
+                      </div>
+                      {% endif %}
+
+                      <div class="space-y-3">
+                        <!-- Existing conditions... -->
+                        
+                        <!-- Buy Conditions -->
+                        <div class="mt-6 mb-3">
+                          <h4 class="text-sm font-semibold text-emerald-600 mb-2">Buy Conditions</h4>
+                          
+                          <!-- Buy Condition 1: Bull structure detected -->
+                          <div class="flex items-center py-1">
+                            <div class="w-6 h-6 rounded-full flex items-center justify-center
+                              {% if market_direction == 'bull' %}bg-emerald-100 text-emerald-600{% else %}bg-slate-100 text-slate-400{% endif %}">
+                              <i class="fas {% if market_direction == 'bull' %}fa-check{% else %}fa-times{% endif %} text-xs"></i>
+                            </div>
+                            <div class="ml-3">
+                              <p class="text-sm text-slate-700">Bullish Structure Detected</p>
+                            </div>
+                          </div>
+                          
+                          <!-- Buy Condition 2: Price above pivot high -->
+                          <div class="flex items-center py-1">
+                            <div class="w-6 h-6 rounded-full flex items-center justify-center
+                              {% if last_pivot_high and current_price and current_price > last_pivot_high %}bg-emerald-100 text-emerald-600{% else %}bg-slate-100 text-slate-400{% endif %}">
+                              <i class="fas {% if last_pivot_high and current_price and current_price > last_pivot_high %}fa-check{% else %}fa-times{% endif %} text-xs"></i>
+                            </div>
+                            <div class="ml-3">
+                              <p class="text-sm text-slate-700">Price Above Previous High</p>
+                            </div>
+                          </div>
+                          
+                          <!-- Buy Condition 3: Confirming timeframes -->
+                          {% set bull_count = market_structures|selectattr('market_direction', 'equalto', 'bull')|list|length %}
+                          {% set is_confirmed = bull_count >= 2 %}
+                          <div class="flex items-center py-1">
+                            <div class="w-6 h-6 rounded-full flex items-center justify-center
+                              {% if is_confirmed %}bg-emerald-100 text-emerald-600{% else %}bg-slate-100 text-slate-400{% endif %}">
+                              <i class="fas {% if is_confirmed %}fa-check{% else %}fa-times{% endif %} text-xs"></i>
+                            </div>
+                            <div class="ml-3">
+                              <p class="text-sm text-slate-700">Multiple Timeframes Confirm ({{ bull_count }})</p>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <!-- Sell Conditions -->
+                        <div class="mt-4 mb-3">
+                          <h4 class="text-sm font-semibold text-red-600 mb-2">Sell Conditions</h4>
+                          
+                          <!-- Sell Condition 1: Bear structure detected -->
+                          <div class="flex items-center py-1">
+                            <div class="w-6 h-6 rounded-full flex items-center justify-center
+                              {% if market_direction == 'bear' %}bg-emerald-100 text-emerald-600{% else %}bg-slate-100 text-slate-400{% endif %}">
+                              <i class="fas {% if market_direction == 'bear' %}fa-check{% else %}fa-times{% endif %} text-xs"></i>
+                            </div>
+                            <div class="ml-3">
+                              <p class="text-sm text-slate-700">Bearish Structure Detected</p>
+                            </div>
+                          </div>
+                          
+                          <!-- Sell Condition 2: Price below pivot low -->
+                          <div class="flex items-center py-1">
+                            <div class="w-6 h-6 rounded-full flex items-center justify-center
+                              {% if last_pivot_low and current_price and current_price < last_pivot_low %}bg-emerald-100 text-emerald-600{% else %}bg-slate-100 text-slate-400{% endif %}">
+                              <i class="fas {% if last_pivot_low and current_price and current_price < last_pivot_low %}fa-check{% else %}fa-times{% endif %} text-xs"></i>
+                            </div>
+                            <div class="ml-3">
+                              <p class="text-sm text-slate-700">Price Below Previous Low</p>
+                            </div>
+                          </div>
+                          
+                          <!-- Sell Condition 3: Confirming timeframes -->
+                          {% set bear_count = market_structures|selectattr('market_direction', 'equalto', 'bear')|list|length %}
+                          {% set is_confirmed = bear_count >= 2 %}
+                          <div class="flex items-center py-1">
+                            <div class="w-6 h-6 rounded-full flex items-center justify-center
+                              {% if is_confirmed %}bg-emerald-100 text-emerald-600{% else %}bg-slate-100 text-slate-400{% endif %}">
+                              <i class="fas {% if is_confirmed %}fa-check{% else %}fa-times{% endif %} text-xs"></i>
+                            </div>
+                            <div class="ml-3">
+                              <p class="text-sm text-slate-700">Multiple Timeframes Confirm ({{ bear_count }})</p>
+                            </div>
+                          </div>
+                        </div>
+
+                        <!-- Existing ready status... -->
                       </div>
                     </div>
                   </div>
