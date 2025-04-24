@@ -205,19 +205,72 @@ def check_partial_close(position, symbol_info):
 
 # Move position to break-even
 def move_to_break_even(position, new_sl):
+    symbol_info = mt5.symbol_info(position.symbol)
+    if not symbol_info:
+        logger.error(f"Failed to get symbol info for {position.symbol} in move_to_break_even")
+        return None
+
+    # Normalize the new SL and existing TP to the correct number of digits
+    normalized_sl = mt5.normalize_price(new_sl, symbol_info.digits)
+    normalized_tp = mt5.normalize_price(position.tp, symbol_info.digits) # Normalize TP too, just in case
+
+    # Get current prices and stop level distance
+    tick = mt5.symbol_info_tick(position.symbol)
+    if not tick:
+        logger.error(f"Failed to get tick data for {position.symbol} in move_to_break_even")
+        return None
+    
+    stop_level_points = symbol_info.trade_stops_level * symbol_info.point
+    current_bid = tick.bid
+    current_ask = tick.ask
+
+    # --- Pre-validation Checks ---
+    is_valid_sl = True
+    if position.type == mt5.POSITION_TYPE_BUY:
+        # For BUY, SL must be below current Bid price
+        if normalized_sl >= current_bid:
+            logger.warning(f"BE Check: Calculated SL {normalized_sl} is >= current Bid {current_bid} for BUY position {position.ticket}. Skipping move.")
+            is_valid_sl = False
+        # Check distance from Ask price (as per MT5 docs for SL modification)
+        elif abs(normalized_sl - current_ask) < stop_level_points:
+            logger.warning(f"BE Check: Calculated SL {normalized_sl} is too close to current Ask {current_ask} (StopLevel: {stop_level_points}) for BUY position {position.ticket}. Skipping move.")
+            is_valid_sl = False
+            
+    elif position.type == mt5.POSITION_TYPE_SELL:
+        # For SELL, SL must be above current Ask price
+        if normalized_sl <= current_ask:
+            logger.warning(f"BE Check: Calculated SL {normalized_sl} is <= current Ask {current_ask} for SELL position {position.ticket}. Skipping move.")
+            is_valid_sl = False
+        # Check distance from Bid price (as per MT5 docs for SL modification)
+        elif abs(normalized_sl - current_bid) < stop_level_points:
+             logger.warning(f"BE Check: Calculated SL {normalized_sl} is too close to current Bid {current_bid} (StopLevel: {stop_level_points}) for SELL position {position.ticket}. Skipping move.")
+             is_valid_sl = False
+
+    if not is_valid_sl:
+        return None # Skip modification if SL is invalid
+
+    # --- Send Request ---
     request = {
         "action": mt5.TRADE_ACTION_SLTP,
         "symbol": position.symbol,
         "position": position.ticket,
-        "sl": new_sl,
-        "tp": position.tp,
+        "sl": normalized_sl, # Use normalized SL
+        "tp": normalized_tp, # Use normalized TP
         "magic": MAGIC
     }
+    
+    logger.info(f"Attempting to move position {position.ticket} to BE. Request: SL={normalized_sl}, TP={normalized_tp}")
     result = mt5.order_send(request)
+    
     if result.retcode != mt5.TRADE_RETCODE_DONE:
-        logger.error(f"Error moving position {position.ticket} to break-even: {result.retcode}")
+        logger.error(f"Error moving position {position.ticket} to break-even: {result.retcode} - {result.comment}")
+        # Log more details on failure
+        logger.error(f"Failed BE Request Details: Position={position.ticket}, Type={position.type}, Entry={position.price_open}, "
+                     f"Attempted SL={normalized_sl}, Current Bid={current_bid}, Current Ask={current_ask}, "
+                     f"StopLevel Points={stop_level_points}, Result={result}")
     else:
-        logger.info(f"Position {position.ticket} moved to break-even: SL={new_sl}")
+        logger.info(f"Position {position.ticket} moved to break-even: SL={normalized_sl}")
+        
     return result
 
 # Partially close a position
@@ -321,49 +374,95 @@ def run(stop_event):
     if not mt5.initialize():
         logger.error("MT5 initialization failed")
         return
+    # Ensure symbol is selected before getting info
     if not mt5.symbol_select(SYMBOL, True):
         logger.error(f"Failed to select symbol {SYMBOL}")
         mt5.shutdown()
         return
 
     symbol_info = mt5.symbol_info(SYMBOL)
+    if not symbol_info:
+        logger.error(f"Failed to get symbol info for {SYMBOL}")
+        mt5.shutdown()
+        return
+
     while not stop_event.is_set():
-        # Check existing positions for break-even and partial close
-        positions = mt5.positions_get(symbol=SYMBOL, magic=MAGIC) or []
-        
-        for position in positions:
-            # Check for break-even opportunity
-            new_sl = check_break_even(position, symbol_info)
-            if new_sl:
-                move_to_break_even(position, new_sl)
+        try: # Add error handling for the main loop
+            # Check existing positions for break-even and partial close
+            positions = mt5.positions_get(symbol=SYMBOL, magic=MAGIC) or []
             
-            # Check for partial close opportunity
-            if check_partial_close(position, symbol_info):
-                partial_close(position)
-        
-        # multi‐TF structure checks
-        dir_map = {}
-        pivot_map = {}
-        for name, tf in zip(TIMEFRAME_NAMES, TIMEFRAMES):
-            bars = mt5.copy_rates_from_pos(SYMBOL, tf, 0, LOOKBACK)
-            if bars is None:
-                bars = []
-            highs, lows = find_pivots(bars)
-            dir_map[name] = check_break(bars, highs, lows, symbol_info)
-            pivot_map[name] = (highs, lows)
-        # pick first TF with a break
-        trigger = next((n for n in TIMEFRAME_NAMES if dir_map.get(n)), None)
-        direction = dir_map.get(trigger)
+            for position in positions:
+                # Check for break-even opportunity
+                new_sl = check_break_even(position, symbol_info)
+                if new_sl:
+                    move_to_break_even(position, new_sl)
+                
+                # Check for partial close opportunity (only if not already at break-even)
+                # Avoid partial closing if BE was just triggered in the same loop iteration
+                if not new_sl and check_partial_close(position, symbol_info):
+                    partial_close(position)
+            
+            # --- Market Structure Analysis ---
+            dir_map = {}
+            pivot_map = {}
+            structure_broken = False
+            trade_direction = None
+            triggering_tf = None
+            last_high_for_trade = None
+            last_low_for_trade = None
 
-        positions = mt5.positions_get(symbol=SYMBOL, magic=MAGIC) or []
-        if trigger and direction and len(positions) < MAX_POS:
-            # Get pivots from the *triggering* timeframe
-            highs, lows = pivot_map[trigger]
-            last_high = highs[-1][1] if highs else None
-            last_low  = lows[-1][1]  if lows  else None
-            # Pass last high/low to enter_trade for dynamic SL calculation
-            enter_trade(direction, symbol_info, last_high, last_low)
+            for name, tf in zip(TIMEFRAME_NAMES, TIMEFRAMES):
+                bars = mt5.copy_rates_from_pos(SYMBOL, tf, 0, LOOKBACK)
+                # Ensure bars is a list even if empty
+                if bars is None:
+                    logger.warning(f"Could not retrieve bars for {SYMBOL} on {name}. Skipping timeframe.")
+                    bars = []
+                
+                # Need at least PIVOT_DEPTH * 2 + 1 bars to find pivots reliably
+                if len(bars) < (PIVOT_DEPTH * 2 + 1):
+                     logger.debug(f"Not enough bars ({len(bars)}) on {name} for pivot depth {PIVOT_DEPTH}. Skipping.")
+                     highs, lows = [], []
+                     direction = None
+                else:
+                    highs, lows = find_pivots(bars)
+                    direction = check_break(bars, highs, lows, symbol_info)
+                
+                dir_map[name] = direction
+                pivot_map[name] = (highs, lows)
 
+                # Check if this timeframe triggered a break (only if no break found yet)
+                if not structure_broken and direction:
+                    structure_broken = True
+                    trade_direction = direction
+                    triggering_tf = name
+                    # Store the pivots from the triggering timeframe for potential SL calculation
+                    trigger_highs, trigger_lows = highs, lows
+                    last_high_for_trade = trigger_highs[-1][1] if trigger_highs else None
+                    last_low_for_trade = trigger_lows[-1][1] if trigger_lows else None
+                    logger.info(f"Market structure shift detected on {triggering_tf}: {trade_direction.upper()}")
+
+            # --- Trade Entry Logic ---
+            # Re-fetch positions in case partial close reduced count
+            current_positions = mt5.positions_get(symbol=SYMBOL, magic=MAGIC) or []
+            position_count = len(current_positions)
+
+            # Condition: Structure broken, direction confirmed, and position limit not reached
+            if structure_broken and trade_direction and position_count < MAX_POS:
+                logger.info(f"Attempting {trade_direction.upper()} trade entry based on {triggering_tf} structure break. Positions: {position_count}/{MAX_POS}")
+                # Pass the pivots from the *triggering* timeframe
+                enter_trade(trade_direction, symbol_info, last_high_for_trade, last_low_for_trade)
+            elif structure_broken and trade_direction:
+                 logger.info(f"Structure shift ({trade_direction.upper()} on {triggering_tf}) detected, but max positions ({position_count}/{MAX_POS}) reached. No new entry.")
+            # else: # Optional: Log if no structure break found
+            #    logger.debug("No market structure break detected across monitored timeframes.")
+
+
+        except Exception as e:
+            logger.error(f"Error in main bot loop: {e}", exc_info=True)
+            # Optional: Add a small delay after an error to prevent rapid looping on persistent issues
+            time.sleep(5) 
+            
+        # Wait for the next cycle
         time.sleep(UPDATE_INTERVAL)
 
     mt5.shutdown()

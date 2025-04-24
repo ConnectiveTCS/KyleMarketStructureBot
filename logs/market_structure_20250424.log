@@ -249,3 +249,133 @@
 2025-04-24 11:33:12,878 - market_structure.bot - INFO - OrderSend result: OrderSendResult(retcode=10009, deal=4204359158, order=4208404442, volume=0.2, price=8472.0, bid=8472.0, ask=8472.2, comment='Request executed', request_id=1551984258, retcode_external=0, request=TradeRequest(action=1, magic=123456, order=0, symbol='Step Index', volume=0.2, price=8472.1, stoplimit=0.0, sl=8473.69642857143, tp=8468.907142857142, deviation=0, type=1, type_filling=0, type_time=0, expiration=0, comment='market structure bot', position=0, position_by=0))
 2025-04-24 11:34:12,946 - market_structure.bot - INFO - Using ATR-based SL for SELL
 2025-04-24 11:34:13,887 - market_structure.bot - INFO - OrderSend result: OrderSendResult(retcode=10009, deal=4204360071, order=4208405397, volume=0.2, price=8471.9, bid=8471.9, ask=8472.1, comment='Request executed', request_id=1551984259, retcode_external=0, request=TradeRequest(action=1, magic=123456, order=0, symbol='Step Index', volume=0.2, price=8471.8, stoplimit=0.0, sl=8473.353571428572, tp=8468.692857142856, deviation=0, type=1, type_filling=0, type_time=0, expiration=0, comment='market structure bot', position=0, position_by=0))
+2025-04-24 11:35:13,903 - market_structure.bot - INFO - Using ATR-based SL for SELL
+2025-04-24 11:35:14,882 - market_structure.bot - INFO - OrderSend result: OrderSendResult(retcode=10009, deal=4204361149, order=4208406503, volume=0.2, price=8473.0, bid=8473.0, ask=8473.2, comment='Request executed', request_id=1551984260, retcode_external=0, request=TradeRequest(action=1, magic=123456, order=0, symbol='Step Index', volume=0.2, price=8473.1, stoplimit=0.0, sl=8474.675000000001, tp=8469.95, deviation=0, type=1, type_filling=0, type_time=0, expiration=0, comment='market structure bot', position=0, position_by=0))
+2025-04-24 11:36:14,890 - market_structure.bot - INFO - Using ATR-based SL for SELL
+2025-04-24 11:36:15,885 - market_structure.bot - INFO - OrderSend result: OrderSendResult(retcode=10009, deal=4204362142, order=4208407524, volume=0.2, price=8473.5, bid=8473.5, ask=8473.7, comment='Request executed', request_id=1551984261, retcode_external=0, request=TradeRequest(action=1, magic=123456, order=0, symbol='Step Index', volume=0.2, price=8473.4, stoplimit=0.0, sl=8474.964285714286, tp=8470.271428571428, deviation=0, type=1, type_filling=0, type_time=0, expiration=0, comment='market structure bot', position=0, position_by=0))
+2025-04-24 11:37:15,899 - market_structure.bot - INFO - Using ATR-based SL for SELL
+2025-04-24 11:37:16,878 - market_structure.bot - INFO - OrderSend result: OrderSendResult(retcode=10009, deal=4204363149, order=4208408526, volume=0.2, price=8473.2, bid=8473.2, ask=8473.4, comment='Request executed', request_id=1551984262, retcode_external=0, request=TradeRequest(action=1, magic=123456, order=0, symbol='Step Index', volume=0.2, price=8473.3, stoplimit=0.0, sl=8474.853571428572, tp=8470.192857142856, deviation=0, type=1, type_filling=0, type_time=0, expiration=0, comment='market structure bot', position=0, position_by=0))
+2025-04-24 11:38:17,863 - market_structure.bot - INFO - Position 4208407524 moved to break-even: SL=8473.4
+2025-04-24 11:38:17,864 - market_structure.bot - ERROR - Error moving position 4208408526 to break-even: 10016
+2025-04-24 11:38:17,870 - market_structure.bot - INFO - Using ATR-based SL for SELL
+2025-04-24 11:38:18,863 - market_structure.bot - INFO - OrderSend result: OrderSendResult(retcode=10009, deal=4204364311, order=4208409720, volume=0.2, price=8472.6, bid=8472.6, ask=8472.8, comment='Request executed', request_id=1551984264, retcode_external=0, request=TradeRequest(action=1, magic=123456, order=0, symbol='Step Index', volume=0.2, price=8472.5, stoplimit=0.0, sl=8474.042857142857, tp=8469.414285714285, deviation=0, type=1, type_filling=0, type_time=0, expiration=0, comment='market structure bot', position=0, position_by=0))
+2025-04-24 11:39:04,496 - market_structure.bot - INFO - Configured timeframes: ['TIMEFRAME_H4', 'TIMEFRAME_M30', 'TIMEFRAME_M15', 'TIMEFRAME_M1']
+2025-04-24 11:39:59,916 - market_structure.bot - INFO - Configured timeframes: ['TIMEFRAME_H4', 'TIMEFRAME_M30', 'TIMEFRAME_M15', 'TIMEFRAME_M1']
+2025-04-24 11:40:13,905 - market_structure.bot - INFO - Bot starting...
+2025-04-24 11:40:13,929 - market_structure.bot - INFO - Market structure shift detected on TIMEFRAME_H4: BEAR
+2025-04-24 11:40:13,934 - market_structure.bot - INFO - Attempting BEAR trade entry based on TIMEFRAME_H4 structure break. Positions: 0/5
+2025-04-24 11:40:13,980 - market_structure.bot - INFO - Using dynamic SL for SELL based on last high: 8552.4
+2025-04-24 11:40:14,887 - market_structure.bot - INFO - OrderSend result: OrderSendResult(retcode=10009, deal=4204366346, order=4208411722, volume=0.2, price=8475.0, bid=8475.0, ask=8475.2, comment='Request executed', request_id=1551984265, retcode_external=0, request=TradeRequest(action=1, magic=123456, order=0, symbol='Step Index', volume=0.2, price=8474.9, stoplimit=0.0, sl=8552.5, tp=8471.642857142857, deviation=0, type=1, type_filling=0, type_time=0, expiration=0, comment='market structure bot', position=0, position_by=0))
+2025-04-24 11:41:14,915 - market_structure.bot - INFO - Market structure shift detected on TIMEFRAME_H4: BEAR
+2025-04-24 11:41:14,925 - market_structure.bot - INFO - Attempting BEAR trade entry based on TIMEFRAME_H4 structure break. Positions: 1/5
+2025-04-24 11:41:14,926 - market_structure.bot - INFO - Using dynamic SL for SELL based on last high: 8552.4
+2025-04-24 11:41:15,861 - market_structure.bot - INFO - OrderSend result: OrderSendResult(retcode=10009, deal=4204367431, order=4208412812, volume=0.2, price=8475.7, bid=8475.7, ask=8475.9, comment='Request executed', request_id=1551984266, retcode_external=0, request=TradeRequest(action=1, magic=123456, order=0, symbol='Step Index', volume=0.2, price=8475.8, stoplimit=0.0, sl=8552.5, tp=8472.457142857142, deviation=0, type=1, type_filling=0, type_time=0, expiration=0, comment='market structure bot', position=0, position_by=0))
+2025-04-24 11:42:15,861 - market_structure.bot - INFO - Bot stopping...
+2025-04-24 11:42:57,889 - market_structure.bot - INFO - Bot starting...
+2025-04-24 11:42:57,914 - market_structure.bot - INFO - Market structure shift detected on TIMEFRAME_H4: BEAR
+2025-04-24 11:42:57,920 - market_structure.bot - INFO - Attempting BEAR trade entry based on TIMEFRAME_H4 structure break. Positions: 2/5
+2025-04-24 11:42:57,921 - market_structure.bot - INFO - Using dynamic SL for SELL based on last high: 8552.4
+2025-04-24 11:42:58,887 - market_structure.bot - INFO - OrderSend result: OrderSendResult(retcode=10009, deal=4204369021, order=4208414417, volume=0.2, price=8476.4, bid=8476.4, ask=8476.6, comment='Request executed', request_id=1551984267, retcode_external=0, request=TradeRequest(action=1, magic=123456, order=0, symbol='Step Index', volume=0.2, price=8476.5, stoplimit=0.0, sl=8552.5, tp=8472.985714285714, deviation=0, type=1, type_filling=0, type_time=0, expiration=0, comment='market structure bot', position=0, position_by=0))
+2025-04-24 11:43:39,254 - market_structure.bot - INFO - Bot starting...
+2025-04-24 11:43:39,280 - market_structure.bot - INFO - Market structure shift detected on TIMEFRAME_H4: BEAR
+2025-04-24 11:43:39,289 - market_structure.bot - INFO - Attempting BEAR trade entry based on TIMEFRAME_H4 structure break. Positions: 3/5
+2025-04-24 11:43:39,310 - market_structure.bot - INFO - Using dynamic SL for SELL based on last high: 8552.4
+2025-04-24 11:43:39,907 - market_structure.bot - INFO - OrderSend result: OrderSendResult(retcode=10009, deal=4204369709, order=4208415111, volume=0.2, price=8475.7, bid=8475.7, ask=8475.9, comment='Request executed', request_id=1551984268, retcode_external=0, request=TradeRequest(action=1, magic=123456, order=0, symbol='Step Index', volume=0.2, price=8475.8, stoplimit=0.0, sl=8552.5, tp=8472.328571428572, deviation=0, type=1, type_filling=0, type_time=0, expiration=0, comment='market structure bot', position=0, position_by=0))
+2025-04-24 11:43:58,926 - market_structure.bot - ERROR - Error moving position 4208414417 to break-even: 10016
+2025-04-24 11:43:58,930 - market_structure.bot - INFO - Market structure shift detected on TIMEFRAME_H4: BEAR
+2025-04-24 11:43:58,940 - market_structure.bot - INFO - Attempting BEAR trade entry based on TIMEFRAME_H4 structure break. Positions: 4/5
+2025-04-24 11:43:58,941 - market_structure.bot - INFO - Using dynamic SL for SELL based on last high: 8552.4
+2025-04-24 11:43:59,863 - market_structure.bot - INFO - OrderSend result: OrderSendResult(retcode=10009, deal=4204370061, order=4208415465, volume=0.2, price=8475.5, bid=8475.5, ask=8475.7, comment='Request executed', request_id=1551984269, retcode_external=0, request=TradeRequest(action=1, magic=123456, order=0, symbol='Step Index', volume=0.2, price=8475.4, stoplimit=0.0, sl=8552.5, tp=8471.864285714286, deviation=0, type=1, type_filling=0, type_time=0, expiration=0, comment='market structure bot', position=0, position_by=0))
+2025-04-24 11:44:39,909 - market_structure.bot - ERROR - Error moving position 4208414417 to break-even: 10016
+2025-04-24 11:44:39,911 - market_structure.bot - INFO - Market structure shift detected on TIMEFRAME_H4: BEAR
+2025-04-24 11:44:39,916 - market_structure.bot - INFO - Structure shift (BEAR on TIMEFRAME_H4) detected, but max positions (5/5) reached. No new entry.
+2025-04-24 11:44:59,868 - market_structure.bot - INFO - Market structure shift detected on TIMEFRAME_H4: BEAR
+2025-04-24 11:44:59,879 - market_structure.bot - INFO - Structure shift (BEAR on TIMEFRAME_H4) detected, but max positions (5/5) reached. No new entry.
+2025-04-24 11:45:39,918 - market_structure.bot - ERROR - Error moving position 4208414417 to break-even: 10016
+2025-04-24 11:45:39,922 - market_structure.bot - INFO - Market structure shift detected on TIMEFRAME_H4: BEAR
+2025-04-24 11:45:39,931 - market_structure.bot - INFO - Structure shift (BEAR on TIMEFRAME_H4) detected, but max positions (5/5) reached. No new entry.
+2025-04-24 11:45:59,885 - market_structure.bot - INFO - Market structure shift detected on TIMEFRAME_H4: BEAR
+2025-04-24 11:45:59,895 - market_structure.bot - INFO - Structure shift (BEAR on TIMEFRAME_H4) detected, but max positions (5/5) reached. No new entry.
+2025-04-24 11:46:39,935 - market_structure.bot - INFO - Market structure shift detected on TIMEFRAME_H4: BEAR
+2025-04-24 11:46:39,939 - market_structure.bot - INFO - Structure shift (BEAR on TIMEFRAME_H4) detected, but max positions (5/5) reached. No new entry.
+2025-04-24 11:46:48,665 - market_structure.bot - INFO - Configured timeframes: ['TIMEFRAME_M15', 'TIMEFRAME_M1']
+2025-04-24 11:46:55,131 - market_structure.bot - INFO - Bot starting...
+2025-04-24 11:46:55,158 - market_structure.bot - INFO - Market structure shift detected on TIMEFRAME_M1: BULL
+2025-04-24 11:46:55,182 - market_structure.bot - INFO - Structure shift (BULL on TIMEFRAME_M1) detected, but max positions (5/5) reached. No new entry.
+2025-04-24 11:47:55,230 - market_structure.bot - INFO - Market structure shift detected on TIMEFRAME_M1: BULL
+2025-04-24 11:47:55,230 - market_structure.bot - INFO - Attempting BULL trade entry based on TIMEFRAME_M1 structure break. Positions: 0/5
+2025-04-24 11:47:55,231 - market_structure.bot - INFO - Using ATR-based SL for BUY
+2025-04-24 11:47:55,873 - market_structure.bot - INFO - OrderSend result: OrderSendResult(retcode=10009, deal=4204374709, order=4208420306, volume=0.2, price=8476.7, bid=8476.5, ask=8476.7, comment='Request executed', request_id=1551984275, retcode_external=0, request=TradeRequest(action=1, magic=123456, order=0, symbol='Step Index', volume=0.2, price=8476.6, stoplimit=0.0, sl=8474.982142857143, tp=8479.835714285715, deviation=0, type=0, type_filling=0, type_time=0, expiration=0, comment='market structure bot', position=0, position_by=0))
+2025-04-24 11:48:55,877 - market_structure.bot - INFO - Market structure shift detected on TIMEFRAME_M1: BULL
+2025-04-24 11:48:55,878 - market_structure.bot - INFO - Attempting BULL trade entry based on TIMEFRAME_M1 structure break. Positions: 1/5
+2025-04-24 11:48:55,879 - market_structure.bot - INFO - Using ATR-based SL for BUY
+2025-04-24 11:48:56,872 - market_structure.bot - INFO - OrderSend result: OrderSendResult(retcode=10009, deal=4204375916, order=4208421482, volume=0.2, price=8475.8, bid=8475.6, ask=8475.8, comment='Request executed', request_id=1551984276, retcode_external=0, request=TradeRequest(action=1, magic=123456, order=0, symbol='Step Index', volume=0.2, price=8475.7, stoplimit=0.0, sl=8474.050000000001, tp=8479.0, deviation=0, type=0, type_filling=0, type_time=0, expiration=0, comment='market structure bot', position=0, position_by=0))
+2025-04-24 11:49:56,876 - market_structure.bot - INFO - Market structure shift detected on TIMEFRAME_M1: BULL
+2025-04-24 11:49:56,876 - market_structure.bot - INFO - Attempting BULL trade entry based on TIMEFRAME_M1 structure break. Positions: 1/5
+2025-04-24 11:49:56,877 - market_structure.bot - INFO - Using ATR-based SL for BUY
+2025-04-24 11:49:57,873 - market_structure.bot - INFO - OrderSend result: OrderSendResult(retcode=10009, deal=4204376875, order=4208422536, volume=0.2, price=8475.9, bid=8475.7, ask=8475.9, comment='Request executed', request_id=1551984277, retcode_external=0, request=TradeRequest(action=1, magic=123456, order=0, symbol='Step Index', volume=0.2, price=8476.0, stoplimit=0.0, sl=8474.328571428572, tp=8479.342857142858, deviation=0, type=0, type_filling=0, type_time=0, expiration=0, comment='market structure bot', position=0, position_by=0))
+2025-04-24 11:50:57,879 - market_structure.bot - INFO - Market structure shift detected on TIMEFRAME_M1: BULL
+2025-04-24 11:50:57,879 - market_structure.bot - INFO - Attempting BULL trade entry based on TIMEFRAME_M1 structure break. Positions: 2/5
+2025-04-24 11:50:57,880 - market_structure.bot - INFO - Using ATR-based SL for BUY
+2025-04-24 11:50:58,869 - market_structure.bot - INFO - OrderSend result: OrderSendResult(retcode=10009, deal=4204378091, order=4208423721, volume=0.2, price=8475.4, bid=8475.2, ask=8475.4, comment='Request executed', request_id=1551984278, retcode_external=0, request=TradeRequest(action=1, magic=123456, order=0, symbol='Step Index', volume=0.2, price=8475.5, stoplimit=0.0, sl=8473.785714285714, tp=8478.92857142857, deviation=0, type=0, type_filling=0, type_time=0, expiration=0, comment='market structure bot', position=0, position_by=0))
+2025-04-24 11:51:58,879 - market_structure.bot - INFO - Market structure shift detected on TIMEFRAME_M1: BULL
+2025-04-24 11:51:58,879 - market_structure.bot - INFO - Attempting BULL trade entry based on TIMEFRAME_M1 structure break. Positions: 1/5
+2025-04-24 11:51:58,883 - market_structure.bot - INFO - Using ATR-based SL for BUY
+2025-04-24 11:51:59,871 - market_structure.bot - INFO - OrderSend result: OrderSendResult(retcode=10009, deal=4204379225, order=4208424832, volume=0.2, price=8474.5, bid=8474.3, ask=8474.5, comment='Request executed', request_id=1551984279, retcode_external=0, request=TradeRequest(action=1, magic=123456, order=0, symbol='Step Index', volume=0.2, price=8474.4, stoplimit=0.0, sl=8472.675, tp=8477.849999999999, deviation=0, type=0, type_filling=0, type_time=0, expiration=0, comment='market structure bot', position=0, position_by=0))
+2025-04-24 11:52:59,880 - market_structure.bot - INFO - Market structure shift detected on TIMEFRAME_M1: BULL
+2025-04-24 11:52:59,881 - market_structure.bot - INFO - Attempting BULL trade entry based on TIMEFRAME_M1 structure break. Positions: 2/5
+2025-04-24 11:52:59,882 - market_structure.bot - INFO - Using ATR-based SL for BUY
+2025-04-24 11:53:00,883 - market_structure.bot - INFO - OrderSend result: OrderSendResult(retcode=10009, deal=4204380387, order=4208425975, volume=0.2, price=8474.8, bid=8474.6, ask=8474.8, comment='Request executed', request_id=1551984280, retcode_external=0, request=TradeRequest(action=1, magic=123456, order=0, symbol='Step Index', volume=0.2, price=8474.7, stoplimit=0.0, sl=8473.07142857143, tp=8477.957142857143, deviation=0, type=0, type_filling=0, type_time=0, expiration=0, comment='market structure bot', position=0, position_by=0))
+2025-04-24 11:55:00,889 - market_structure.bot - ERROR - Error in main bot loop: module 'MetaTrader5' has no attribute 'normalize_price'
+Traceback (most recent call last):
+  File "C:\Coding\Market Structure Shift\bot.py", line 398, in run
+    move_to_break_even(position, new_sl)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "C:\Coding\Market Structure Shift\bot.py", line 214, in move_to_break_even
+    normalized_sl = mt5.normalize_price(new_sl, symbol_info.digits)
+                    ^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'MetaTrader5' has no attribute 'normalize_price'
+2025-04-24 11:56:05,899 - market_structure.bot - ERROR - Error in main bot loop: module 'MetaTrader5' has no attribute 'normalize_price'
+Traceback (most recent call last):
+  File "C:\Coding\Market Structure Shift\bot.py", line 398, in run
+    move_to_break_even(position, new_sl)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "C:\Coding\Market Structure Shift\bot.py", line 214, in move_to_break_even
+    normalized_sl = mt5.normalize_price(new_sl, symbol_info.digits)
+                    ^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'MetaTrader5' has no attribute 'normalize_price'
+2025-04-24 11:57:10,905 - market_structure.bot - ERROR - Error in main bot loop: module 'MetaTrader5' has no attribute 'normalize_price'
+Traceback (most recent call last):
+  File "C:\Coding\Market Structure Shift\bot.py", line 398, in run
+    move_to_break_even(position, new_sl)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "C:\Coding\Market Structure Shift\bot.py", line 214, in move_to_break_even
+    normalized_sl = mt5.normalize_price(new_sl, symbol_info.digits)
+                    ^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'MetaTrader5' has no attribute 'normalize_price'
+2025-04-24 11:58:15,914 - market_structure.bot - ERROR - Error in main bot loop: module 'MetaTrader5' has no attribute 'normalize_price'
+Traceback (most recent call last):
+  File "C:\Coding\Market Structure Shift\bot.py", line 398, in run
+    move_to_break_even(position, new_sl)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "C:\Coding\Market Structure Shift\bot.py", line 214, in move_to_break_even
+    normalized_sl = mt5.normalize_price(new_sl, symbol_info.digits)
+                    ^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'MetaTrader5' has no attribute 'normalize_price'
+2025-04-24 11:59:20,923 - market_structure.bot - INFO - Market structure shift detected on TIMEFRAME_M1: BULL
+2025-04-24 11:59:20,923 - market_structure.bot - INFO - Attempting BULL trade entry based on TIMEFRAME_M1 structure break. Positions: 0/5
+2025-04-24 11:59:20,924 - market_structure.bot - INFO - Using ATR-based SL for BUY
+2025-04-24 11:59:21,864 - market_structure.bot - INFO - OrderSend result: OrderSendResult(retcode=10009, deal=4204388427, order=4208434449, volume=0.2, price=8477.5, bid=8477.3, ask=8477.5, comment='Request executed', request_id=1551984281, retcode_external=0, request=TradeRequest(action=1, magic=123456, order=0, symbol='Step Index', volume=0.2, price=8477.6, stoplimit=0.0, sl=8476.025, tp=8480.750000000002, deviation=0, type=0, type_filling=0, type_time=0, expiration=0, comment='market structure bot', position=0, position_by=0))
+2025-04-24 12:00:21,869 - market_structure.bot - INFO - Market structure shift detected on TIMEFRAME_M1: BULL
+2025-04-24 12:00:21,869 - market_structure.bot - INFO - Attempting BULL trade entry based on TIMEFRAME_M1 structure break. Positions: 1/5
+2025-04-24 12:00:21,870 - market_structure.bot - INFO - Using ATR-based SL for BUY
+2025-04-24 12:00:22,874 - market_structure.bot - INFO - OrderSend result: OrderSendResult(retcode=10009, deal=4204389838, order=4208435887, volume=0.2, price=8477.8, bid=8477.6, ask=8477.8, comment='Request executed', request_id=1551984282, retcode_external=0, request=TradeRequest(action=1, magic=123456, order=0, symbol='Step Index', volume=0.2, price=8477.7, stoplimit=0.0, sl=8476.125, tp=8480.850000000002, deviation=0, type=0, type_filling=0, type_time=0, expiration=0, comment='market structure bot', position=0, position_by=0))
+2025-04-24 12:03:22,888 - market_structure.bot - ERROR - Error in main bot loop: module 'MetaTrader5' has no attribute 'normalize_price'
+Traceback (most recent call last):
+  File "C:\Coding\Market Structure Shift\bot.py", line 398, in run
+    move_to_break_even(position, new_sl)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "C:\Coding\Market Structure Shift\bot.py", line 214, in move_to_break_even
+    normalized_sl = mt5.normalize_price(new_sl, symbol_info.digits)
+                    ^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'MetaTrader5' has no attribute 'normalize_price'

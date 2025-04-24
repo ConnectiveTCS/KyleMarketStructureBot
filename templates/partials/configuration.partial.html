@@ -17,12 +17,14 @@
             <label
               for="profile-select"
               class="block text-sm font-medium text-slate-600 mb-1"
+              title="Select a previously saved configuration profile to load its settings."
               >Load Profile:</label
             >
             <select
               id="profile-select"
               name="profile_select"
               class="w-full p-2 border border-slate-300 rounded-md shadow-sm focus:ring-primary focus:border-primary"
+              title="List of available configuration profiles."
             >
               <option value="">-- Select Profile --</option>
               {% for profile in profiles %}
@@ -35,6 +37,7 @@
               type="button"
               id="load-profile-btn"
               class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md text-sm flex-grow"
+              title="Load the settings from the selected profile."
             >
               Load Selected
             </button>
@@ -42,6 +45,7 @@
               type="button"
               id="delete-profile-btn"
               class="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-md text-sm"
+              title="Delete the selected profile."
             >
               <i class="fas fa-trash"></i>
             </button>
@@ -51,6 +55,7 @@
           <label
             for="new-profile-name"
             class="block text-sm font-medium text-slate-600 mb-1"
+            title="Enter a name to save the current configuration settings as a new profile."
             >Save Current as New Profile:</label
           >
           <div class="flex space-x-2">
@@ -59,11 +64,13 @@
               id="new-profile-name"
               placeholder="Enter new profile name"
               class="flex-grow p-2 border border-slate-300 rounded-md shadow-sm focus:ring-primary focus:border-primary"
+              title="Name for the new configuration profile."
             />
             <button
               type="button"
               id="save-profile-btn"
               class="bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2 px-4 rounded-md text-sm"
+              title="Save the current settings with the specified name."
             >
               Save
             </button>
@@ -81,12 +88,14 @@
           <label
             for="strategy-select"
             class="block text-sm font-medium text-slate-600 mb-1"
+            title="Choose the trading strategy the bot should use."
             >Active Strategy:</label
           >
           <select
             id="strategy-select"
             name="active_strategy_select"
             class="w-full p-2 border border-slate-300 rounded-md shadow-sm focus:ring-primary focus:border-primary"
+            title="Select the main trading algorithm."
           >
             {% for strategy_id, strategy in available_strategies.items() %}
             <option
@@ -128,6 +137,7 @@
             <label
               for="symbol"
               class="block text-sm font-medium text-slate-600 mb-1"
+              title="The trading symbol (e.g., EURUSD, BTCUSDT) the bot will trade."
               >Symbol:</label
             >
             <input
@@ -136,12 +146,14 @@
               name="symbol"
               value="{{ config.symbol }}"
               class="w-full p-2 border border-slate-300 rounded-md shadow-sm focus:ring-primary focus:border-primary"
+              title="Enter the trading pair symbol."
             />
           </div>
           <div>
             <label
               for="timeframes"
               class="block text-sm font-medium text-slate-600 mb-1"
+              title="A JSON list of timeframes the bot will analyze (e.g., ['1h', '4h']). The first timeframe is typically the primary execution timeframe."
               >Timeframes (JSON list):</label
             >
             <input
@@ -150,12 +162,14 @@
               name="timeframes"
               value="{{ config.timeframes|tojson }}"
               class="w-full p-2 border border-slate-300 rounded-md shadow-sm focus:ring-primary focus:border-primary"
+              title="Enter timeframes like '1m', '5m', '1h', '4h', '1d' in JSON list format."
             />
           </div>
           <div>
             <label
               for="lookback"
               class="block text-sm font-medium text-slate-600 mb-1"
+              title="The number of historical candles to load for analysis on each timeframe."
               >Lookback Period:</label
             >
             <input
@@ -164,12 +178,14 @@
               name="lookback"
               value="{{ config.lookback }}"
               class="w-full p-2 border border-slate-300 rounded-md shadow-sm focus:ring-primary focus:border-primary"
+              title="Number of past candles to consider for calculations."
             />
           </div>
           <div>
             <label
               for="lot_size"
               class="block text-sm font-medium text-slate-600 mb-1"
+              title="The volume of each trade placed by the bot."
               >Lot Size:</label
             >
             <input
@@ -179,12 +195,14 @@
               name="lot_size"
               value="{{ config.lot_size }}"
               class="w-full p-2 border border-slate-300 rounded-md shadow-sm focus:ring-primary focus:border-primary"
+              title="Trade volume per position."
             />
           </div>
           <div>
             <label
               for="magic"
               class="block text-sm font-medium text-slate-600 mb-1"
+              title="A unique identifier number used by the bot to manage its own trades."
               >Magic Number:</label
             >
             <input
@@ -193,12 +211,14 @@
               name="magic"
               value="{{ config.magic }}"
               class="w-full p-2 border border-slate-300 rounded-md shadow-sm focus:ring-primary focus:border-primary"
+              title="Unique ID for trades placed by this bot instance."
             />
           </div>
           <div>
             <label
               for="max_positions"
               class="block text-sm font-medium text-slate-600 mb-1"
+              title="The maximum number of open positions the bot can have simultaneously."
               >Max Positions:</label
             >
             <input
@@ -207,12 +227,14 @@
               name="max_positions"
               value="{{ config.max_positions }}"
               class="w-full p-2 border border-slate-300 rounded-md shadow-sm focus:ring-primary focus:border-primary"
+              title="Limit on concurrent open trades."
             />
           </div>
           <div>
             <label
               for="update_interval"
               class="block text-sm font-medium text-slate-600 mb-1"
+              title="How often (in seconds) the bot checks for new data and potential trading opportunities."
               >Update Interval (s):</label
             >
             <input
@@ -221,6 +243,7 @@
               name="update_interval"
               value="{{ config.update_interval }}"
               class="w-full p-2 border border-slate-300 rounded-md shadow-sm focus:ring-primary focus:border-primary"
+              title="Frequency (in seconds) for bot execution cycle."
             />
           </div>
         </div>
@@ -239,6 +262,7 @@
             <label
               for="pivot_depth"
               class="block text-sm font-medium text-slate-600 mb-1"
+              title="The number of candles to the left and right required to confirm a pivot high or low."
               >Pivot Depth:</label
             >
             <input
@@ -247,12 +271,14 @@
               name="pivot_depth"
               value="{{ config.pivot_depth }}"
               class="w-full p-2 border border-slate-300 rounded-md shadow-sm focus:ring-primary focus:border-primary"
+              title="Sensitivity for detecting swing points (higher value = fewer, more significant swings)."
             />
           </div>
           <div>
             <label
               for="break_buffer_pips"
               class="block text-sm font-medium text-slate-600 mb-1"
+              title="The minimum distance (in pips) price must move beyond a structure level to be considered a valid break."
               >Break Buffer (Pips):</label
             >
             <input
@@ -262,12 +288,14 @@
               name="break_buffer_pips"
               value="{{ config.break_buffer_pips }}"
               class="w-full p-2 border border-slate-300 rounded-md shadow-sm focus:ring-primary focus:border-primary"
+              title="Buffer added to structure breaks to avoid false signals."
             />
           </div>
           <div>
             <label
               for="atr_period"
               class="block text-sm font-medium text-slate-600 mb-1"
+              title="The lookback period for calculating the Average True Range (ATR), used for dynamic stop loss and take profit."
               >ATR Period:</label
             >
             <input
@@ -276,12 +304,14 @@
               name="atr_period"
               value="{{ config.atr_period }}"
               class="w-full p-2 border border-slate-300 rounded-md shadow-sm focus:ring-primary focus:border-primary"
+              title="Number of candles for ATR calculation."
             />
           </div>
           <div>
             <label
               for="atr_multiplier_sl"
               class="block text-sm font-medium text-slate-600 mb-1"
+              title="The multiplier applied to the ATR value to determine the stop loss distance."
               >ATR Multiplier (SL):</label
             >
             <input
@@ -291,12 +321,14 @@
               name="atr_multiplier_sl"
               value="{{ config.atr_multiplier_sl }}"
               class="w-full p-2 border border-slate-300 rounded-md shadow-sm focus:ring-primary focus:border-primary"
+              title="Factor multiplied by ATR to set stop loss."
             />
           </div>
           <div>
             <label
               for="atr_multiplier_tp"
               class="block text-sm font-medium text-slate-600 mb-1"
+              title="The multiplier applied to the ATR value to determine the take profit distance."
               >ATR Multiplier (TP):</label
             >
             <input
@@ -306,6 +338,7 @@
               name="atr_multiplier_tp"
               value="{{ config.atr_multiplier_tp }}"
               class="w-full p-2 border border-slate-300 rounded-md shadow-sm focus:ring-primary focus:border-primary"
+              title="Factor multiplied by ATR to set take profit."
             />
           </div>
           <!-- Dynamic SL Toggle -->
@@ -332,6 +365,7 @@
             <label
               for="use_dynamic_sl"
               class="ml-2 block text-sm font-medium text-slate-600"
+              title="If checked, the stop loss will be placed at the most recent swing high/low instead of using the ATR multiplier."
               >Use Dynamic SL (Swing Points)</label
             >
           </div>
@@ -351,6 +385,7 @@
             <label
               for="stoch_k_period"
               class="block text-sm font-medium text-slate-600 mb-1"
+              title="The lookback period for the %K line of the Stochastic oscillator."
               >K Period:</label
             >
             <input
@@ -359,12 +394,14 @@
               name="stoch_k_period"
               value="{{ config.stoch_k_period }}"
               class="w-full p-2 border border-slate-300 rounded-md shadow-sm focus:ring-primary focus:border-primary"
+              title="Number of periods for the Stochastic %K line."
             />
           </div>
           <div>
             <label
               for="stoch_d_period"
               class="block text-sm font-medium text-slate-600 mb-1"
+              title="The period for the %D line (moving average of %K) of the Stochastic oscillator."
               >D Period:</label
             >
             <input
@@ -373,12 +410,14 @@
               name="stoch_d_period"
               value="{{ config.stoch_d_period }}"
               class="w-full p-2 border border-slate-300 rounded-md shadow-sm focus:ring-primary focus:border-primary"
+              title="Number of periods for the Stochastic %D line."
             />
           </div>
           <div>
             <label
               for="stoch_slowing"
               class="block text-sm font-medium text-slate-600 mb-1"
+              title="The slowing period applied to the %K line, smoothing the oscillator."
               >Slowing:</label
             >
             <input
@@ -387,12 +426,14 @@
               name="stoch_slowing"
               value="{{ config.stoch_slowing }}"
               class="w-full p-2 border border-slate-300 rounded-md shadow-sm focus:ring-primary focus:border-primary"
+              title="Slowing factor for the Stochastic oscillator."
             />
           </div>
           <div>
             <label
               for="stoch_overbought"
               class="block text-sm font-medium text-slate-600 mb-1"
+              title="The Stochastic level above which the market is considered overbought (potential sell signal)."
               >Overbought Level:</label
             >
             <input
@@ -401,12 +442,14 @@
               name="stoch_overbought"
               value="{{ config.stoch_overbought }}"
               class="w-full p-2 border border-slate-300 rounded-md shadow-sm focus:ring-primary focus:border-primary"
+              title="Threshold for overbought condition (e.g., 80)."
             />
           </div>
           <div>
             <label
               for="stoch_oversold"
               class="block text-sm font-medium text-slate-600 mb-1"
+              title="The Stochastic level below which the market is considered oversold (potential buy signal)."
               >Oversold Level:</label
             >
             <input
@@ -415,18 +458,21 @@
               name="stoch_oversold"
               value="{{ config.stoch_oversold }}"
               class="w-full p-2 border border-slate-300 rounded-md shadow-sm focus:ring-primary focus:border-primary"
+              title="Threshold for oversold condition (e.g., 20)."
             />
           </div>
           <div>
             <label
               for="stoch_trend_detection"
               class="block text-sm font-medium text-slate-600 mb-1"
+              title="Method used to determine the overall trend direction (e.g., using a Simple Moving Average)."
               >Trend Detection:</label
             >
             <select
               id="stoch_trend_detection"
               name="stoch_trend_detection"
               class="w-full p-2 border border-slate-300 rounded-md shadow-sm focus:ring-primary focus:border-primary"
+              title="Select the indicator for trend filtering."
             >
               <option
                 value="SMA"
@@ -448,6 +494,7 @@
             <label
               for="stoch_trend_period"
               class="block text-sm font-medium text-slate-600 mb-1"
+              title="The lookback period for the selected trend detection indicator."
               >Trend Period:</label
             >
             <input
@@ -456,6 +503,7 @@
               name="stoch_trend_period"
               value="{{ config.stoch_trend_period }}"
               class="w-full p-2 border border-slate-300 rounded-md shadow-sm focus:ring-primary focus:border-primary"
+              title="Number of periods for the trend indicator (e.g., SMA period)."
             />
           </div>
         </div>
@@ -471,6 +519,7 @@
             <label
               for="break_even_pips"
               class="block text-sm font-medium text-slate-600 mb-1"
+              title="The profit amount (in pips) at which the stop loss will be moved to the entry price."
               >Break Even Trigger (Pips):</label
             >
             <input
@@ -480,12 +529,14 @@
               name="break_even_pips"
               value="{{ config.break_even_pips }}"
               class="w-full p-2 border border-slate-300 rounded-md shadow-sm focus:ring-primary focus:border-primary"
+              title="Profit target in pips to trigger break even."
             />
           </div>
           <div>
             <label
               for="break_even_buffer_pips"
               class="block text-sm font-medium text-slate-600 mb-1"
+              title="An additional buffer (in pips) added to the entry price when moving the stop loss to break even, securing some profit."
               >Break Even Buffer (Pips):</label
             >
             <input
@@ -495,6 +546,7 @@
               name="break_even_buffer_pips"
               value="{{ config.break_even_buffer_pips }}"
               class="w-full p-2 border border-slate-300 rounded-md shadow-sm focus:ring-primary focus:border-primary"
+              title="Pips added above/below entry when moving SL to break even."
             />
           </div>
           <div class="flex items-center pt-5">
@@ -519,6 +571,7 @@
             <label
               for="partial_close_enabled"
               class="ml-2 block text-sm font-medium text-slate-600"
+              title="If checked, the bot will close a portion of the position when a specific profit target is reached."
               >Enable Partial Close</label
             >
           </div>
@@ -526,6 +579,7 @@
             <label
               for="partial_close_pct"
               class="block text-sm font-medium text-slate-600 mb-1"
+              title="The percentage of the position to close when the partial close trigger is hit."
               >Partial Close %:</label
             >
             <input
@@ -537,12 +591,14 @@
               name="partial_close_pct"
               value="{{ config.partial_close_pct }}"
               class="w-full p-2 border border-slate-300 rounded-md shadow-sm focus:ring-primary focus:border-primary"
+              title="Percentage (0-100) of the trade volume to close partially."
             />
           </div>
           <div>
             <label
               for="partial_close_pips"
               class="block text-sm font-medium text-slate-600 mb-1"
+              title="The profit amount (in pips) required to trigger the partial close action."
               >Partial Close Trigger (Pips):</label
             >
             <input
@@ -552,6 +608,7 @@
               name="partial_close_pips"
               value="{{ config.partial_close_pips }}"
               class="w-full p-2 border border-slate-300 rounded-md shadow-sm focus:ring-primary focus:border-primary"
+              title="Profit target in pips to trigger partial close."
             />
           </div>
         </div>
@@ -561,6 +618,7 @@
         <button
           type="submit"
           class="bg-primary hover:bg-blue-800 text-white font-bold py-2 px-6 rounded-md shadow-md transition duration-150 ease-in-out"
+          title="Save all current settings to the active configuration."
         >
           Save Configuration
         </button>
