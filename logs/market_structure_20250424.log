@@ -127,3 +127,9 @@
 2025-04-24 08:31:40,252 - market_structure.bot - DEBUG - check_break: received empty bars list
 2025-04-24 08:33:13,580 - market_structure.bot - INFO - Configured timeframes: ['TIMEFRAME_H4', 'TIMEFRAME_M30', 'TIMEFRAME_M15', 'TIMEFRAME_M1']
 2025-04-24 08:33:15,153 - market_structure.bot - INFO - Configured timeframes: ['TIMEFRAME_H4', 'TIMEFRAME_M30', 'TIMEFRAME_M15', 'TIMEFRAME_M1']
+2025-04-24 08:38:21,739 - market_structure.bot - INFO - Bot starting...
+2025-04-24 08:38:22,853 - market_structure.bot - INFO - OrderSend result: OrderSendResult(retcode=10009, deal=4204186385, order=4208227209, volume=0.5, price=1532.11, bid=1532.11, ask=1532.54, comment='Request executed', request_id=1551984195, retcode_external=0, request=TradeRequest(action=1, magic=123456, order=0, symbol='Volatility 100 Index', volume=0.5, price=1532.0, stoplimit=0.0, sl=1536.044642857143, tp=1523.9107142857142, deviation=0, type=1, type_filling=0, type_time=0, expiration=0, comment='market structure bot', position=0, position_by=0))
+2025-04-24 08:39:22,855 - market_structure.bot - ERROR - Error moving position 4208227209 to break-even: 10016
+2025-04-24 08:39:22,856 - market_structure.bot - ERROR - Error partially closing position 4208227209: 10014
+2025-04-24 08:39:24,850 - market_structure.bot - INFO - OrderSend result: OrderSendResult(retcode=10009, deal=4204187129, order=4208227985, volume=0.5, price=1530.99, bid=1530.99, ask=1531.42, comment='Request executed', request_id=1551984196, retcode_external=0, request=TradeRequest(action=1, magic=123456, order=0, symbol='Volatility 100 Index', volume=0.5, price=1530.77, stoplimit=0.0, sl=1534.6367857142857, tp=1523.0364285714286, deviation=0, type=1, type_filling=0, type_time=0, expiration=0, comment='market structure bot', position=0, position_by=0))
+2025-04-24 08:40:24,851 - market_structure.bot - INFO - Bot stopping...

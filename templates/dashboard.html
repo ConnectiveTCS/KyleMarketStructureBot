@@ -1334,140 +1334,148 @@
           </div>
           
           <div id="config" class="dashboard-section hidden">
-            <div class="mb-6">
-              <h2 class="text-xl font-bold text-slate-800">
-                <i class="fas fa-cog mr-2 text-blue-500"></i>Bot Configuration
+            <!-- Executive Dashboard Header -->
+            <div class="bg-gradient-to-r from-slate-800 to-slate-700 text-white rounded-t-lg p-5 flex justify-between items-center">
+              <h2 class="text-xl font-bold">
+                <i class="fas fa-cog mr-2"></i>Bot Configuration Dashboard
               </h2>
-            </div>
-            
-            <!-- Profile Management Section -->
-            <div class="bg-white rounded-lg shadow-card p-6 mb-6">
-              <h3 class="text-lg font-medium text-slate-800 mb-4">Profile Management</h3>
-              
-              <div class="flex flex-wrap items-end gap-4">
-                <div class="w-full md:w-auto flex-grow">
-                  <label class="block text-sm font-medium text-slate-700 mb-1">
-                    Select Profile
-                  </label>
-                  <select id="profile-select" class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition">
-                    <option value="">-- Select a profile --</option>
-                    {% for profile in profiles %}
-                      <option value="{{ profile }}">{{ profile }}</option>
-                    {% endfor %}
-                  </select>
-                </div>
-                
-                <div class="w-full md:w-auto flex-grow">
-                  <label class="block text-sm font-medium text-slate-700 mb-1">
-                    New Profile Name
-                  </label>
-                  <input type="text" id="new-profile-name" placeholder="Enter profile name" 
-                    class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition" />
-                </div>
-                
-                <div class="flex space-x-2">
-                  <button id="save-profile-btn" class="px-4 py-2 bg-emerald-500 text-white rounded-md shadow-sm hover:bg-emerald-600 transition flex items-center justify-center">
-                    <i class="fas fa-save mr-2"></i>
-                    Save as Profile
-                  </button>
-                  
-                  <button id="load-profile-btn" class="px-4 py-2 bg-blue-500 text-white rounded-md shadow-sm hover:bg-blue-600 transition flex items-center justify-center">
-                    <i class="fas fa-download mr-2"></i>
-                    Load
-                  </button>
-                  
-                  <button id="delete-profile-btn" class="px-4 py-2 bg-red-500 text-white rounded-md shadow-sm hover:bg-red-600 transition flex items-center justify-center">
-                    <i class="fas fa-trash-alt mr-2"></i>
-                    Delete
-                  </button>
-                </div>
+              <div class="flex items-center">
+                <span class="text-sm opacity-80 mr-3">{{ symbol }}</span>
+                <span class="bg-blue-500 text-xs font-bold px-2.5 py-1 rounded">CONFIG</span>
               </div>
-              
-              <!-- Alert Messages -->
-              <div id="profile-message" class="mt-4 hidden"></div>
             </div>
             
-            <div class="bg-white rounded-lg shadow-card p-6">
-              <form action="/update_config" method="post" class="space-y-4">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {% for key, val in config.items() %}
-                  <div class="mb-4">
+            <div class="p-6 bg-slate-50 mt-6">
+              <!-- Profile Management Section -->
+              <div class="bg-white rounded-lg shadow-card p-6 mb-6">
+                <h3 class="text-lg font-medium text-slate-800 mb-4">Profile Management</h3>
+                
+                <div class="flex flex-wrap items-end gap-4">
+                  <div class="w-full md:w-auto flex-grow">
                     <label class="block text-sm font-medium text-slate-700 mb-1">
-                      {{ key.replace('_', ' ').title() }}:
+                      Select Profile
                     </label>
-                    <input 
-                      name="{{ key }}" 
-                      value="{{ val }}" 
-                      class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition"
-                    />
-                  </div>
-                  {% endfor %}
-                  <div class="col-span-2 mt-2 border-t pt-4">
-                    <h3 class="text-lg font-medium text-slate-800 mb-2">Risk Management Settings</h3>
-                  </div>
-                  
-                  <div class="mb-4">
-                    <label class="block text-sm font-medium text-slate-700 mb-1">
-                      Break Even Pips:
-                    </label>
-                    <input 
-                      name="break_even_pips" 
-                      value="{{ config.break_even_pips|default(0) }}" 
-                      class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition"
-                    />
-                  </div>
-                  
-                  <div class="mb-4">
-                    <label class="block text-sm font-medium text-slate-700 mb-1">
-                      Break Even Buffer Pips:
-                    </label>
-                    <input 
-                      name="break_even_buffer_pips" 
-                      value="{{ config.break_even_buffer_pips|default(0) }}" 
-                      class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition"
-                    />
-                  </div>
-                  
-                  <div class="mb-4">
-                    <label class="block text-sm font-medium text-slate-700 mb-1">
-                      Partial Close Enabled:
-                    </label>
-                    <select
-                      name="partial_close_enabled"
-                      class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition"
-                    >
-                      <option value="true" {% if config.partial_close_enabled %}selected{% endif %}>Enabled</option>
-                      <option value="false" {% if not config.partial_close_enabled %}selected{% endif %}>Disabled</option>
+                    <select id="profile-select" class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition">
+                      <option value="">-- Select a profile --</option>
+                      {% for profile in profiles %}
+                        <option value="{{ profile }}">{{ profile }}</option>
+                      {% endfor %}
                     </select>
                   </div>
                   
-                  <div class="mb-4">
+                  <div class="w-full md:w-auto flex-grow">
                     <label class="block text-sm font-medium text-slate-700 mb-1">
-                      Partial Close Percentage:
+                      New Profile Name
                     </label>
-                    <input 
-                      name="partial_close_pct" 
-                      value="{{ config.partial_close_pct|default(50) }}" 
-                      class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition"
-                    />
+                    <input type="text" id="new-profile-name" placeholder="Enter profile name" 
+                      class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition" />
                   </div>
                   
-                  <div class="mb-4">
-                    <label class="block text-sm font-medium text-slate-700 mb-1">
-                      Partial Close Pips:
-                    </label>
-                    <input 
-                      name="partial_close_pips" 
-                      value="{{ config.partial_close_pips|default(0) }}" 
-                      class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition"
-                    />
+                  <div class="flex space-x-2">
+                    <button id="save-profile-btn" class="px-4 py-2 bg-emerald-500 text-white rounded-md shadow-sm hover:bg-emerald-600 transition flex items-center justify-center">
+                      <i class="fas fa-save mr-2"></i>
+                      Save as Profile
+                    </button>
+                    
+                    <button id="load-profile-btn" class="px-4 py-2 bg-blue-500 text-white rounded-md shadow-sm hover:bg-blue-600 transition flex items-center justify-center">
+                      <i class="fas fa-download mr-2"></i>
+                      Load
+                    </button>
+                    
+                    <button id="delete-profile-btn" class="px-4 py-2 bg-red-500 text-white rounded-md shadow-sm hover:bg-red-600 transition flex items-center justify-center">
+                      <i class="fas fa-trash-alt mr-2"></i>
+                      Delete
+                    </button>
                   </div>
                 </div>
-                <button type="submit" class="w-full md:w-auto mt-6 px-6 py-2 bg-blue-500 text-white rounded-md shadow-sm hover:bg-blue-600 transition flex items-center justify-center">
-                  <i class="fas fa-save mr-2"></i>
-                  Update Configuration
-                </button>
-              </form>
+                
+                <!-- Alert Messages -->
+                <div id="profile-message" class="mt-4 hidden"></div>
+              </div>
+              
+              <!-- Update Configuration Form -->
+              <div class="bg-white rounded-lg shadow-card p-6">
+                <form action="/update_config" method="post" class="space-y-4">
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {% for key, val in config.items() %}
+                    <div class="mb-4">
+                      <label class="block text-sm font-medium text-slate-700 mb-1">
+                        {{ key.replace('_', ' ').title() }}:
+                      </label>
+                      <input 
+                        name="{{ key }}" 
+                        value="{{ val }}" 
+                        class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition"
+                      />
+                    </div>
+                    {% endfor %}
+                    <div class="col-span-2 mt-2 border-t pt-4">
+                      <h3 class="text-lg font-medium text-slate-800 mb-2">Risk Management Settings</h3>
+                    </div>
+                    
+                    <div class="mb-4">
+                      <label class="block text-sm font-medium text-slate-700 mb-1">
+                        Break Even Pips:
+                      </label>
+                      <input 
+                        name="break_even_pips" 
+                        value="{{ config.break_even_pips|default(0) }}" 
+                        class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition"
+                      />
+                    </div>
+                    
+                    <div class="mb-4">
+                      <label class="block text-sm font-medium text-slate-700 mb-1">
+                        Break Even Buffer Pips:
+                      </label>
+                      <input 
+                        name="break_even_buffer_pips" 
+                        value="{{ config.break_even_buffer_pips|default(0) }}" 
+                        class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition"
+                      />
+                    </div>
+                    
+                    <div class="mb-4">
+                      <label class="block text-sm font-medium text-slate-700 mb-1">
+                        Partial Close Enabled:
+                      </label>
+                      <select
+                        name="partial_close_enabled"
+                        class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition"
+                      >
+                        <option value="true" {% if config.partial_close_enabled %}selected{% endif %}>Enabled</option>
+                        <option value="false" {% if not config.partial_close_enabled %}selected{% endif %}>Disabled</option>
+                      </select>
+                    </div>
+                    
+                    <div class="mb-4">
+                      <label class="block text-sm font-medium text-slate-700 mb-1">
+                        Partial Close Percentage:
+                      </label>
+                      <input 
+                        name="partial_close_pct" 
+                        value="{{ config.partial_close_pct|default(50) }}" 
+                        class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition"
+                      />
+                    </div>
+                    
+                    <div class="mb-4">
+                      <label class="block text-sm font-medium text-slate-700 mb-1">
+                        Partial Close Pips:
+                      </label>
+                      <input 
+                        name="partial_close_pips" 
+                        value="{{ config.partial_close_pips|default(0) }}" 
+                        class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition"
+                      />
+                    </div>
+                  </div>
+                  <button type="submit" class="w-full md:w-auto mt-6 px-6 py-2 bg-blue-500 text-white rounded-md shadow-sm hover:bg-blue-600 transition flex items-center justify-center">
+                    <i class="fas fa-save mr-2"></i>
+                    Update Configuration
+                  </button>
+                </form>
+              </div>
             </div>
           </div>
         </div>
