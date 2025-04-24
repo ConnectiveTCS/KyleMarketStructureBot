@@ -1,20 +1,18 @@
 {
-    "symbol": "EURUSD",
+    "symbol": "Crash 500 Index",
     "timeframes": [
         "TIMEFRAME_H4",
-        "TIMEFRAME_M30",
-        "TIMEFRAME_M15",
-        "TIMEFRAME_M1"
+        "TIMEFRAME_M30"
     ],
     "lookback": 100,
     "pivot_depth": 3,
     "break_buffer_pips": 1,
     "atr_period": 14,
     "atr_multiplier_sl": 1.5,
-    "atr_multiplier_tp": 3.0,
-    "lot_size": 0.2,
-    "stop_loss_pips": 10,
-    "take_profit_pips": 20,
+    "atr_multiplier_tp": 3,
+    "lot_size": 0.5,
+    "stop_loss_pips": 5,
+    "take_profit_pips": 10,
     "magic": 123456,
     "max_positions": 5,
     "update_interval": 60,

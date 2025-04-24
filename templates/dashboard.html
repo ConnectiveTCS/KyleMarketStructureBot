@@ -1557,6 +1557,42 @@
           }, 3000);
         }
         
+        // utility: update form inputs from config object
+        function updateConfigForm(cfg) {
+          console.debug('[DEBUG] updateConfigForm with cfg:', cfg);
+          Object.entries(cfg).forEach(([key, val]) => {
+            const field = document.querySelector(`#config form [name="${key}"]`);
+            if (!field) return;
+            if (field.tagName === 'SELECT') {
+              field.value = val;
+            } else {
+              field.value = Array.isArray(val) ? JSON.stringify(val) : val;
+            }
+          });
+        }
+
+        // auto-load and fill config on profile select change
+        profileSelect.addEventListener('change', function() {
+          const name = this.value;
+          console.debug('[DEBUG] Profile select changed to:', name);
+          if (!name) return;
+          fetch(`/load_profile?name=${encodeURIComponent(name)}`)
+            .then(r => r.json())
+            .then(data => {
+              console.debug('[DEBUG] load_profile response:', data);
+              if (data.success) {
+                fetch('/get_config')
+                  .then(r => r.json())
+                  .then(resp => {
+                    console.debug('[DEBUG] get_config response:', resp);
+                    if (resp.success) updateConfigForm(resp.config);
+                  })
+                  .catch(err => console.error('[DEBUG] get_config error:', err));
+              }
+            })
+            .catch(err => console.error('[DEBUG] load_profile error:', err));
+        });
+
         // Save profile
         saveProfileBtn.addEventListener('click', function() {
           const profileName = newProfileName.value.trim();
@@ -1611,10 +1647,12 @@
             .then(data => {
               if (data.success) {
                 showMessage(`Profile "${profileName}" loaded successfully`, 'success');
-                // Reload the page to reflect the new configuration
-                setTimeout(() => {
-                  window.location.reload();
-                }, 1000);
+                // Reload the page to reflect the new configuration if instructed by backend
+                if (data.reload) {
+                  setTimeout(() => {
+                    window.location.reload();
+                  }, 1000);
+                }
               } else {
                 showMessage(data.message || 'Failed to load profile', 'error');
               }

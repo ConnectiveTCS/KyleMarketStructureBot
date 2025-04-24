@@ -118,6 +118,10 @@ def find_pivots(bars):
 
 # Check for break of market structure with buffer
 def check_break(bars, highs, lows, symbol_info):
+    # avoid IndexError when no bars available
+    if bars is None or len(bars) == 0:
+        logger.debug("check_break: received empty bars list")
+        return None
     last_close = bars[-1]['close']
     buffer = pips_to_points(BREAK_BUFFER_PIPS, symbol_info)
     if highs:

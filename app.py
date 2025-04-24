@@ -92,7 +92,7 @@ def start_bot():
 def get_positions():
     if not mt5.initialize():
         return []
-    with open('config.json', 'r') as f:
+    with open(CONFIG_FILE, 'r') as f:
         cfg = json.load(f)
     symbol = cfg['symbol']
     magic = cfg['magic']
@@ -105,7 +105,7 @@ def get_positions():
 def get_history(from_date=None, to_date=None, limit=None):
     if not mt5.initialize():
         return []
-    with open('config.json', 'r') as f:
+    with open(CONFIG_FILE, 'r') as f:
         cfg = json.load(f)
     magic = cfg['magic']
     
@@ -177,7 +177,7 @@ def format_position(position):
 def get_market_structures():
     if not mt5.initialize():
         return None, []
-    with open('config.json', 'r') as f:
+    with open(CONFIG_FILE, 'r') as f:
         cfg = json.load(f)
     symbol = cfg['symbol']
     lookback = int(cfg['lookback'])
@@ -191,7 +191,10 @@ def get_market_structures():
         highs, lows = trading_bot.find_pivots(bars)
         direction = trading_bot.check_break(bars, highs, lows, symbol_info)
         tick = mt5.symbol_info_tick(symbol)
-        current_price = (tick.bid + tick.ask) / 2
+        if tick:
+            current_price = (tick.bid + tick.ask) / 2
+        else:
+            current_price = None
         ph, pht = None, None
         if highs:
             idx, price = highs[-1]
@@ -243,7 +246,7 @@ def filter_history():
 
 @app.route('/')
 def dashboard():
-    with open('config.json', 'r') as f:
+    with open(CONFIG_FILE, 'r') as f:
         config = json.load(f)
     status = 'running' if bot_thread and bot_thread.is_alive() else 'stopped'
     
@@ -390,7 +393,7 @@ def update_config():
                 new_conf[key] = val
                 
     # Load current config to preserve array values that might not be in form
-    with open('config.json', 'r') as f:
+    with open(CONFIG_FILE, 'r') as f:
         current_config = json.load(f)
         
     # Merge configs (this keeps arrays like timeframes)
@@ -398,7 +401,7 @@ def update_config():
         if key not in new_conf:
             new_conf[key] = val
             
-    with open('config.json', 'w') as f:
+    with open(CONFIG_FILE, 'w') as f:
         json.dump(new_conf, f, indent=4)
     return redirect(url_for('dashboard'))
 
@@ -420,7 +423,18 @@ def load_profile_route():
         return jsonify({'success': False, 'message': 'Profile name is required'})
     
     success, message = load_profile(name)
-    return jsonify({'success': success, 'message': message})
+    if success:
+        # Optionally stop the bot so new config is used on next start
+        global bot_thread
+        stop_event.set()
+        # Wait for bot to stop
+        if bot_thread and bot_thread.is_alive():
+            bot_thread.join(timeout=2)
+        bot_thread = None
+        # Return reload instruction to frontend
+        return jsonify({'success': True, 'message': message, 'reload': True})
+    else:
+        return jsonify({'success': False, 'message': message})
 
 @app.route('/delete_profile')
 def delete_profile_route():
@@ -430,6 +444,15 @@ def delete_profile_route():
     
     success, message = delete_profile(name)
     return jsonify({'success': success, 'message': message})
+
+@app.route('/get_config')
+def get_config():
+    try:
+        with open(CONFIG_FILE, 'r') as f:
+            cfg = json.load(f)
+        return jsonify({'success': True, 'config': cfg})
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
 
 if __name__ == '__main__':
     # When running as a service, bind to all interfaces (0.0.0.0)

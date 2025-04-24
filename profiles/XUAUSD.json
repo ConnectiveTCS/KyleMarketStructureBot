@@ -1,5 +1,5 @@
 {
-    "symbol": "EURUSD",
+    "symbol": "XUAUSD",
     "timeframes": [
         "TIMEFRAME_H4",
         "TIMEFRAME_M30",
@@ -11,8 +11,8 @@
     "break_buffer_pips": 1,
     "atr_period": 14,
     "atr_multiplier_sl": 1.5,
-    "atr_multiplier_tp": 3.0,
-    "lot_size": 0.05,
+    "atr_multiplier_tp": 3,
+    "lot_size": 0.001,
     "stop_loss_pips": 5,
     "take_profit_pips": 10,
     "magic": 123456,
