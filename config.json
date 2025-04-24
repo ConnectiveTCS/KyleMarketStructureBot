@@ -1,5 +1,6 @@
 {
     "symbol": "Step Index",
+    "active_strategy": "stochastic",
     "timeframes": [
         "TIMEFRAME_H4",
         "TIMEFRAME_M30",
@@ -7,11 +8,6 @@
         "TIMEFRAME_M1"
     ],
     "lookback": 100,
-    "pivot_depth": 3,
-    "break_buffer_pips": 1,
-    "atr_period": 14,
-    "atr_multiplier_sl": 1.5,
-    "atr_multiplier_tp": 3.0,
     "lot_size": 0.2,
     "stop_loss_pips": 5,
     "take_profit_pips": 10,
@@ -22,5 +18,19 @@
     "break_even_buffer_pips": 1,
     "partial_close_enabled": true,
     "partial_close_pct": 50,
-    "partial_close_pips": 10
+    "partial_close_pips": 10,
+    "// Market Structure Strategy Parameters": "",
+    "pivot_depth": 3,
+    "break_buffer_pips": 1,
+    "atr_period": 14,
+    "atr_multiplier_sl": 1.5,
+    "atr_multiplier_tp": 3.0,
+    "// Stochastic Oscillator Strategy Parameters": "",
+    "stoch_k_period": 5,
+    "stoch_d_period": 3,
+    "stoch_slowing": 3,
+    "stoch_overbought": 80,
+    "stoch_oversold": 20,
+    "stoch_trend_detection": "SMA",
+    "stoch_trend_period": 50
 }

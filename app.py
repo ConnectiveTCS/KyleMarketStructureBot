@@ -5,11 +5,15 @@ import os  # Add this import
 import sys  # Add this import for the system module
 import subprocess  # New import
 import requests  # New import
+import random
+import time
 from flask import Flask, render_template, request, redirect, url_for, jsonify  # Add jsonify
 import bot as trading_bot
 import MetaTrader5 as mt5
 # Import the logs module
 from logs import get_logs, get_available_components
+from strategies import get_available_strategies
+from strategy_factory import StrategyFactory
 
 app = Flask(__name__)
 # Add min function to Jinja environment
@@ -28,6 +32,27 @@ if not os.path.exists(PROFILES_DIR):
 
 # GitHub repo to check
 GITHUB_REPO = os.environ.get('GITHUB_REPO', 'your_github_user/market-structure-bot')
+
+# Load configuration from file
+def load_config():
+    """Load configuration from file"""
+    try:
+        with open(CONFIG_FILE, 'r') as f:
+            return json.load(f)
+    except Exception as e:
+        print(f"Error loading config: {e}")
+        return {}
+
+# Save configuration to file
+def save_config(config):
+    """Save configuration to file"""
+    try:
+        with open(CONFIG_FILE, 'w') as f:
+            json.dump(config, f, indent=4)
+        return True
+    except Exception as e:
+        print(f"Error saving config: {e}")
+        return False
 
 # Get all available profiles
 def get_available_profiles():
@@ -274,95 +299,39 @@ def filter_history():
 
 @app.route('/')
 def dashboard():
-    with open(CONFIG_FILE, 'r') as f:
-        config = json.load(f)
-    status = 'running' if bot_thread and bot_thread.is_alive() else 'stopped'
+    config = load_config()
+    available_strategies = get_available_strategies()
     
-    # Get date filter parameters
-    from_date_str = request.args.get('from_date')
-    to_date_str = request.args.get('to_date')
+    # Mock data for example purposes
+    mock_data = {
+        "symbol": config.get("symbol", "Step Index"),
+        "timeframe": "H4",
+        "status": "running",
+        "current_price": 15750.25,
+        "market_direction": "bull",
+        "overall_direction": "bull",
+        "last_pivot_high": 15700.50,
+        "last_pivot_low": 15600.75,
+        "positions": get_positions(),
+        "history": get_history(),
+        "logs": get_logs(n=100),
+        "account": get_account_info(),
+        "market_structures": get_market_structures()[1],
+        "profiles": get_available_profiles(),
+        "available_strategies": available_strategies,
+        "config": config
+    }
     
-    try:
-        if from_date_str:
-            from_date = datetime.datetime.strptime(from_date_str, '%Y-%m-%d')
-        else:
-            # Default to the last 30 days
-            from_date = datetime.datetime.now() - datetime.timedelta(days=30)
-            
-        if to_date_str:
-            to_date = datetime.datetime.strptime(to_date_str, '%Y-%m-%d')
-            # Set to end of day
-            to_date = to_date.replace(hour=23, minute=59, second=59)
-        else:
-            to_date = datetime.datetime.now()
-    except ValueError:
-        # Handle invalid date format
-        from_date = datetime.datetime.now() - datetime.timedelta(days=30)
-        to_date = datetime.datetime.now()
+    # Add strategy-specific data
+    active_strategy = config.get("active_strategy", "market_structure")
+    if active_strategy == "stochastic":
+        mock_data["stochastic"] = {
+            "k_value": 25.5,
+            "d_value": 20.3,
+            "trend": "uptrend"
+        }
     
-    # Get monitoring data
-    positions = get_positions()
-    history = get_history(from_date=from_date, to_date=to_date)
-    account = get_account_info()
-    
-    # Get market structures data
-    overall, market_structures = get_market_structures()
-    
-    # Get individual structure details for the original template variables
-    # Use the first timeframe structure or set defaults
-    primary_structure = market_structures[0] if market_structures else {}
-    symbol = config['symbol']
-    timeframe = primary_structure.get('timeframe', 'N/A')
-    market_direction = primary_structure.get('market_direction')
-    current_price = primary_structure.get('current_price')
-    last_pivot_high = primary_structure.get('last_pivot_high')
-    pivot_high_time = primary_structure.get('pivot_high_time')
-    last_pivot_low = primary_structure.get('last_pivot_low')
-    pivot_low_time = primary_structure.get('pivot_low_time')
-    
-    # Get logs for the dashboard
-    log_level = request.args.get('level', None)
-    log_component = request.args.get('component', None)
-    logs = get_logs(n=100, level=log_level, component=log_component)
-    log_components = get_available_components()
-    
-    # Get available profiles
-    profiles = get_available_profiles()
-    
-    # Load local version
-    with open(CONFIG_FILE, 'r') as f:
-        local_conf = json.load(f)
-    local_ver = local_conf.get('version', '0.0.0')
-    latest_ver = get_latest_github_release()
-    update_available = bool(latest_ver and latest_ver != local_ver)
-    
-    return render_template('dashboard.html', 
-                          config=config, 
-                          status=status,
-                          positions=positions,
-                          history=history,
-                          account=account,
-                          overall_direction=overall,
-                          market_structures=market_structures,
-                          # Add individual structure details for backward compatibility
-                          symbol=symbol,
-                          timeframe=timeframe,
-                          market_direction=market_direction,
-                          current_price=current_price,
-                          last_pivot_high=last_pivot_high,
-                          pivot_high_time=pivot_high_time, 
-                          last_pivot_low=last_pivot_low,
-                          pivot_low_time=pivot_low_time,
-                          logs=logs,
-                          log_level=log_level,
-                          log_component=log_component,
-                          log_components=log_components,
-                          profiles=profiles,
-                          # Add date filter parameters
-                          from_date=from_date.strftime('%Y-%m-%d'),
-                          to_date=to_date.strftime('%Y-%m-%d'),
-                          latest_version=latest_ver,
-                          update_available=update_available)
+    return render_template('dashboard.html', **mock_data)
 
 @app.route('/logs')
 def view_logs():
@@ -397,52 +366,26 @@ def stop():
 
 @app.route('/update_config', methods=['POST'])
 def update_config():
-    new_conf = {}
-    for key, val in request.form.items():
-        # Special handling for timeframes field
-        if key == 'timeframes':
-            try:
-                # If it contains square brackets, try to parse it as JSON
-                if '[' in val and ']' in val:
-                    # Clean up the input to ensure it's valid JSON
-                    # Remove single quotes, ensure double quotes for array items
-                    cleaned_val = val.replace("'", '"')
-                    new_conf[key] = json.loads(cleaned_val)
-                else:
-                    # If it's a single timeframe, make it a list
-                    new_conf[key] = [val]
-            except json.JSONDecodeError:
-                # If JSON parsing fails, keep as string but log warning
-                new_conf[key] = val
-                print(f"Warning: Could not parse timeframes value: {val}")
-        # Handle boolean values from form
-        elif val.lower() == 'true':
-            new_conf[key] = True
-        elif val.lower() == 'false':
-            new_conf[key] = False
-        # try to cast to int or float
-        elif val.isdigit():
-            new_conf[key] = int(val)
+    config = load_config()
+    
+    # Update config with form data
+    for key, value in request.form.items():
+        # Handle boolean values
+        if value.lower() in ['true', 'false']:
+            config[key] = value.lower() == 'true'
+        # Handle numeric values
+        elif value.replace('.', '', 1).isdigit():
+            if '.' in value:
+                config[key] = float(value)
+            else:
+                config[key] = int(value)
+        # Handle everything else as strings
         else:
-            try:
-                new_conf[key] = float(val)
-            except:
-                new_conf[key] = val
-                
-    # Load current config to preserve array values that might not be in form
-    with open(CONFIG_FILE, 'r') as f:
-        current_config = json.load(f)
-        
-    # Merge configs (this keeps arrays like timeframes)
-    for key, val in current_config.items():
-        if key not in new_conf:
-            new_conf[key] = val
-            
-    with open(CONFIG_FILE, 'w') as f:
-        json.dump(new_conf, f, indent=4)
-    return redirect(url_for('dashboard'))
+            config[key] = value
+    
+    save_config(config)
+    return redirect('/')
 
-# Profile management routes
 @app.route('/save_profile', methods=['POST'])
 def save_profile_route():
     data = request.json
