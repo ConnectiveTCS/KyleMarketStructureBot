@@ -313,24 +313,30 @@
                     <div class="p-5">
                       <!-- Timeframe Signals Panel -->
                       <div class="flex flex-wrap justify-center">
-                        {% for ms in market_structures %}
-                        <div class="w-1/3 md:w-1/4 lg:w-1/6 mb-5 flex flex-col items-center">
-                          <div class="multi-tf-indicator 
-                            {% if ms.market_direction=='bull' %}bg-emerald-100 text-emerald-600
-                            {% elif ms.market_direction=='bear' %}bg-red-100 text-red-600
-                            {% else %}bg-slate-100 text-slate-600{% endif %}">
-                            <i class="fas 
-                              {% if ms.market_direction=='bull' %}fa-arrow-up
-                              {% elif ms.market_direction=='bear' %}fa-arrow-down
-                              {% else %}fa-minus{% endif %} 
-                              text-2xl"></i>
+                        {% if market_structures %}
+                          {% for ms in market_structures %}
+                          <div class="w-1/3 md:w-1/4 lg:w-1/6 mb-5 flex flex-col items-center">
+                            <div class="multi-tf-indicator 
+                              {% if ms.market_direction=='bull' %}bg-emerald-100 text-emerald-600
+                              {% elif ms.market_direction=='bear' %}bg-red-100 text-red-600
+                              {% else %}bg-slate-100 text-slate-600{% endif %}">
+                              <i class="fas 
+                                {% if ms.market_direction=='bull' %}fa-arrow-up
+                                {% elif ms.market_direction=='bear' %}fa-arrow-down
+                                {% else %}fa-minus{% endif %} 
+                                text-2xl"></i>
+                            </div>
+                            <p class="font-bold text-xs text-center">{{ ms.timeframe }}</p>
+                            <p class="text-xs text-center text-slate-500">
+                              {{ ms.market_direction|default('Neutral')|title }}
+                            </p>
                           </div>
-                          <p class="font-bold text-xs text-center">{{ ms.timeframe }}</p>
-                          <p class="text-xs text-center text-slate-500">
-                            {{ ms.market_direction|default('Neutral')|title }}
-                          </p>
-                        </div>
-                        {% endfor %}
+                          {% endfor %}
+                        {% else %}
+                          <div class="w-full p-4 text-center text-slate-500">
+                            <i class="fas fa-info-circle mr-2"></i>No market structure data available
+                          </div>
+                        {% endif %}
                       </div>
                       
                       <!-- Market Strength Gauge -->

@@ -12,14 +12,25 @@ with open('config.json', 'r') as f:
     config = json.load(f)
 
 SYMBOL = config['symbol']
-# support multiple timeframes by precedence
-TIMEFRAME_NAMES = config.get('timeframes', [config.get('timeframe')])
+# Support multiple timeframes by precedence
+if 'timeframes' in config and isinstance(config['timeframes'], list):
+    TIMEFRAME_NAMES = config['timeframes']
+elif 'timeframe' in config:
+    TIMEFRAME_NAMES = [config['timeframe']]
+else:
+    TIMEFRAME_NAMES = ["TIMEFRAME_M15"]  # Default timeframe
+
 # map timeframe keys to MT5 constants, monthly uses TIMEFRAME_MN1
 TF_CONST_MAP = {
     "TIMEFRAME_M1": mt5.TIMEFRAME_M1,
+    "TIMEFRAME_M5": mt5.TIMEFRAME_M5,
     "TIMEFRAME_M15": mt5.TIMEFRAME_M15,
     "TIMEFRAME_M30": mt5.TIMEFRAME_M30,
+    "TIMEFRAME_H1": mt5.TIMEFRAME_H1,
     "TIMEFRAME_H4": mt5.TIMEFRAME_H4,
+    "TIMEFRAME_D1": mt5.TIMEFRAME_D1,
+    "TIMEFRAME_W1": mt5.TIMEFRAME_W1,
+    "TIMEFRAME_MN1": mt5.TIMEFRAME_MN1,
 }
 
 logger.info(f"Configured timeframes: {TIMEFRAME_NAMES}")

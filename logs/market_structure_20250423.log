@@ -245,3 +245,11 @@
 2025-04-23 21:57:39,800 - market_structure.bot - INFO - OrderSend result: OrderSendResult(retcode=10009, deal=4203687318, order=4207724603, volume=0.2, price=8493.5, bid=8493.5, ask=8493.7, comment='Request executed', request_id=1551984148, retcode_external=0, request=TradeRequest(action=1, magic=123456, order=0, symbol='Step Index', volume=0.2, price=8493.6, stoplimit=0.0, sl=8500.028571428571, tp=8480.742857142859, deviation=0, type=1, type_filling=0, type_time=0, expiration=0, comment='market structure bot', position=0, position_by=0))
 2025-04-23 21:58:40,827 - market_structure.bot - INFO - OrderSend result: OrderSendResult(retcode=10009, deal=4203688381, order=4207725671, volume=0.2, price=8493.6, bid=8493.6, ask=8493.8, comment='Request executed', request_id=1551984149, retcode_external=0, request=TradeRequest(action=1, magic=123456, order=0, symbol='Step Index', volume=0.2, price=8493.7, stoplimit=0.0, sl=8500.128571428571, tp=8480.84285714286, deviation=0, type=1, type_filling=0, type_time=0, expiration=0, comment='market structure bot', position=0, position_by=0))
 2025-04-23 21:59:40,828 - market_structure.bot - INFO - Bot stopping...
+2025-04-23 22:25:55,020 - market_structure.bot - INFO - Configured timeframes: ['TIMEFRAME_H4', 'TIMEFRAME_M30', 'TIMEFRAME_M15', 'TIMEFRAME_M1']
+2025-04-23 22:25:55,021 - market_structure.bot - WARNING - No valid timeframes found in configuration. Using TIMEFRAME_M15 as default.
+2025-04-23 22:25:55,579 - market_structure.bot - INFO - Configured timeframes: ['TIMEFRAME_H4', 'TIMEFRAME_M30', 'TIMEFRAME_M15', 'TIMEFRAME_M1']
+2025-04-23 22:25:55,579 - market_structure.bot - WARNING - No valid timeframes found in configuration. Using TIMEFRAME_M15 as default.
+2025-04-23 22:34:16,178 - market_structure.bot - INFO - Configured timeframes: ['TIMEFRAME_H4', 'TIMEFRAME_M30', 'TIMEFRAME_M15', 'TIMEFRAME_M1']
+2025-04-23 22:34:16,179 - market_structure.bot - WARNING - No valid timeframes found in configuration. Using TIMEFRAME_M15 as default.
+2025-04-23 22:34:16,677 - market_structure.bot - INFO - Configured timeframes: ['TIMEFRAME_H4', 'TIMEFRAME_M30', 'TIMEFRAME_M15', 'TIMEFRAME_M1']
+2025-04-23 22:34:16,678 - market_structure.bot - WARNING - No valid timeframes found in configuration. Using TIMEFRAME_M15 as default.
