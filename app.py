@@ -322,13 +322,23 @@ def dashboard():
         "config": config
     }
     
-    # Add strategy-specific data
+    # Always include stochastic data in the template context
+    # with default/empty values when the strategy is not active
+    mock_data["stochastic"] = {
+        "k_value": None,
+        "d_value": None,
+        "trend": None,
+        "signal": None
+    }
+    
+    # Override with actual values if stochastic is the active strategy
     active_strategy = config.get("active_strategy", "market_structure")
     if active_strategy == "stochastic":
         mock_data["stochastic"] = {
             "k_value": 25.5,
             "d_value": 20.3,
-            "trend": "uptrend"
+            "trend": "uptrend",
+            "signal": "buy"  # Add a signal value
         }
     
     return render_template('dashboard.html', **mock_data)

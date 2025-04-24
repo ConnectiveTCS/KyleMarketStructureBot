@@ -339,6 +339,13 @@
                 <i class="fas fa-chart-bar mr-3 w-5 text-center"></i>
                 <span>Market Structure</span>
               </button>
+              <!-- Add Stochastic Dashboard button when active strategy is stochastic -->
+              {% if config.active_strategy == 'stochastic' %}
+              <button onclick="showSection('stochastic_dashboard')" class="nav-btn flex items-center p-2 rounded hover:bg-white/10 w-full text-left">
+                <i class="fas fa-wave-square mr-3 w-5 text-center"></i>
+                <span>Stochastic Dashboard</span>
+              </button>
+              {% endif %}
               <button onclick="showSection('positions')" class="nav-btn flex items-center p-2 rounded hover:bg-white/10 w-full text-left">
                 <i class="fas fa-list-ul mr-3 w-5 text-center"></i>
                 <span>Open Positions</span>
@@ -738,6 +745,143 @@
                         {% else %}bg-slate-100 text-slate-600{% endif %}">
                         <p class="font-semibold">
                           {% if market_direction and positions|length < config.max_positions %}
+                            Ready to Trade
+                          {% elif positions|length >= config.max_positions %}
+                            Maximum Positions Reached
+                          {% else %}
+                            Waiting for Signal
+                          {% endif %}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Add a new section for Stochastic Dashboard -->
+          <div id="stochastic_dashboard" class="dashboard-section hidden">
+            <!-- Executive Dashboard Header -->
+            <div class="bg-gradient-to-r from-slate-800 to-slate-700 text-white rounded-t-lg p-4 sm:p-5 flex flex-wrap sm:flex-nowrap justify-between items-center">
+              <h2 class="text-lg sm:text-xl font-bold w-full sm:w-auto">
+                <i class="fas fa-wave-square mr-2"></i>Stochastic Dashboard
+                <span class="text-blue-300 text-sm sm:text-base block sm:inline mt-1 sm:mt-0">{{ symbol }}</span>
+              </h2>
+              <div class="flex items-center mt-2 sm:mt-0 w-full sm:w-auto justify-end space-x-2">
+                <a href="/chart/{{ symbol }}" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-2.5 py-1 rounded flex items-center">
+                  <i class="fas fa-chart-line mr-1"></i>
+                  <span>View Chart</span>
+                </a>
+                <span class="bg-blue-500 text-xs font-bold px-2.5 py-1 rounded">LIVE</span>
+              </div>
+            </div>
+            
+            <!-- Key Metrics Bar -->
+            <div class="bg-white grid grid-cols-2 sm:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-slate-200 shadow-md">
+              <div class="p-3 sm:p-5 text-center">
+                <p class="text-xs uppercase tracking-wider text-slate-500 mb-1 sm:mb-2 font-medium">Signal Status</p>
+                <div class="flex justify-center items-center">
+                  <div class="w-3 h-3 rounded-full mt-1 mr-2 
+                    {% if stochastic and stochastic.signal == 'buy' %}bg-emerald-500
+                    {% elif stochastic and stochastic.signal == 'sell' %}bg-red-500
+                    {% else %}bg-slate-400{% endif %}"></div>
+                  <p class="text-base sm:text-lg font-bold 
+                    {% if stochastic and stochastic.signal == 'buy' %}text-emerald-600
+                    {% elif stochastic and stochastic.signal == 'sell' %}text-red-600
+                    {% else %}text-slate-600{% endif %}">
+                    {{ stochastic.signal|title if stochastic and stochastic.signal else 'No Signal' }}
+                  </p>
+                </div>
+              </div>
+              <div class="p-3 sm:p-5 text-center">
+                <p class="text-xs uppercase tracking-wider text-slate-500 mb-1 sm:mb-2 font-medium">Current Price</p>
+                <p class="text-base sm:text-lg font-bold">{{ current_price }}</p>
+              </div>
+              <div class="p-3 sm:p-5 text-center">
+                <p class="text-xs uppercase tracking-wider text-slate-500 mb-1 sm:mb-2 font-medium">Trend Direction</p>
+                <p class="text-base sm:text-lg font-bold 
+                  {% if stochastic and stochastic.trend == 'uptrend' %}text-emerald-600
+                  {% elif stochastic and stochastic.trend == 'downtrend' %}text-red-600
+                  {% else %}text-slate-600{% endif %}">
+                  {{ stochastic.trend|title if stochastic and stochastic.trend else 'Neutral' }}
+                </p>
+              </div>
+              <div class="p-3 sm:p-5 text-center">
+                <p class="text-xs uppercase tracking-wider text-slate-500 mb-1 sm:mb-2 font-medium">Positions</p>
+                <p class="text-base sm:text-lg font-bold">{{ positions|length if positions else 0 }}</p>
+              </div>
+            </div>
+            
+            <!-- Dashboard Main Content -->
+            <div class="p-4 sm:p-6 bg-slate-50 mt-4 sm:mt-6">
+              <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6">
+                <!-- Include the Stochastic Dashboard Template -->
+                {% include 'stochastic_dashboard.html' %}
+                
+                <!-- Current Status Card -->
+                <div class="col-span-1 lg:col-span-4">
+                  <!-- Use the existing status card -->
+                  <div class="bg-white rounded-lg shadow-card h-full">
+                    <div class="border-b p-4">
+                      <h3 class="font-semibold text-slate-800">Signal Status</h3>
+                    </div>
+                    <div class="p-5">
+                      <div class="space-y-3">
+                        <!-- Stochastic Specific Conditions -->
+                        <div class="flex items-center">
+                          <div class="w-8 h-8 rounded-full flex items-center justify-center
+                            {% if stochastic and stochastic.trend %}bg-emerald-100 text-emerald-600{% else %}bg-slate-100 text-slate-400{% endif %}">
+                            <i class="fas {% if stochastic and stochastic.trend %}fa-check{% else %}fa-times{% endif %}"></i>
+                          </div>
+                          <div class="ml-3">
+                            <p class="font-medium text-slate-800">Trend Direction Detected</p>
+                            <p class="text-xs text-slate-500">
+                              {% if stochastic and stochastic.trend %}
+                                {{ stochastic.trend|title }} detected using {{ config.stoch_trend_detection }}
+                              {% else %}
+                                No clear trend detected
+                              {% endif %}
+                            </p>
+                          </div>
+                        </div>
+                        
+                        <div class="flex items-center">
+                          <div class="w-8 h-8 rounded-full flex items-center justify-center
+                            {% if stochastic and stochastic.k_value is not none and (stochastic.k_value < config.stoch_oversold or stochastic.k_value > config.stoch_overbought) %}bg-emerald-100 text-emerald-600{% else %}bg-slate-100 text-slate-400{% endif %}">
+                            <i class="fas {% if stochastic and stochastic.k_value is not none and (stochastic.k_value < config.stoch_oversold or stochastic.k_value > config.stoch_overbought) %}fa-check{% else %}fa-times{% endif %}"></i>
+                          </div>
+                          <div class="ml-3">
+                            <p class="font-medium text-slate-800">Extreme Level Reached</p>
+                            <p class="text-xs text-slate-500">Stochastic in overbought or oversold zone</p>
+                          </div>
+                        </div>
+                        
+                        <div class="flex items-center">
+                          <div class="w-8 h-8 rounded-full flex items-center justify-center
+                            {% if stochastic and stochastic.signal %}bg-emerald-100 text-emerald-600{% else %}bg-slate-100 text-slate-400{% endif %}">
+                            <i class="fas {% if stochastic and stochastic.signal %}fa-check{% else %}fa-times{% endif %}"></i>
+                          </div>
+                          <div class="ml-3">
+                            <p class="font-medium text-slate-800">Crossover Signal</p>
+                            <p class="text-xs text-slate-500">
+                              {% if stochastic and stochastic.signal %}
+                                {{ stochastic.signal|upper }} signal from K/D crossover
+                              {% else %}
+                                No crossover detected
+                              {% endif %}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <!-- Ready Status -->
+                      <div class="mt-5 p-3 text-center rounded
+                        {% if stochastic and stochastic.signal and positions|length < config.max_positions %}bg-emerald-100 text-emerald-800
+                        {% elif positions|length >= config.max_positions %}bg-yellow-100 text-yellow-800
+                        {% else %}bg-slate-100 text-slate-600{% endif %}">
+                        <p class="font-semibold">
+                          {% if stochastic and stochastic.signal and positions|length < config.max_positions %}
                             Ready to Trade
                           {% elif positions|length >= config.max_positions %}
                             Maximum Positions Reached
@@ -1676,6 +1820,12 @@
         <i class="fas fa-chart-bar"></i>
         <span>Market</span>
       </button>
+      {% if config.active_strategy == 'stochastic' %}
+      <button onclick="showSection('stochastic_dashboard')" class="mobile-nav-item" id="mobile-nav-stochasticdashboard">
+        <i class="fas fa-wave-square"></i>
+        <span>Stoch</span>
+      </button>
+      {% endif %}
       <button onclick="showSection('positions')" class="mobile-nav-item" id="mobile-nav-positions">
         <i class="fas fa-list-ul"></i>
         <span>Positions</span>
