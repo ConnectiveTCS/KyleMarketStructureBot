@@ -1,0 +1,10 @@
+2025-04-24 09:22:36,850 - MarketStructureService - INFO - Service is starting
+2025-04-24 09:22:36,851 - MarketStructureService - INFO - Starting Market Structure Bot application
+2025-04-24 09:22:36,871 - MarketStructureService - INFO - Application process started with PID: 8652
+2025-04-24 09:22:41,885 - MarketStructureService - ERROR - Application process terminated unexpectedly
+2025-04-24 09:22:41,886 - MarketStructureService - INFO - Service stopped
+2025-04-24 09:23:12,320 - MarketStructureService - INFO - Service is starting
+2025-04-24 09:23:12,321 - MarketStructureService - INFO - Starting Market Structure Bot application
+2025-04-24 09:23:12,329 - MarketStructureService - INFO - Application process started with PID: 15596
+2025-04-24 09:23:17,338 - MarketStructureService - ERROR - Application process terminated unexpectedly
+2025-04-24 09:23:17,338 - MarketStructureService - INFO - Service stopped
