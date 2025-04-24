@@ -1,0 +1,5 @@
+# Ignore bot log files
+bot.*.log
+
+# Ignore bot compiled Python files
+bot.*.pyc
