@@ -262,7 +262,7 @@
             <label
               for="pivot_depth"
               class="block text-sm font-medium text-slate-600 mb-1"
-              title="The number of candles to the left and right required to confirm a pivot high or low."
+              title="The number of bars to look to each side when identifying pivots. Higher values create less, but more significant pivots."
               >Pivot Depth:</label
             >
             <input
@@ -271,24 +271,41 @@
               name="pivot_depth"
               value="{{ config.pivot_depth }}"
               class="w-full p-2 border border-slate-300 rounded-md shadow-sm focus:ring-primary focus:border-primary"
-              title="Sensitivity for detecting swing points (higher value = fewer, more significant swings)."
+              title="Number of bars to analyze for pivot points."
             />
           </div>
           <div>
             <label
               for="break_buffer_pips"
               class="block text-sm font-medium text-slate-600 mb-1"
-              title="The minimum distance (in pips) price must move beyond a structure level to be considered a valid break."
-              >Break Buffer (Pips):</label
+              title="Buffer in pips to add when checking if a structure has been broken."
+              >Break Buffer (pips):</label
             >
             <input
               type="number"
-              step="0.1"
               id="break_buffer_pips"
               name="break_buffer_pips"
               value="{{ config.break_buffer_pips }}"
+              step="0.1"
               class="w-full p-2 border border-slate-300 rounded-md shadow-sm focus:ring-primary focus:border-primary"
-              title="Buffer added to structure breaks to avoid false signals."
+              title="Buffer in pips to add when checking for structure breaks."
+            />
+          </div>
+          <div>
+            <label
+              for="min_tf_confirmation"
+              class="block text-sm font-medium text-slate-600 mb-1"
+              title="Minimum number of timeframes that need to agree on the direction before entering a trade."
+              >Min TF Confirmation:</label
+            >
+            <input
+              type="number"
+              id="min_tf_confirmation"
+              name="min_tf_confirmation"
+              value="{{ config.min_tf_confirmation|default(2) }}"
+              min="1"
+              class="w-full p-2 border border-slate-300 rounded-md shadow-sm focus:ring-primary focus:border-primary"
+              title="Minimum number of timeframes that must confirm direction."
             />
           </div>
           <div>
@@ -571,8 +588,8 @@
             <label
               for="partial_close_enabled"
               class="ml-2 block text-sm font-medium text-slate-600"
-              title="If checked, the bot will close a portion of the position when a specific profit target is reached."
-              >Enable Partial Close</label
+              title="If checked, the bot will close a portion of the position when a specific profit target is reached AFTER break-even has been triggered."
+              >Enable Partial Close (only after break-even)</label
             >
           </div>
           <div>
@@ -610,6 +627,41 @@
               class="w-full p-2 border border-slate-300 rounded-md shadow-sm focus:ring-primary focus:border-primary"
               title="Profit target in pips to trigger partial close."
             />
+          </div>
+        </div>
+      </div>
+
+      <!-- Money Management Settings -->
+      <div class="border rounded-md p-4 mt-4">
+        <h3 class="text-md font-semibold mb-3 text-slate-700">
+          Money Management Settings
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div class="flex items-center pt-5">
+            <input
+              type="hidden"
+              name="partial_close_enabled"
+              value="false"
+            />
+            <input
+              type="checkbox"
+              id="partial_close_enabled"
+              name="partial_close_enabled"
+              value="true"
+              class="h-4 w-4 text-primary border-slate-300 rounded focus:ring-primary"
+              {%
+              if
+              config.partial_close_enabled
+              %}checked{%
+              endif
+              %}
+            />
+            <label
+              for="partial_close_enabled"
+              class="ml-2 block text-sm font-medium text-slate-600"
+              title="If checked, the bot will close a portion of the position when a specific profit target is reached AFTER break-even has been triggered."
+              >Enable Partial Close (only after break-even)</label
+            >
           </div>
         </div>
       </div>

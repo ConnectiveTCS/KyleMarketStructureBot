@@ -461,3 +461,73 @@ AttributeError: module 'MetaTrader5' has no attribute 'normalize_price'
 2025-04-24 12:17:13,914 - market_structure.bot - INFO - Attempting BULL trade entry based on TIMEFRAME_M15 structure break. Positions: 1/5
 2025-04-24 12:17:13,915 - market_structure.bot - INFO - Using ATR-based SL for BUY
 2025-04-24 12:17:14,924 - market_structure.bot - INFO - OrderSend result: OrderSendResult(retcode=10009, deal=4204409963, order=4208456847, volume=0.2, price=8481.4, bid=8481.2, ask=8481.4, comment='Request executed', request_id=1551984288, retcode_external=0, request=TradeRequest(action=1, magic=123456, order=0, symbol='Step Index', volume=0.2, price=8481.5, stoplimit=0.0, sl=8479.903571428571, tp=8484.692857142858, deviation=0, type=0, type_filling=0, type_time=0, expiration=0, comment='market structure bot', position=0, position_by=0))
+2025-04-24 12:18:14,949 - market_structure.bot - ERROR - Error in main bot loop: module 'MetaTrader5' has no attribute 'normalize_price'
+Traceback (most recent call last):
+  File "C:\Coding\Market Structure Shift\bot.py", line 398, in run
+    move_to_break_even(position, new_sl)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "C:\Coding\Market Structure Shift\bot.py", line 214, in move_to_break_even
+    normalized_sl = mt5.normalize_price(new_sl, symbol_info.digits)
+                    ^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'MetaTrader5' has no attribute 'normalize_price'
+2025-04-24 12:19:20,391 - market_structure.bot - ERROR - Error in main bot loop: module 'MetaTrader5' has no attribute 'normalize_price'
+Traceback (most recent call last):
+  File "C:\Coding\Market Structure Shift\bot.py", line 398, in run
+    move_to_break_even(position, new_sl)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "C:\Coding\Market Structure Shift\bot.py", line 214, in move_to_break_even
+    normalized_sl = mt5.normalize_price(new_sl, symbol_info.digits)
+                    ^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'MetaTrader5' has no attribute 'normalize_price'
+2025-04-24 12:20:25,410 - market_structure.bot - INFO - Market structure shift detected on TIMEFRAME_M15: BULL
+2025-04-24 12:20:25,415 - market_structure.bot - INFO - Attempting BULL trade entry based on TIMEFRAME_M15 structure break. Positions: 2/5
+2025-04-24 12:20:25,417 - market_structure.bot - INFO - Using ATR-based SL for BUY
+2025-04-24 12:20:25,875 - market_structure.bot - INFO - OrderSend result: OrderSendResult(retcode=10009, deal=4204412767, order=4208459764, volume=0.2, price=8480.9, bid=8480.7, ask=8480.9, comment='Request executed', request_id=1551984289, retcode_external=0, request=TradeRequest(action=1, magic=123456, order=0, symbol='Step Index', volume=0.2, price=8480.8, stoplimit=0.0, sl=8479.246428571429, tp=8483.907142857142, deviation=0, type=0, type_filling=0, type_time=0, expiration=0, comment='market structure bot', position=0, position_by=0))
+2025-04-24 12:21:25,879 - market_structure.bot - INFO - Market structure shift detected on TIMEFRAME_M15: BULL
+2025-04-24 12:21:25,882 - market_structure.bot - INFO - Attempting BULL trade entry based on TIMEFRAME_M15 structure break. Positions: 2/5
+2025-04-24 12:21:25,883 - market_structure.bot - INFO - Using ATR-based SL for BUY
+2025-04-24 12:21:26,883 - market_structure.bot - INFO - OrderSend result: OrderSendResult(retcode=10009, deal=4204414280, order=4208461242, volume=0.2, price=8480.0, bid=8479.8, ask=8480.0, comment='Request executed', request_id=1551984290, retcode_external=0, request=TradeRequest(action=1, magic=123456, order=0, symbol='Step Index', volume=0.2, price=8480.1, stoplimit=0.0, sl=8478.525, tp=8483.25, deviation=0, type=0, type_filling=0, type_time=0, expiration=0, comment='market structure bot', position=0, position_by=0))
+2025-04-24 12:22:26,889 - market_structure.bot - INFO - Market structure shift detected on TIMEFRAME_M15: BULL
+2025-04-24 12:22:26,894 - market_structure.bot - INFO - Attempting BULL trade entry based on TIMEFRAME_M15 structure break. Positions: 1/5
+2025-04-24 12:22:26,895 - market_structure.bot - INFO - Using ATR-based SL for BUY
+2025-04-24 12:22:27,867 - market_structure.bot - INFO - OrderSend result: OrderSendResult(retcode=10009, deal=4204415628, order=4208462662, volume=0.2, price=8479.3, bid=8479.1, ask=8479.3, comment='Request executed', request_id=1551984291, retcode_external=0, request=TradeRequest(action=1, magic=123456, order=0, symbol='Step Index', volume=0.2, price=8479.4, stoplimit=0.0, sl=8477.857142857143, tp=8482.485714285713, deviation=0, type=0, type_filling=0, type_time=0, expiration=0, comment='market structure bot', position=0, position_by=0))
+2025-04-24 12:23:27,871 - market_structure.bot - INFO - Market structure shift detected on TIMEFRAME_M15: BULL
+2025-04-24 12:23:27,875 - market_structure.bot - INFO - Attempting BULL trade entry based on TIMEFRAME_M15 structure break. Positions: 2/5
+2025-04-24 12:23:27,876 - market_structure.bot - INFO - Using ATR-based SL for BUY
+2025-04-24 12:23:28,902 - market_structure.bot - INFO - OrderSend result: OrderSendResult(retcode=10009, deal=4204416586, order=4208463677, volume=0.2, price=8478.8, bid=8478.6, ask=8478.8, comment='Request executed', request_id=1551984292, retcode_external=0, request=TradeRequest(action=1, magic=123456, order=0, symbol='Step Index', volume=0.2, price=8478.9, stoplimit=0.0, sl=8477.378571428571, tp=8481.942857142856, deviation=0, type=0, type_filling=0, type_time=0, expiration=0, comment='market structure bot', position=0, position_by=0))
+2025-04-24 12:24:28,905 - market_structure.bot - INFO - Market structure shift detected on TIMEFRAME_M15: BULL
+2025-04-24 12:24:28,909 - market_structure.bot - INFO - Attempting BULL trade entry based on TIMEFRAME_M15 structure break. Positions: 1/5
+2025-04-24 12:24:28,911 - market_structure.bot - INFO - Using ATR-based SL for BUY
+2025-04-24 12:24:29,856 - market_structure.bot - INFO - OrderSend result: OrderSendResult(retcode=10009, deal=4204417750, order=4208464819, volume=0.2, price=8478.9, bid=8478.7, ask=8478.9, comment='Request executed', request_id=1551984293, retcode_external=0, request=TradeRequest(action=1, magic=123456, order=0, symbol='Step Index', volume=0.2, price=8479.0, stoplimit=0.0, sl=8477.435714285715, tp=8482.128571428571, deviation=0, type=0, type_filling=0, type_time=0, expiration=0, comment='market structure bot', position=0, position_by=0))
+2025-04-24 12:25:29,860 - market_structure.bot - INFO - Market structure shift detected on TIMEFRAME_M15: BULL
+2025-04-24 12:25:29,864 - market_structure.bot - INFO - Attempting BULL trade entry based on TIMEFRAME_M15 structure break. Positions: 2/5
+2025-04-24 12:25:29,865 - market_structure.bot - INFO - Using ATR-based SL for BUY
+2025-04-24 12:25:30,875 - market_structure.bot - INFO - OrderSend result: OrderSendResult(retcode=10009, deal=4204419096, order=4208466220, volume=0.2, price=8478.2, bid=8478.0, ask=8478.2, comment='Request executed', request_id=1551984294, retcode_external=0, request=TradeRequest(action=1, magic=123456, order=0, symbol='Step Index', volume=0.2, price=8478.1, stoplimit=0.0, sl=8476.439285714287, tp=8481.421428571428, deviation=0, type=0, type_filling=0, type_time=0, expiration=0, comment='market structure bot', position=0, position_by=0))
+2025-04-24 12:27:56,602 - market_structure.bot - INFO - Configured timeframes: ['TIMEFRAME_M15', 'TIMEFRAME_M1']
+2025-04-24 12:28:06,629 - market_structure.bot - INFO - Configured timeframes: ['TIMEFRAME_M15', 'TIMEFRAME_M1']
+2025-04-24 12:28:37,940 - market_structure.bot - INFO - Configured timeframes: ['TIMEFRAME_M15', 'TIMEFRAME_M1']
+2025-04-24 12:28:56,844 - market_structure.bot - INFO - Bot starting...
+2025-04-24 12:28:56,876 - market_structure.bot - ERROR - Error in main bot loop: module 'MetaTrader5' has no attribute 'normalize_price'
+Traceback (most recent call last):
+  File "C:\Coding\Market Structure Shift\bot.py", line 415, in run
+    result = move_to_break_even(position, new_sl)
+  File "C:\Coding\Market Structure Shift\bot.py", line 215, in move_to_break_even
+    normalized_sl = mt5.normalize_price(new_sl, symbol_info.digits)
+                    ^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'MetaTrader5' has no attribute 'normalize_price'
+2025-04-24 12:30:01,904 - market_structure.bot - DEBUG - Insufficient timeframe confirmation: Bull=1, Bear=0, Required=2
+2025-04-24 12:31:01,910 - market_structure.bot - DEBUG - Insufficient timeframe confirmation: Bull=1, Bear=0, Required=2
+2025-04-24 12:34:51,117 - market_structure.bot - INFO - Configured timeframes: ['TIMEFRAME_M15', 'TIMEFRAME_M1']
+2025-04-24 12:34:51,983 - market_structure.bot - INFO - Configured timeframes: ['TIMEFRAME_M15', 'TIMEFRAME_M1']
+2025-04-24 12:34:59,458 - market_structure.bot - INFO - Bot starting...
+2025-04-24 12:34:59,503 - market_structure.bot - DEBUG - Insufficient timeframe confirmation: Bull=1, Bear=0, Required=2
+2025-04-24 12:35:59,512 - market_structure.bot - DEBUG - Insufficient timeframe confirmation: Bull=1, Bear=0, Required=2
+2025-04-24 12:36:46,585 - market_structure.bot - INFO - Configured timeframes: ['TIMEFRAME_H4', 'TIMEFRAME_M30', 'TIMEFRAME_M15', 'TIMEFRAME_M1']
+2025-04-24 12:36:47,405 - market_structure.bot - INFO - Configured timeframes: ['TIMEFRAME_H4', 'TIMEFRAME_M30', 'TIMEFRAME_M15', 'TIMEFRAME_M1']
+2025-04-24 12:36:58,602 - market_structure.bot - INFO - Bot starting...
+2025-04-24 12:36:58,639 - market_structure.bot - INFO - Bullish structure confirmed on 2 timeframes: TIMEFRAME_H4, TIMEFRAME_M30
+2025-04-24 12:36:58,641 - market_structure.bot - INFO - Trade direction (bull) confirmed but price (8454.7) not beyond pivot point yet.
+2025-04-24 12:37:58,649 - market_structure.bot - INFO - Bullish structure confirmed on 2 timeframes: TIMEFRAME_H4, TIMEFRAME_M30
+2025-04-24 12:37:58,650 - market_structure.bot - INFO - Trade direction (bull) confirmed but price (8454.7) not beyond pivot point yet.
+2025-04-24 12:38:58,657 - market_structure.bot - INFO - Bullish structure confirmed on 2 timeframes: TIMEFRAME_H4, TIMEFRAME_M30
+2025-04-24 12:38:58,658 - market_structure.bot - INFO - Trade direction (bull) confirmed but price (8454.7) not beyond pivot point yet.

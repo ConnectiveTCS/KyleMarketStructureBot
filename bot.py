@@ -77,6 +77,9 @@ PARTIAL_CLOSE_PCT = float(config.get('partial_close_pct', 50))
 PARTIAL_CLOSE_PIPS = float(config.get('partial_close_pips', 0))
 USE_DYNAMIC_SL = bool(config.get('use_dynamic_sl', False)) # Load the new parameter
 
+# Minimum required timeframes for confirmation
+MIN_TF_CONFIRMATION = int(config.get('min_tf_confirmation', 2))
+
 # Convert pips to price units
 def pips_to_points(pips, symbol_info):
     digits = symbol_info.digits
@@ -135,6 +138,25 @@ def check_break(bars, highs, lows, symbol_info):
             return 'bear'
     return None
 
+# Custom normalize_price function since MT5 doesn't provide one
+def normalize_price(price, digits):
+    """
+    Normalize price to the specified number of digits (decimal places).
+    Replacement for the missing mt5.normalize_price function.
+    
+    Args:
+        price: The price value to normalize
+        digits: Number of decimal places
+        
+    Returns:
+        float: Normalized price value
+    """
+    if price is None:
+        return None
+    
+    multiplier = 10 ** digits
+    return round(price * multiplier) / multiplier
+
 # Check if position should be moved to break-even
 def check_break_even(position, symbol_info):
     if BREAK_EVEN_PIPS <= 0:
@@ -171,15 +193,17 @@ def check_break_even(position, symbol_info):
     
     return False
 
-# Check if position should be partially closed
+# Enhanced check for partial close - only trigger after break-even is hit
 def check_partial_close(position, symbol_info):
-    if not PARTIAL_CLOSE_ENABLED or PARTIAL_CLOSE_PIPS <= 0 or PARTIAL_CLOSE_PCT <= 0:
+    if not PARTIAL_CLOSE_ENABLED or PARTIAL_CLOSE_PIPS <= 0:
         return False
     
-    # If position has already been partially closed (check volume)
-    original_volume = LOT_SIZE  # Assuming all positions start with the same lot size
-    if position.volume < original_volume * 0.99:  # Allow for small rounding differences
-        return False
+    # Only attempt partial close if break-even has been triggered
+    if position.type == mt5.POSITION_TYPE_BUY and position.sl < position.price_open:
+        return False  # Break-even not yet triggered for buy
+    
+    if position.type == mt5.POSITION_TYPE_SELL and position.sl > position.price_open:
+        return False  # Break-even not yet triggered for sell
     
     # Calculate pip value for this symbol
     pip_value = pips_to_points(1.0, symbol_info)
@@ -191,17 +215,13 @@ def check_partial_close(position, symbol_info):
     tick = mt5.symbol_info_tick(position.symbol)
     current_bid, current_ask = tick.bid, tick.ask
     
-    # Check if position is in enough profit for partial close
+    # Check if position is in enough profit to trigger partial close
     if position.type == mt5.POSITION_TYPE_BUY:
         profit_pips = current_bid - position.price_open
-        if profit_pips >= partial_close_threshold:
-            return True
+        return profit_pips >= partial_close_threshold
     else:  # SELL position
         profit_pips = position.price_open - current_ask
-        if profit_pips >= partial_close_threshold:
-            return True
-    
-    return False
+        return profit_pips >= partial_close_threshold
 
 # Move position to break-even
 def move_to_break_even(position, new_sl):
@@ -211,8 +231,8 @@ def move_to_break_even(position, new_sl):
         return None
 
     # Normalize the new SL and existing TP to the correct number of digits
-    normalized_sl = mt5.normalize_price(new_sl, symbol_info.digits)
-    normalized_tp = mt5.normalize_price(position.tp, symbol_info.digits) # Normalize TP too, just in case
+    normalized_sl = normalize_price(new_sl, symbol_info.digits)
+    normalized_tp = normalize_price(position.tp, symbol_info.digits) # Normalize TP too, just in case
 
     # Get current prices and stop level distance
     tick = mt5.symbol_info_tick(position.symbol)
@@ -309,8 +329,23 @@ def partial_close(position):
         logger.info(f"Position {position.ticket} partially closed: {close_volume} lots")
     return result
 
-# Entry logic with ATR-based SL/TP or Dynamic SL based on swing points
-def enter_trade(direction, symbol_info, last_high, last_low):
+# Entry logic with enhanced checks
+def enter_trade(direction, symbol_info, last_high, last_low, current_price):
+    # Additional safety check - don't enter if we already have max positions
+    positions = mt5.positions_get(symbol=SYMBOL, magic=MAGIC) or []
+    if len(positions) >= MAX_POS:
+        logger.warning(f"Maximum positions ({MAX_POS}) already reached. Skipping entry.")
+        return
+        
+    # Validate that price is actually above pivot high for buys or below pivot low for sells
+    if direction == 'bull' and current_price <= last_high:
+        logger.warning(f"Buy signal rejected: Current price ({current_price}) not above pivot high ({last_high})")
+        return
+        
+    if direction == 'bear' and current_price >= last_low:
+        logger.warning(f"Sell signal rejected: Current price ({current_price}) not below pivot low ({last_low})")
+        return
+    
     rates = mt5.copy_rates_from_pos(SYMBOL, TIMEFRAME, 0, LOOKBACK)
     atr = calculate_atr(rates, ATR_PERIOD)
     tick = mt5.symbol_info_tick(SYMBOL)
@@ -318,7 +353,7 @@ def enter_trade(direction, symbol_info, last_high, last_low):
 
     if direction == 'bull':
         price = tick.ask
-        tp = price + atr * ATR_MULT_TP # TP remains ATR based for now
+        tp = price + atr * ATR_MULT_TP
         order_type = mt5.ORDER_TYPE_BUY
         if USE_DYNAMIC_SL and last_low is not None:
             sl = last_low - buffer_points
@@ -326,9 +361,9 @@ def enter_trade(direction, symbol_info, last_high, last_low):
         else:
             sl = price - atr * ATR_MULT_SL
             logger.info(f"Using ATR-based SL for BUY")
-    else: # direction == 'bear'
+    else:  # direction == 'bear'
         price = tick.bid
-        tp = price - atr * ATR_MULT_TP # TP remains ATR based for now
+        tp = price - atr * ATR_MULT_TP
         order_type = mt5.ORDER_TYPE_SELL
         if USE_DYNAMIC_SL and last_high is not None:
             sl = last_high + buffer_points
@@ -337,7 +372,7 @@ def enter_trade(direction, symbol_info, last_high, last_low):
             sl = price + atr * ATR_MULT_SL
             logger.info(f"Using ATR-based SL for SELL")
 
-    # Ensure SL is valid (e.g., SL for buy is below price, SL for sell is above price)
+    # Ensure SL is valid
     if order_type == mt5.ORDER_TYPE_BUY and sl >= price:
         logger.warning(f"Calculated dynamic SL ({sl}) is above entry price ({price}). Reverting to ATR SL.")
         sl = price - atr * ATR_MULT_SL
@@ -352,15 +387,20 @@ def enter_trade(direction, symbol_info, last_high, last_low):
             sl = price - atr * ATR_MULT_SL
         else:
             sl = price + atr * ATR_MULT_SL
+    
+    # Normalize price, SL and TP to correct digits
+    normalized_price = normalize_price(price, symbol_info.digits)
+    normalized_sl = normalize_price(sl, symbol_info.digits)
+    normalized_tp = normalize_price(tp, symbol_info.digits)
             
     request = {
         'action': mt5.TRADE_ACTION_DEAL,
         'symbol': SYMBOL,
         'volume': LOT_SIZE,
         'type': order_type,
-        'price': price,
-        'sl': sl,
-        'tp': tp,
+        'price': normalized_price,
+        'sl': normalized_sl,
+        'tp': normalized_tp,
         'magic': MAGIC,
         'comment': 'market structure bot',
         'type_filling': mt5.ORDER_FILLING_FOK,
@@ -368,48 +408,54 @@ def enter_trade(direction, symbol_info, last_high, last_low):
     result = mt5.order_send(request)
     logger.info(f"OrderSend result: {result}")
 
-# Main bot loop
+# Main bot loop with enhanced multi-timeframe confirmation
 def run(stop_event):
     logger.info("Bot starting...")
     if not mt5.initialize():
         logger.error("MT5 initialization failed")
         return
+    
     # Ensure symbol is selected before getting info
     if not mt5.symbol_select(SYMBOL, True):
         logger.error(f"Failed to select symbol {SYMBOL}")
         mt5.shutdown()
         return
-
+    
     symbol_info = mt5.symbol_info(SYMBOL)
     if not symbol_info:
         logger.error(f"Failed to get symbol info for {SYMBOL}")
         mt5.shutdown()
         return
-
+    
     while not stop_event.is_set():
-        try: # Add error handling for the main loop
+        try:
             # Check existing positions for break-even and partial close
             positions = mt5.positions_get(symbol=SYMBOL, magic=MAGIC) or []
             
+            # Money management - Process in order: first break-even, then partial close
             for position in positions:
-                # Check for break-even opportunity
+                # First check if break-even can be applied
                 new_sl = check_break_even(position, symbol_info)
                 if new_sl:
-                    move_to_break_even(position, new_sl)
-                
-                # Check for partial close opportunity (only if not already at break-even)
-                # Avoid partial closing if BE was just triggered in the same loop iteration
-                if not new_sl and check_partial_close(position, symbol_info):
+                    result = move_to_break_even(position, new_sl)
+                    # After applying break-even, wait until next cycle to check partial close
+                    # This ensures the break-even is registered in the system
+                    continue
+                    
+                # Only check partial close if break-even wasn't just applied
+                if check_partial_close(position, symbol_info):
                     partial_close(position)
             
             # --- Market Structure Analysis ---
             dir_map = {}
             pivot_map = {}
-            structure_broken = False
+            bull_count = 0
+            bear_count = 0
             trade_direction = None
-            triggering_tf = None
+            triggering_tfs = []
             last_high_for_trade = None
             last_low_for_trade = None
+            current_price = None
 
             for name, tf in zip(TIMEFRAME_NAMES, TIMEFRAMES):
                 bars = mt5.copy_rates_from_pos(SYMBOL, tf, 0, LOOKBACK)
@@ -420,43 +466,64 @@ def run(stop_event):
                 
                 # Need at least PIVOT_DEPTH * 2 + 1 bars to find pivots reliably
                 if len(bars) < (PIVOT_DEPTH * 2 + 1):
-                     logger.debug(f"Not enough bars ({len(bars)}) on {name} for pivot depth {PIVOT_DEPTH}. Skipping.")
-                     highs, lows = [], []
-                     direction = None
+                    logger.debug(f"Not enough bars ({len(bars)}) on {name} for pivot depth {PIVOT_DEPTH}. Skipping.")
+                    highs, lows = [], []
+                    direction = None
                 else:
                     highs, lows = find_pivots(bars)
                     direction = check_break(bars, highs, lows, symbol_info)
+                    
+                    # Get current price for entry validation
+                    if not current_price and len(bars) > 0:
+                        current_price = bars[0]['close']
                 
                 dir_map[name] = direction
                 pivot_map[name] = (highs, lows)
 
-                # Check if this timeframe triggered a break (only if no break found yet)
-                if not structure_broken and direction:
-                    structure_broken = True
-                    trade_direction = direction
-                    triggering_tf = name
-                    # Store the pivots from the triggering timeframe for potential SL calculation
-                    trigger_highs, trigger_lows = highs, lows
-                    last_high_for_trade = trigger_highs[-1][1] if trigger_highs else None
-                    last_low_for_trade = trigger_lows[-1][1] if trigger_lows else None
-                    logger.info(f"Market structure shift detected on {triggering_tf}: {trade_direction.upper()}")
+                # Count timeframes confirming each direction
+                if direction == 'bull':
+                    bull_count += 1
+                    triggering_tfs.append(name)
+                    if not last_high_for_trade and highs:
+                        last_high_for_trade = highs[-1][1]
+                    if not last_low_for_trade and lows:
+                        last_low_for_trade = lows[-1][1]
+                elif direction == 'bear':
+                    bear_count += 1
+                    triggering_tfs.append(name)
+                    if not last_high_for_trade and highs:
+                        last_high_for_trade = highs[-1][1]
+                    if not last_low_for_trade and lows:
+                        last_low_for_trade = lows[-1][1]
 
+            # Determine overall direction based on multi-timeframe confirmation
+            if bull_count >= MIN_TF_CONFIRMATION:
+                trade_direction = 'bull'
+                logger.info(f"Bullish structure confirmed on {bull_count} timeframes: {', '.join(triggering_tfs[:MIN_TF_CONFIRMATION])}")
+            elif bear_count >= MIN_TF_CONFIRMATION:
+                trade_direction = 'bear'
+                logger.info(f"Bearish structure confirmed on {bear_count} timeframes: {', '.join(triggering_tfs[:MIN_TF_CONFIRMATION])}")
+            else:
+                logger.debug(f"Insufficient timeframe confirmation: Bull={bull_count}, Bear={bear_count}, Required={MIN_TF_CONFIRMATION}")
+                
             # --- Trade Entry Logic ---
             # Re-fetch positions in case partial close reduced count
             current_positions = mt5.positions_get(symbol=SYMBOL, magic=MAGIC) or []
             position_count = len(current_positions)
 
-            # Condition: Structure broken, direction confirmed, and position limit not reached
-            if structure_broken and trade_direction and position_count < MAX_POS:
-                logger.info(f"Attempting {trade_direction.upper()} trade entry based on {triggering_tf} structure break. Positions: {position_count}/{MAX_POS}")
-                # Pass the pivots from the *triggering* timeframe
-                enter_trade(trade_direction, symbol_info, last_high_for_trade, last_low_for_trade)
-            elif structure_broken and trade_direction:
-                 logger.info(f"Structure shift ({trade_direction.upper()} on {triggering_tf}) detected, but max positions ({position_count}/{MAX_POS}) reached. No new entry.")
-            # else: # Optional: Log if no structure break found
-            #    logger.debug("No market structure break detected across monitored timeframes.")
-
-
+            # Condition: Multi-timeframe confirmation, direction confirmed, valid price level, and position limit not reached
+            if trade_direction and position_count < MAX_POS:
+                if trade_direction == 'bull' and current_price > last_high_for_trade:
+                    logger.info(f"Attempting BUY trade entry based on {MIN_TF_CONFIRMATION}+ timeframe confirmation. Price ({current_price}) > Pivot High ({last_high_for_trade})")
+                    enter_trade(trade_direction, symbol_info, last_high_for_trade, last_low_for_trade, current_price)
+                elif trade_direction == 'bear' and current_price < last_low_for_trade:
+                    logger.info(f"Attempting SELL trade entry based on {MIN_TF_CONFIRMATION}+ timeframe confirmation. Price ({current_price}) < Pivot Low ({last_low_for_trade})")
+                    enter_trade(trade_direction, symbol_info, last_high_for_trade, last_low_for_trade, current_price)
+                else:
+                    logger.info(f"Trade direction ({trade_direction}) confirmed but price ({current_price}) not beyond pivot point yet.")
+            elif trade_direction:
+                logger.info(f"Structure shift ({trade_direction.upper()}) detected with {MIN_TF_CONFIRMATION}+ timeframe confirmation, but max positions ({position_count}/{MAX_POS}) reached. No new entry.")
+            
         except Exception as e:
             logger.error(f"Error in main bot loop: {e}", exc_info=True)
             # Optional: Add a small delay after an error to prevent rapid looping on persistent issues
