@@ -75,6 +75,7 @@ BREAK_EVEN_BUFFER = float(config.get('break_even_buffer_pips', 1))
 PARTIAL_CLOSE_ENABLED = bool(config.get('partial_close_enabled', False))
 PARTIAL_CLOSE_PCT = float(config.get('partial_close_pct', 50))
 PARTIAL_CLOSE_PIPS = float(config.get('partial_close_pips', 0))
+USE_DYNAMIC_SL = bool(config.get('use_dynamic_sl', False)) # Load the new parameter
 
 # Convert pips to price units
 def pips_to_points(pips, symbol_info):
@@ -255,22 +256,50 @@ def partial_close(position):
         logger.info(f"Position {position.ticket} partially closed: {close_volume} lots")
     return result
 
-# Entry logic with ATR-based SL/TP
+# Entry logic with ATR-based SL/TP or Dynamic SL based on swing points
 def enter_trade(direction, symbol_info, last_high, last_low):
     rates = mt5.copy_rates_from_pos(SYMBOL, TIMEFRAME, 0, LOOKBACK)
     atr = calculate_atr(rates, ATR_PERIOD)
     tick = mt5.symbol_info_tick(SYMBOL)
+    buffer_points = pips_to_points(BREAK_BUFFER_PIPS, symbol_info)
+
     if direction == 'bull':
         price = tick.ask
-        sl = price - atr * ATR_MULT_SL
-        tp = price + atr * ATR_MULT_TP
+        tp = price + atr * ATR_MULT_TP # TP remains ATR based for now
         order_type = mt5.ORDER_TYPE_BUY
-    else:
+        if USE_DYNAMIC_SL and last_low is not None:
+            sl = last_low - buffer_points
+            logger.info(f"Using dynamic SL for BUY based on last low: {last_low}")
+        else:
+            sl = price - atr * ATR_MULT_SL
+            logger.info(f"Using ATR-based SL for BUY")
+    else: # direction == 'bear'
         price = tick.bid
-        sl = price + atr * ATR_MULT_SL
-        tp = price - atr * ATR_MULT_TP
+        tp = price - atr * ATR_MULT_TP # TP remains ATR based for now
         order_type = mt5.ORDER_TYPE_SELL
+        if USE_DYNAMIC_SL and last_high is not None:
+            sl = last_high + buffer_points
+            logger.info(f"Using dynamic SL for SELL based on last high: {last_high}")
+        else:
+            sl = price + atr * ATR_MULT_SL
+            logger.info(f"Using ATR-based SL for SELL")
 
+    # Ensure SL is valid (e.g., SL for buy is below price, SL for sell is above price)
+    if order_type == mt5.ORDER_TYPE_BUY and sl >= price:
+        logger.warning(f"Calculated dynamic SL ({sl}) is above entry price ({price}). Reverting to ATR SL.")
+        sl = price - atr * ATR_MULT_SL
+    elif order_type == mt5.ORDER_TYPE_SELL and sl <= price:
+        logger.warning(f"Calculated dynamic SL ({sl}) is below entry price ({price}). Reverting to ATR SL.")
+        sl = price + atr * ATR_MULT_SL
+        
+    # Ensure SL is not zero or negative if required by broker
+    if sl <= 0:
+        logger.warning(f"Calculated SL ({sl}) is zero or negative. Reverting to ATR SL.")
+        if order_type == mt5.ORDER_TYPE_BUY:
+            sl = price - atr * ATR_MULT_SL
+        else:
+            sl = price + atr * ATR_MULT_SL
+            
     request = {
         'action': mt5.TRADE_ACTION_DEAL,
         'symbol': SYMBOL,
@@ -328,9 +357,11 @@ def run(stop_event):
 
         positions = mt5.positions_get(symbol=SYMBOL, magic=MAGIC) or []
         if trigger and direction and len(positions) < MAX_POS:
+            # Get pivots from the *triggering* timeframe
             highs, lows = pivot_map[trigger]
             last_high = highs[-1][1] if highs else None
             last_low  = lows[-1][1]  if lows  else None
+            # Pass last high/low to enter_trade for dynamic SL calculation
             enter_trade(direction, symbol_info, last_high, last_low)
 
         time.sleep(UPDATE_INTERVAL)

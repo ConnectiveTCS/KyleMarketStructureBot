@@ -1,382 +1,570 @@
-<!-- Executive Dashboard Header -->
-            <div class="bg-gradient-to-r from-slate-800 to-slate-700 text-white rounded-t-lg p-4 sm:p-5 flex flex-wrap sm:flex-nowrap justify-between items-center">
-              <h2 class="text-lg sm:text-xl font-bold w-full sm:w-auto">
-                <i class="fas fa-cog mr-2"></i>Bot Configuration Dashboard
-              </h2>
-              <div class="flex items-center mt-2 sm:mt-0 w-full sm:w-auto justify-end">
-                <span class="text-sm opacity-80 mr-3">{{ symbol }}</span>
-                <span class="bg-blue-500 text-xs font-bold px-2.5 py-1 rounded">CONFIG</span>
-              </div>
-            </div>
-            
-            <div class="p-4 sm:p-6 bg-slate-50 mt-4 sm:mt-6">
-              <!-- Profile Management Section -->
-              <div class="bg-white rounded-lg shadow-card p-6 mb-6">
-                <h3 class="text-lg font-medium text-slate-800 mb-4">Profile Management</h3>
-                
-                <div class="flex flex-wrap items-end gap-4">
-                  <div class="w-full md:w-auto flex-grow">
-                    <label class="block text-sm font-medium text-slate-700 mb-1">
-                      Select Profile
-                    </label>
-                    <select id="profile-select" class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition">
-                      <option value="">-- Select a profile --</option>
-                      {% for profile in profiles %}
-                        <option value="{{ profile }}">{{ profile }}</option>
-                      {% endfor %}
-                    </select>
-                  </div>
-                  
-                  <div class="w-full md:w-auto flex-grow">
-                    <label class="block text-sm font-medium text-slate-700 mb-1">
-                      New Profile Name
-                    </label>
-                    <input type="text" id="new-profile-name" placeholder="Enter profile name" 
-                      class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition" />
-                  </div>
-                  
-                  <div class="flex space-x-2">
-                    <button id="save-profile-btn" class="px-4 py-2 bg-emerald-500 text-white rounded-md shadow-sm hover:bg-emerald-600 transition flex items-center justify-center">
-                      <i class="fas fa-save mr-2"></i>
-                      Save as Profile
-                    </button>
-                    
-                    <button id="load-profile-btn" class="px-4 py-2 bg-blue-500 text-white rounded-md shadow-sm hover:bg-blue-600 transition flex items-center justify-center">
-                      <i class="fas fa-download mr-2"></i>
-                      Load
-                    </button>
-                    
-                    <button id="delete-profile-btn" class="px-4 py-2 bg-red-500 text-white rounded-md shadow-sm hover:bg-red-600 transition flex items-center justify-center">
-                      <i class="fas fa-trash-alt mr-2"></i>
-                      Delete
-                    </button>
-                  </div>
-                </div>
-                
-                <!-- Alert Messages -->
-                <div id="profile-message" class="mt-4 hidden"></div>
-              </div>
-              
-              <div class="bg-white rounded-lg shadow-card p-6 mb-6">
-                <h3 class="text-lg font-medium text-slate-800 mb-4">Strategy Selection</h3>
-                
-                <div class="flex flex-wrap items-end gap-4">
-                  <div class="w-full md:w-auto flex-grow">
-                    <label class="block text-sm font-medium text-slate-700 mb-1">
-                      Trading Strategy
-                    </label>
-                    <select id="strategy-select" name="active_strategy" class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition">
-                      {% for strategy_id, strategy in available_strategies.items() %}
-                        <option value="{{ strategy_id }}" {% if config.active_strategy == strategy_id %}selected{% endif %}>
-                          {{ strategy.name|title }}
-                        </option>
-                      {% endfor %}
-                    </select>
-                  </div>
-                  
-                  <div class="w-full">
-                    <div id="strategy-description" class="text-sm text-slate-600 p-3 bg-slate-50 rounded-md">
-                      {% if config.active_strategy in available_strategies %}
-                        {{ available_strategies[config.active_strategy].description }}
-                      {% else %}
-                        Please select a trading strategy.
-                      {% endif %}
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-              <!-- Update Configuration Form -->
-              <div class="bg-white rounded-lg shadow-card p-6">
-                <form action="/update_config" method="post" class="space-y-4">
-                  <input type="hidden" name="active_strategy" id="active-strategy-input" value="{{ config.active_strategy }}">
-                  
-                  <!-- Common Settings Section -->
-                  <div class="border-b pb-4 mb-4">
-                    <h3 class="text-lg font-medium text-slate-800 mb-4">Common Settings</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div class="mb-4">
-                        <label class="block text-sm font-medium text-slate-700 mb-1">
-                          Symbol:
-                        </label>
-                        <input 
-                          name="symbol" 
-                          value="{{ config.symbol }}" 
-                          class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition"
-                        />
-                      </div>
-                      
-                      <div class="mb-4">
-                        <label class="block text-sm font-medium text-slate-700 mb-1">
-                          Lot Size:
-                        </label>
-                        <input 
-                          name="lot_size" 
-                          value="{{ config.lot_size }}" 
-                          class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition"
-                        />
-                      </div>
-                      
-                      <div class="mb-4">
-                        <label class="block text-sm font-medium text-slate-700 mb-1">
-                          Stop Loss (pips):
-                        </label>
-                        <input 
-                          name="stop_loss_pips" 
-                          value="{{ config.stop_loss_pips }}" 
-                          class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition"
-                        />
-                      </div>
-                      
-                      <div class="mb-4">
-                        <label class="block text-sm font-medium text-slate-700 mb-1">
-                          Take Profit (pips):
-                        </label>
-                        <input 
-                          name="take_profit_pips" 
-                          value="{{ config.take_profit_pips }}" 
-                          class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition"
-                        />
-                      </div>
-                      
-                      <div class="mb-4">
-                        <label class="block text-sm font-medium text-slate-700 mb-1">
-                          Max Positions:
-                        </label>
-                        <input 
-                          name="max_positions" 
-                          value="{{ config.max_positions }}" 
-                          class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition"
-                        />
-                      </div>
-                      
-                      <div class="mb-4">
-                        <label class="block text-sm font-medium text-slate-700 mb-1">
-                          Update Interval (seconds):
-                        </label>
-                        <input 
-                          name="update_interval" 
-                          value="{{ config.update_interval }}" 
-                          class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <!-- Risk Management Settings -->
-                  <div class="border-b pb-4 mb-4">
-                    <h3 class="text-lg font-medium text-slate-800 mb-4">Risk Management Settings</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div class="mb-4">
-                        <label class="block text-sm font-medium text-slate-700 mb-1">
-                          Break Even Pips:
-                        </label>
-                        <input 
-                          name="break_even_pips" 
-                          value="{{ config.break_even_pips }}" 
-                          class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition"
-                        />
-                      </div>
-                      
-                      <div class="mb-4">
-                        <label class="block text-sm font-medium text-slate-700 mb-1">
-                          Break Even Buffer Pips:
-                        </label>
-                        <input 
-                          name="break_even_buffer_pips" 
-                          value="{{ config.break_even_buffer_pips }}" 
-                          class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition"
-                        />
-                      </div>
-                      
-                      <div class="mb-4">
-                        <label class="block text-sm font-medium text-slate-700 mb-1">
-                          Partial Close Enabled:
-                        </label>
-                        <select
-                          name="partial_close_enabled"
-                          class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition"
-                        >
-                          <option value="true" {% if config.partial_close_enabled %}selected{% endif %}>Enabled</option>
-                          <option value="false" {% if not config.partial_close_enabled %}selected{% endif %}>Disabled</option>
-                        </select>
-                      </div>
-                      
-                      <div class="mb-4">
-                        <label class="block text-sm font-medium text-slate-700 mb-1">
-                          Partial Close Percentage:
-                        </label>
-                        <input 
-                          name="partial_close_pct" 
-                          value="{{ config.partial_close_pct }}" 
-                          class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition"
-                        />
-                      </div>
-                      
-                      <div class="mb-4">
-                        <label class="block text-sm font-medium text-slate-700 mb-1">
-                          Partial Close Pips:
-                        </label>
-                        <input 
-                          name="partial_close_pips" 
-                          value="{{ config.partial_close_pips }}" 
-                          class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <!-- Market Structure Strategy Settings -->
-                  <div id="market_structure-settings" class="strategy-settings border-b pb-4 mb-4 {% if config.active_strategy != 'market_structure' %}hidden{% endif %}">
-                    <h3 class="text-lg font-medium text-slate-800 mb-4">Market Structure Strategy Settings</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div class="mb-4">
-                        <label class="block text-sm font-medium text-slate-700 mb-1">
-                          Pivot Depth:
-                        </label>
-                        <input 
-                          name="pivot_depth" 
-                          value="{{ config.pivot_depth }}" 
-                          class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition"
-                        />
-                      </div>
-                      
-                      <div class="mb-4">
-                        <label class="block text-sm font-medium text-slate-700 mb-1">
-                          Break Buffer (pips):
-                        </label>
-                        <input 
-                          name="break_buffer_pips" 
-                          value="{{ config.break_buffer_pips }}" 
-                          class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition"
-                        />
-                      </div>
-                      
-                      <div class="mb-4">
-                        <label class="block text-sm font-medium text-slate-700 mb-1">
-                          ATR Period:
-                        </label>
-                        <input 
-                          name="atr_period" 
-                          value="{{ config.atr_period }}" 
-                          class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition"
-                        />
-                      </div>
-                      
-                      <div class="mb-4">
-                        <label class="block text-sm font-medium text-slate-700 mb-1">
-                          ATR Multiplier SL:
-                        </label>
-                        <input 
-                          name="atr_multiplier_sl" 
-                          value="{{ config.atr_multiplier_sl }}" 
-                          class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition"
-                        />
-                      </div>
-                      
-                      <div class="mb-4">
-                        <label class="block text-sm font-medium text-slate-700 mb-1">
-                          ATR Multiplier TP:
-                        </label>
-                        <input 
-                          name="atr_multiplier_tp" 
-                          value="{{ config.atr_multiplier_tp }}" 
-                          class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <!-- Stochastic Oscillator Strategy Settings -->
-                  <div id="stochastic-settings" class="strategy-settings border-b pb-4 mb-4 {% if config.active_strategy != 'stochastic' %}hidden{% endif %}">
-                    <h3 class="text-lg font-medium text-slate-800 mb-4">Stochastic Oscillator Strategy Settings</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div class="mb-4">
-                        <label class="block text-sm font-medium text-slate-700 mb-1">
-                          %K Period:
-                        </label>
-                        <input 
-                          name="stoch_k_period" 
-                          value="{{ config.stoch_k_period }}" 
-                          class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition"
-                        />
-                      </div>
-                      
-                      <div class="mb-4">
-                        <label class="block text-sm font-medium text-slate-700 mb-1">
-                          %D Period:
-                        </label>
-                        <input 
-                          name="stoch_d_period" 
-                          value="{{ config.stoch_d_period }}" 
-                          class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition"
-                        />
-                      </div>
-                      
-                      <div class="mb-4">
-                        <label class="block text-sm font-medium text-slate-700 mb-1">
-                          Slowing:
-                        </label>
-                        <input 
-                          name="stoch_slowing" 
-                          value="{{ config.stoch_slowing }}" 
-                          class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition"
-                        />
-                      </div>
-                      
-                      <div class="mb-4">
-                        <label class="block text-sm font-medium text-slate-700 mb-1">
-                          Overbought Level:
-                        </label>
-                        <input 
-                          name="stoch_overbought" 
-                          value="{{ config.stoch_overbought }}" 
-                          class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition"
-                        />
-                      </div>
-                      
-                      <div class="mb-4">
-                        <label class="block text-sm font-medium text-slate-700 mb-1">
-                          Oversold Level:
-                        </label>
-                        <input 
-                          name="stoch_oversold" 
-                          value="{{ config.stoch_oversold }}" 
-                          class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition"
-                        />
-                      </div>
-                      
-                      <div class="mb-4">
-                        <label class="block text-sm font-medium text-slate-700 mb-1">
-                          Trend Detection Method:
-                        </label>
-                        <select
-                          name="stoch_trend_detection"
-                          class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition"
-                        >
-                          <option value="SMA" {% if config.stoch_trend_detection == 'SMA' %}selected{% endif %}>Simple Moving Average</option>
-                          <option value="EMA" {% if config.stoch_trend_detection == 'EMA' %}selected{% endif %}>Exponential Moving Average</option>
-                          <option value="NONE" {% if config.stoch_trend_detection == 'NONE' %}selected{% endif %}>No Trend Filter</option>
-                        </select>
-                      </div>
-                      
-                      <div class="mb-4">
-                        <label class="block text-sm font-medium text-slate-700 mb-1">
-                          Trend Period:
-                        </label>
-                        <input 
-                          name="stoch_trend_period" 
-                          value="{{ config.stoch_trend_period }}" 
-                          class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <button type="submit" class="w-full md:w-auto mt-6 px-6 py-2 bg-blue-500 text-white rounded-md shadow-sm hover:bg-blue-600 transition flex items-center justify-center">
-                    <i class="fas fa-save mr-2"></i>
-                    Update Configuration
-                  </button>
-                </form>
-              </div>
-            </div>
+<div class="bg-white rounded-lg shadow-card mb-6">
+  <div class="section-header rounded-t-lg">
+    <h2 class="text-lg font-semibold text-slate-800">
+      <i class="fas fa-cog mr-2 text-primary"></i>Configuration
+    </h2>
+  </div>
+
+  <div class="p-4 sm:p-6">
+    <form action="/update_config" method="post" class="space-y-6">
+      <!-- Profile Management -->
+      <div class="border rounded-md p-4 bg-slate-50">
+        <h3 class="text-md font-semibold mb-3 text-slate-700">
+          Configuration Profiles
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
+          <div>
+            <label
+              for="profile-select"
+              class="block text-sm font-medium text-slate-600 mb-1"
+              >Load Profile:</label
+            >
+            <select
+              id="profile-select"
+              name="profile_select"
+              class="w-full p-2 border border-slate-300 rounded-md shadow-sm focus:ring-primary focus:border-primary"
+            >
+              <option value="">-- Select Profile --</option>
+              {% for profile in profiles %}
+              <option value="{{ profile }}">{{ profile }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="flex space-x-2">
+            <button
+              type="button"
+              id="load-profile-btn"
+              class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md text-sm flex-grow"
+            >
+              Load Selected
+            </button>
+            <button
+              type="button"
+              id="delete-profile-btn"
+              class="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-md text-sm"
+            >
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+        </div>
+        <div class="mt-4">
+          <label
+            for="new-profile-name"
+            class="block text-sm font-medium text-slate-600 mb-1"
+            >Save Current as New Profile:</label
+          >
+          <div class="flex space-x-2">
+            <input
+              type="text"
+              id="new-profile-name"
+              placeholder="Enter new profile name"
+              class="flex-grow p-2 border border-slate-300 rounded-md shadow-sm focus:ring-primary focus:border-primary"
+            />
+            <button
+              type="button"
+              id="save-profile-btn"
+              class="bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2 px-4 rounded-md text-sm"
+            >
+              Save
+            </button>
+          </div>
+        </div>
+        <div id="profile-message" class="mt-3 hidden"></div>
+      </div>
+
+      <!-- Strategy Selection -->
+      <div class="border rounded-md p-4">
+        <h3 class="text-md font-semibold mb-3 text-slate-700">
+          Trading Strategy
+        </h3>
+        <div class="mb-4">
+          <label
+            for="strategy-select"
+            class="block text-sm font-medium text-slate-600 mb-1"
+            >Active Strategy:</label
+          >
+          <select
+            id="strategy-select"
+            name="active_strategy_select"
+            class="w-full p-2 border border-slate-300 rounded-md shadow-sm focus:ring-primary focus:border-primary"
+          >
+            {% for strategy_id, strategy in available_strategies.items() %}
+            <option
+              value="{{ strategy_id }}"
+              {%
+              if
+              config.active_strategy
+              ==
+              strategy_id
+              %}selected{%
+              endif
+              %}
+            >
+              {{ strategy.name }}
+            </option>
+            {% endfor %}
+          </select>
+          <input
+            type="hidden"
+            id="active-strategy-input"
+            name="active_strategy"
+            value="{{ config.active_strategy }}"
+          />
+          <p id="strategy-description" class="text-sm text-slate-500 mt-2">
+            {{ available_strategies[config.active_strategy].description if
+            config.active_strategy in available_strategies else 'Select a
+            strategy.' }}
+          </p>
+        </div>
+      </div>
+
+      <!-- General Settings -->
+      <div class="border rounded-md p-4">
+        <h3 class="text-md font-semibold mb-3 text-slate-700">
+          General Settings
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div>
+            <label
+              for="symbol"
+              class="block text-sm font-medium text-slate-600 mb-1"
+              >Symbol:</label
+            >
+            <input
+              type="text"
+              id="symbol"
+              name="symbol"
+              value="{{ config.symbol }}"
+              class="w-full p-2 border border-slate-300 rounded-md shadow-sm focus:ring-primary focus:border-primary"
+            />
+          </div>
+          <div>
+            <label
+              for="timeframes"
+              class="block text-sm font-medium text-slate-600 mb-1"
+              >Timeframes (JSON list):</label
+            >
+            <input
+              type="text"
+              id="timeframes"
+              name="timeframes"
+              value="{{ config.timeframes|tojson }}"
+              class="w-full p-2 border border-slate-300 rounded-md shadow-sm focus:ring-primary focus:border-primary"
+            />
+          </div>
+          <div>
+            <label
+              for="lookback"
+              class="block text-sm font-medium text-slate-600 mb-1"
+              >Lookback Period:</label
+            >
+            <input
+              type="number"
+              id="lookback"
+              name="lookback"
+              value="{{ config.lookback }}"
+              class="w-full p-2 border border-slate-300 rounded-md shadow-sm focus:ring-primary focus:border-primary"
+            />
+          </div>
+          <div>
+            <label
+              for="lot_size"
+              class="block text-sm font-medium text-slate-600 mb-1"
+              >Lot Size:</label
+            >
+            <input
+              type="number"
+              step="0.01"
+              id="lot_size"
+              name="lot_size"
+              value="{{ config.lot_size }}"
+              class="w-full p-2 border border-slate-300 rounded-md shadow-sm focus:ring-primary focus:border-primary"
+            />
+          </div>
+          <div>
+            <label
+              for="magic"
+              class="block text-sm font-medium text-slate-600 mb-1"
+              >Magic Number:</label
+            >
+            <input
+              type="number"
+              id="magic"
+              name="magic"
+              value="{{ config.magic }}"
+              class="w-full p-2 border border-slate-300 rounded-md shadow-sm focus:ring-primary focus:border-primary"
+            />
+          </div>
+          <div>
+            <label
+              for="max_positions"
+              class="block text-sm font-medium text-slate-600 mb-1"
+              >Max Positions:</label
+            >
+            <input
+              type="number"
+              id="max_positions"
+              name="max_positions"
+              value="{{ config.max_positions }}"
+              class="w-full p-2 border border-slate-300 rounded-md shadow-sm focus:ring-primary focus:border-primary"
+            />
+          </div>
+          <div>
+            <label
+              for="update_interval"
+              class="block text-sm font-medium text-slate-600 mb-1"
+              >Update Interval (s):</label
+            >
+            <input
+              type="number"
+              id="update_interval"
+              name="update_interval"
+              value="{{ config.update_interval }}"
+              class="w-full p-2 border border-slate-300 rounded-md shadow-sm focus:ring-primary focus:border-primary"
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- Market Structure Strategy Settings -->
+      <div
+        id="market_structure-settings"
+        class="strategy-settings border rounded-md p-4 {% if config.active_strategy != 'market_structure' %}hidden{% endif %}"
+      >
+        <h3 class="text-md font-semibold mb-3 text-slate-700">
+          Market Structure Settings
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div>
+            <label
+              for="pivot_depth"
+              class="block text-sm font-medium text-slate-600 mb-1"
+              >Pivot Depth:</label
+            >
+            <input
+              type="number"
+              id="pivot_depth"
+              name="pivot_depth"
+              value="{{ config.pivot_depth }}"
+              class="w-full p-2 border border-slate-300 rounded-md shadow-sm focus:ring-primary focus:border-primary"
+            />
+          </div>
+          <div>
+            <label
+              for="break_buffer_pips"
+              class="block text-sm font-medium text-slate-600 mb-1"
+              >Break Buffer (Pips):</label
+            >
+            <input
+              type="number"
+              step="0.1"
+              id="break_buffer_pips"
+              name="break_buffer_pips"
+              value="{{ config.break_buffer_pips }}"
+              class="w-full p-2 border border-slate-300 rounded-md shadow-sm focus:ring-primary focus:border-primary"
+            />
+          </div>
+          <div>
+            <label
+              for="atr_period"
+              class="block text-sm font-medium text-slate-600 mb-1"
+              >ATR Period:</label
+            >
+            <input
+              type="number"
+              id="atr_period"
+              name="atr_period"
+              value="{{ config.atr_period }}"
+              class="w-full p-2 border border-slate-300 rounded-md shadow-sm focus:ring-primary focus:border-primary"
+            />
+          </div>
+          <div>
+            <label
+              for="atr_multiplier_sl"
+              class="block text-sm font-medium text-slate-600 mb-1"
+              >ATR Multiplier (SL):</label
+            >
+            <input
+              type="number"
+              step="0.1"
+              id="atr_multiplier_sl"
+              name="atr_multiplier_sl"
+              value="{{ config.atr_multiplier_sl }}"
+              class="w-full p-2 border border-slate-300 rounded-md shadow-sm focus:ring-primary focus:border-primary"
+            />
+          </div>
+          <div>
+            <label
+              for="atr_multiplier_tp"
+              class="block text-sm font-medium text-slate-600 mb-1"
+              >ATR Multiplier (TP):</label
+            >
+            <input
+              type="number"
+              step="0.1"
+              id="atr_multiplier_tp"
+              name="atr_multiplier_tp"
+              value="{{ config.atr_multiplier_tp }}"
+              class="w-full p-2 border border-slate-300 rounded-md shadow-sm focus:ring-primary focus:border-primary"
+            />
+          </div>
+          <!-- Dynamic SL Toggle -->
+          <div class="flex items-center pt-5">
+            <input
+              type="hidden"
+              name="use_dynamic_sl"
+              value="false"
+            />
+            <!-- Hidden input for false value -->
+            <input
+              type="checkbox"
+              id="use_dynamic_sl"
+              name="use_dynamic_sl"
+              value="true"
+              class="h-4 w-4 text-primary border-slate-300 rounded focus:ring-primary"
+              {%
+              if
+              config.use_dynamic_sl
+              %}checked{%
+              endif
+              %}
+            />
+            <label
+              for="use_dynamic_sl"
+              class="ml-2 block text-sm font-medium text-slate-600"
+              >Use Dynamic SL (Swing Points)</label
+            >
+          </div>
+        </div>
+      </div>
+
+      <!-- Stochastic Strategy Settings -->
+      <div
+        id="stochastic-settings"
+        class="strategy-settings border rounded-md p-4 {% if config.active_strategy != 'stochastic' %}hidden{% endif %}"
+      >
+        <h3 class="text-md font-semibold mb-3 text-slate-700">
+          Stochastic Settings
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div>
+            <label
+              for="stoch_k_period"
+              class="block text-sm font-medium text-slate-600 mb-1"
+              >K Period:</label
+            >
+            <input
+              type="number"
+              id="stoch_k_period"
+              name="stoch_k_period"
+              value="{{ config.stoch_k_period }}"
+              class="w-full p-2 border border-slate-300 rounded-md shadow-sm focus:ring-primary focus:border-primary"
+            />
+          </div>
+          <div>
+            <label
+              for="stoch_d_period"
+              class="block text-sm font-medium text-slate-600 mb-1"
+              >D Period:</label
+            >
+            <input
+              type="number"
+              id="stoch_d_period"
+              name="stoch_d_period"
+              value="{{ config.stoch_d_period }}"
+              class="w-full p-2 border border-slate-300 rounded-md shadow-sm focus:ring-primary focus:border-primary"
+            />
+          </div>
+          <div>
+            <label
+              for="stoch_slowing"
+              class="block text-sm font-medium text-slate-600 mb-1"
+              >Slowing:</label
+            >
+            <input
+              type="number"
+              id="stoch_slowing"
+              name="stoch_slowing"
+              value="{{ config.stoch_slowing }}"
+              class="w-full p-2 border border-slate-300 rounded-md shadow-sm focus:ring-primary focus:border-primary"
+            />
+          </div>
+          <div>
+            <label
+              for="stoch_overbought"
+              class="block text-sm font-medium text-slate-600 mb-1"
+              >Overbought Level:</label
+            >
+            <input
+              type="number"
+              id="stoch_overbought"
+              name="stoch_overbought"
+              value="{{ config.stoch_overbought }}"
+              class="w-full p-2 border border-slate-300 rounded-md shadow-sm focus:ring-primary focus:border-primary"
+            />
+          </div>
+          <div>
+            <label
+              for="stoch_oversold"
+              class="block text-sm font-medium text-slate-600 mb-1"
+              >Oversold Level:</label
+            >
+            <input
+              type="number"
+              id="stoch_oversold"
+              name="stoch_oversold"
+              value="{{ config.stoch_oversold }}"
+              class="w-full p-2 border border-slate-300 rounded-md shadow-sm focus:ring-primary focus:border-primary"
+            />
+          </div>
+          <div>
+            <label
+              for="stoch_trend_detection"
+              class="block text-sm font-medium text-slate-600 mb-1"
+              >Trend Detection:</label
+            >
+            <select
+              id="stoch_trend_detection"
+              name="stoch_trend_detection"
+              class="w-full p-2 border border-slate-300 rounded-md shadow-sm focus:ring-primary focus:border-primary"
+            >
+              <option
+                value="SMA"
+                {%
+                if
+                config.stoch_trend_detection
+                ==
+                'SMA'
+                %}selected{%
+                endif
+                %}
+              >
+                SMA
+              </option>
+              <!-- Add other methods if needed -->
+            </select>
+          </div>
+          <div>
+            <label
+              for="stoch_trend_period"
+              class="block text-sm font-medium text-slate-600 mb-1"
+              >Trend Period:</label
+            >
+            <input
+              type="number"
+              id="stoch_trend_period"
+              name="stoch_trend_period"
+              value="{{ config.stoch_trend_period }}"
+              class="w-full p-2 border border-slate-300 rounded-md shadow-sm focus:ring-primary focus:border-primary"
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- Trade Management Settings -->
+      <div class="border rounded-md p-4">
+        <h3 class="text-md font-semibold mb-3 text-slate-700">
+          Trade Management
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div>
+            <label
+              for="break_even_pips"
+              class="block text-sm font-medium text-slate-600 mb-1"
+              >Break Even Trigger (Pips):</label
+            >
+            <input
+              type="number"
+              step="0.1"
+              id="break_even_pips"
+              name="break_even_pips"
+              value="{{ config.break_even_pips }}"
+              class="w-full p-2 border border-slate-300 rounded-md shadow-sm focus:ring-primary focus:border-primary"
+            />
+          </div>
+          <div>
+            <label
+              for="break_even_buffer_pips"
+              class="block text-sm font-medium text-slate-600 mb-1"
+              >Break Even Buffer (Pips):</label
+            >
+            <input
+              type="number"
+              step="0.1"
+              id="break_even_buffer_pips"
+              name="break_even_buffer_pips"
+              value="{{ config.break_even_buffer_pips }}"
+              class="w-full p-2 border border-slate-300 rounded-md shadow-sm focus:ring-primary focus:border-primary"
+            />
+          </div>
+          <div class="flex items-center pt-5">
+            <input
+              type="hidden"
+              name="partial_close_enabled"
+              value="false"
+            />
+            <input
+              type="checkbox"
+              id="partial_close_enabled"
+              name="partial_close_enabled"
+              value="true"
+              class="h-4 w-4 text-primary border-slate-300 rounded focus:ring-primary"
+              {%
+              if
+              config.partial_close_enabled
+              %}checked{%
+              endif
+              %}
+            />
+            <label
+              for="partial_close_enabled"
+              class="ml-2 block text-sm font-medium text-slate-600"
+              >Enable Partial Close</label
+            >
+          </div>
+          <div>
+            <label
+              for="partial_close_pct"
+              class="block text-sm font-medium text-slate-600 mb-1"
+              >Partial Close %:</label
+            >
+            <input
+              type="number"
+              step="1"
+              min="0"
+              max="100"
+              id="partial_close_pct"
+              name="partial_close_pct"
+              value="{{ config.partial_close_pct }}"
+              class="w-full p-2 border border-slate-300 rounded-md shadow-sm focus:ring-primary focus:border-primary"
+            />
+          </div>
+          <div>
+            <label
+              for="partial_close_pips"
+              class="block text-sm font-medium text-slate-600 mb-1"
+              >Partial Close Trigger (Pips):</label
+            >
+            <input
+              type="number"
+              step="0.1"
+              id="partial_close_pips"
+              name="partial_close_pips"
+              value="{{ config.partial_close_pips }}"
+              class="w-full p-2 border border-slate-300 rounded-md shadow-sm focus:ring-primary focus:border-primary"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div class="flex justify-end pt-4">
+        <button
+          type="submit"
+          class="bg-primary hover:bg-blue-800 text-white font-bold py-2 px-6 rounded-md shadow-md transition duration-150 ease-in-out"
+        >
+          Save Configuration
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
