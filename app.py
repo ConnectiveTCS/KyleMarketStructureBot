@@ -1,7 +1,8 @@
 import threading
 import json
 import datetime  # Import the standard datetime module
-from flask import Flask, render_template, request, redirect, url_for
+import os  # Add this import
+from flask import Flask, render_template, request, redirect, url_for, jsonify  # Add jsonify
 import bot as trading_bot
 import MetaTrader5 as mt5
 # Import the logs module
@@ -10,6 +11,73 @@ from logs import get_logs, get_available_components
 app = Flask(__name__)
 bot_thread = None
 stop_event = threading.Event()
+
+# Define profiles directory
+PROFILES_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'profiles')
+CONFIG_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config.json')
+
+# Create profiles directory if it doesn't exist
+if not os.path.exists(PROFILES_DIR):
+    os.makedirs(PROFILES_DIR)
+
+# Get all available profiles
+def get_available_profiles():
+    if not os.path.exists(PROFILES_DIR):
+        return []
+    profiles = [f[:-5] for f in os.listdir(PROFILES_DIR) if f.endswith('.json')]
+    return sorted(profiles)
+
+# Save current config as a profile
+def save_profile(name):
+    if not name or '/' in name or '\\' in name:
+        return False, "Invalid profile name"
+    
+    # Load current config
+    try:
+        with open(CONFIG_FILE, 'r') as f:
+            config = json.load(f)
+    except Exception as e:
+        return False, f"Error loading current config: {str(e)}"
+    
+    # Save as profile
+    profile_path = os.path.join(PROFILES_DIR, f"{name}.json")
+    try:
+        with open(profile_path, 'w') as f:
+            json.dump(config, f, indent=4)
+        return True, "Profile saved successfully"
+    except Exception as e:
+        return False, f"Error saving profile: {str(e)}"
+
+# Load profile
+def load_profile(name):
+    profile_path = os.path.join(PROFILES_DIR, f"{name}.json")
+    if not os.path.exists(profile_path):
+        return False, "Profile not found"
+    
+    try:
+        # Load profile
+        with open(profile_path, 'r') as f:
+            profile_config = json.load(f)
+        
+        # Save as current config
+        with open(CONFIG_FILE, 'w') as f:
+            json.dump(profile_config, f, indent=4)
+        
+        return True, "Profile loaded successfully"
+    except Exception as e:
+        return False, f"Error loading profile: {str(e)}"
+
+# Delete profile
+def delete_profile(name):
+    profile_path = os.path.join(PROFILES_DIR, f"{name}.json")
+    if not os.path.exists(profile_path):
+        return False, "Profile not found"
+    
+    try:
+        os.remove(profile_path)
+        return True, "Profile deleted successfully"
+    except Exception as e:
+        return False, f"Error deleting profile: {str(e)}"
 
 # Start trading bot in background thread
 def start_bot():
@@ -164,6 +232,9 @@ def dashboard():
     logs = get_logs(n=100, level=log_level, component=log_component)
     log_components = get_available_components()
     
+    # Get available profiles
+    profiles = get_available_profiles()
+    
     return render_template('dashboard.html', 
                           config=config, 
                           status=status,
@@ -184,7 +255,8 @@ def dashboard():
                           logs=logs,
                           log_level=log_level,
                           log_component=log_component,
-                          log_components=log_components)
+                          log_components=log_components,
+                          profiles=profiles)  # Add profiles here
 
 @app.route('/logs')
 def view_logs():
@@ -247,6 +319,35 @@ def update_config():
     with open('config.json', 'w') as f:
         json.dump(new_conf, f, indent=4)
     return redirect(url_for('dashboard'))
+
+# Profile management routes
+@app.route('/save_profile', methods=['POST'])
+def save_profile_route():
+    data = request.json
+    name = data.get('name', '').strip()
+    if not name:
+        return jsonify({'success': False, 'message': 'Profile name is required'})
+    
+    success, message = save_profile(name)
+    return jsonify({'success': success, 'message': message})
+
+@app.route('/load_profile')
+def load_profile_route():
+    name = request.args.get('name', '').strip()
+    if not name:
+        return jsonify({'success': False, 'message': 'Profile name is required'})
+    
+    success, message = load_profile(name)
+    return jsonify({'success': success, 'message': message})
+
+@app.route('/delete_profile')
+def delete_profile_route():
+    name = request.args.get('name', '').strip()
+    if not name:
+        return jsonify({'success': False, 'message': 'Profile name is required'})
+    
+    success, message = delete_profile(name)
+    return jsonify({'success': success, 'message': message})
 
 if __name__ == '__main__':
     app.run(debug=True)

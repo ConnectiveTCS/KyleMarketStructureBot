@@ -901,6 +901,53 @@
               </h2>
             </div>
             
+            <!-- Profile Management Section -->
+            <div class="bg-white rounded-lg shadow-card p-6 mb-6">
+              <h3 class="text-lg font-medium text-slate-800 mb-4">Profile Management</h3>
+              
+              <div class="flex flex-wrap items-end gap-4">
+                <div class="w-full md:w-auto flex-grow">
+                  <label class="block text-sm font-medium text-slate-700 mb-1">
+                    Select Profile
+                  </label>
+                  <select id="profile-select" class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition">
+                    <option value="">-- Select a profile --</option>
+                    {% for profile in profiles %}
+                      <option value="{{ profile }}">{{ profile }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                
+                <div class="w-full md:w-auto flex-grow">
+                  <label class="block text-sm font-medium text-slate-700 mb-1">
+                    New Profile Name
+                  </label>
+                  <input type="text" id="new-profile-name" placeholder="Enter profile name" 
+                    class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition" />
+                </div>
+                
+                <div class="flex space-x-2">
+                  <button id="save-profile-btn" class="px-4 py-2 bg-emerald-500 text-white rounded-md shadow-sm hover:bg-emerald-600 transition flex items-center justify-center">
+                    <i class="fas fa-save mr-2"></i>
+                    Save as Profile
+                  </button>
+                  
+                  <button id="load-profile-btn" class="px-4 py-2 bg-blue-500 text-white rounded-md shadow-sm hover:bg-blue-600 transition flex items-center justify-center">
+                    <i class="fas fa-download mr-2"></i>
+                    Load
+                  </button>
+                  
+                  <button id="delete-profile-btn" class="px-4 py-2 bg-red-500 text-white rounded-md shadow-sm hover:bg-red-600 transition flex items-center justify-center">
+                    <i class="fas fa-trash-alt mr-2"></i>
+                    Delete
+                  </button>
+                </div>
+              </div>
+              
+              <!-- Alert Messages -->
+              <div id="profile-message" class="mt-4 hidden"></div>
+            </div>
+            
             <div class="bg-white rounded-lg shadow-card p-6">
               <form action="/update_config" method="post" class="space-y-4">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1015,6 +1062,131 @@
       document.addEventListener("DOMContentLoaded", function() {
         showSection('market_structure');
         document.querySelector('[onclick="showSection(\'market_structure\')"]').classList.add('active');
+      });
+
+      // Profile Management
+      document.addEventListener("DOMContentLoaded", function() {
+        const saveProfileBtn = document.getElementById('save-profile-btn');
+        const loadProfileBtn = document.getElementById('load-profile-btn');
+        const deleteProfileBtn = document.getElementById('delete-profile-btn');
+        const profileSelect = document.getElementById('profile-select');
+        const newProfileName = document.getElementById('new-profile-name');
+        const profileMessage = document.getElementById('profile-message');
+        
+        // Show message function
+        function showMessage(message, type) {
+          profileMessage.innerHTML = `
+            <div class="p-3 rounded ${type === 'success' ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'}">
+              <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'} mr-2"></i>
+              ${message}
+            </div>
+          `;
+          profileMessage.classList.remove('hidden');
+          setTimeout(() => {
+            profileMessage.classList.add('hidden');
+          }, 3000);
+        }
+        
+        // Save profile
+        saveProfileBtn.addEventListener('click', function() {
+          const profileName = newProfileName.value.trim();
+          if (!profileName) {
+            showMessage('Please enter a profile name', 'error');
+            return;
+          }
+          
+          fetch('/save_profile', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ name: profileName })
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              showMessage(`Profile "${profileName}" saved successfully`, 'success');
+              
+              // Add new profile to select if not exists
+              if (!Array.from(profileSelect.options).find(opt => opt.value === profileName)) {
+                const option = document.createElement('option');
+                option.value = profileName;
+                option.textContent = profileName;
+                profileSelect.appendChild(option);
+              }
+              
+              // Select the newly saved profile
+              profileSelect.value = profileName;
+              newProfileName.value = '';
+            } else {
+              showMessage(data.message || 'Failed to save profile', 'error');
+            }
+          })
+          .catch(error => {
+            showMessage('An error occurred while saving the profile', 'error');
+            console.error('Error:', error);
+          });
+        });
+        
+        // Load profile
+        loadProfileBtn.addEventListener('click', function() {
+          const profileName = profileSelect.value;
+          if (!profileName) {
+            showMessage('Please select a profile to load', 'error');
+            return;
+          }
+          
+          fetch(`/load_profile?name=${encodeURIComponent(profileName)}`)
+            .then(response => response.json())
+            .then(data => {
+              if (data.success) {
+                showMessage(`Profile "${profileName}" loaded successfully`, 'success');
+                // Reload the page to reflect the new configuration
+                setTimeout(() => {
+                  window.location.reload();
+                }, 1000);
+              } else {
+                showMessage(data.message || 'Failed to load profile', 'error');
+              }
+            })
+            .catch(error => {
+              showMessage('An error occurred while loading the profile', 'error');
+              console.error('Error:', error);
+            });
+        });
+        
+        // Delete profile
+        deleteProfileBtn.addEventListener('click', function() {
+          const profileName = profileSelect.value;
+          if (!profileName) {
+            showMessage('Please select a profile to delete', 'error');
+            return;
+          }
+          
+          if (confirm(`Are you sure you want to delete the profile "${profileName}"?`)) {
+            fetch(`/delete_profile?name=${encodeURIComponent(profileName)}`)
+              .then(response => response.json())
+              .then(data => {
+                if (data.success) {
+                  showMessage(`Profile "${profileName}" deleted successfully`, 'success');
+                  
+                  // Remove the option from the select
+                  const option = Array.from(profileSelect.options).find(opt => opt.value === profileName);
+                  if (option) {
+                    profileSelect.removeChild(option);
+                  }
+                  
+                  profileSelect.value = '';
+                } else {
+                  showMessage(data.message || 'Failed to delete profile', 'error');
+                }
+              })
+              .catch(error => {
+                showMessage('An error occurred while deleting the profile', 'error');
+                console.error('Error:', error);
+              });
+          }
+        });
       });
     </script>
   </body>
